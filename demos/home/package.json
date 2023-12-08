@@ -43,9 +43,6 @@
         ]
     },
     "homepage": "/home/",
-    "volta": {
-        "node": "16.20.2"
-    },
     "devDependencies": {
         "@craco/craco": "^7.1.0",
         "http-proxy-middleware": "^2.0.6",
