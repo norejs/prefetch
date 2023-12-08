@@ -227,7 +227,7 @@ function initServiceWorker(_a) {
  */
 var workers = new Map();
 function runAppPreloadScript(_a) {
-    var _b = _a === void 0 ? {} : _a, _c = _b.appUrl, appUrl = _c === void 0 ? '' : _c, _d = _b.scriptUrl, scriptUrl = _d === void 0 ? '' : _d, _e = _b.lifespan, lifespan = _e === void 0 ? 5000 : _e, _f = _b.autoInstallServiceWorker, autoInstallServiceWorker = _f === void 0 ? true : _f;
+    var _b = _a === void 0 ? {} : _a, _c = _b.appUrl, appUrl = _c === void 0 ? '' : _c, _d = _b.scriptUrl, scriptUrl = _d === void 0 ? '' : _d, _e = _b.lifespan, lifespan = _e === void 0 ? 10000 : _e, _f = _b.autoInstallServiceWorker, autoInstallServiceWorker = _f === void 0 ? true : _f;
     return __awaiter(this, void 0, void 0, function () {
         var worker_1;
         return __generator(this, function (_g) {
@@ -242,7 +242,7 @@ function runAppPreloadScript(_a) {
                     if (!(typeof Worker !== 'undefined')) return [3 /*break*/, 3];
                     if (!autoInstallServiceWorker) return [3 /*break*/, 2];
                     return [4 /*yield*/, initServiceWorker({
-                            url: '/home/service-worker.js',
+                            url: '/webapp/home/service-worker.js',
                             scope: '/',
                         })];
                 case 1:
@@ -280,6 +280,12 @@ function createMessageChannel(worker, appUrl) {
         console.log('message from worker', event);
         var eventData = event.data;
         var type = eventData.type, data = eventData.data;
+        if (type === 'getcookie') {
+            return worker.postMessage({
+                type: 'getcookie',
+                data: document.cookie,
+            });
+        }
         // 预加载相关的通讯，传递给service worker
         console.log('navigator?.serviceWorker?.controller', (_a = navigator === null || navigator === void 0 ? void 0 : navigator.serviceWorker) === null || _a === void 0 ? void 0 : _a.controller);
         (_c = (_b = navigator === null || navigator === void 0 ? void 0 : navigator.serviceWorker) === null || _b === void 0 ? void 0 : _b.controller) === null || _c === void 0 ? void 0 : _c.postMessage({
@@ -319,6 +325,7 @@ function registerPreloadApp(appUrl) {
                 case 1:
                     manifest = _e.sent();
                     _a = manifest !== null && manifest !== void 0 ? manifest : {}, _b = _a.normalScripts, normalScripts = _b === void 0 ? [] : _b, _c = _a.preloadScripts, preloadScripts = _c === void 0 ? [] : _c, _d = _a.styles, styles = _d === void 0 ? [] : _d;
+                    appendPrefetchLink([appUrl]);
                     appendPrefetchLink(styles);
                     appendPrefetchLink(normalScripts);
                     if (preloadScripts.length > 1) {
@@ -345,6 +352,8 @@ function appendPrefetchLink(links) {
     try {
         var fragment_1 = document.createDocumentFragment();
         links.forEach(function (link) {
+            if (!link)
+                return;
             var linkEl = document.createElement('link');
             linkEl.setAttribute('rel', 'prefetch');
             linkEl.setAttribute('href', link);
@@ -369,5 +378,5 @@ function PrefetchLinks(props) {
     return React.createElement(React.Fragment, null, children);
 }
 
-export { PrefetchLinks as PrefetchLint };
+export { PrefetchLinks as PrefetchLink };
 //# sourceMappingURL=index.esm.js.map

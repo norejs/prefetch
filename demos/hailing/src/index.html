@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, viewport-fit=cover"
+        />
+        <meta name="theme-color" content="#000000" />
+        <meta name="description" content="商旅-打车" />
+        <link
+            rel="icon"
+            href="https://pic.c-ctrip.com/corp_pic/common/favicon.ico"
+        />
+        <!-- Ares 样式 -->
+
+        <link
+            href="https://bd-s.tripcdn.cn/modules/corp/corp-fe-hailing-h5/static/css/vendors~main.e4134b96.chunk.css"
+            rel="stylesheet"
+        />
+
+        <link
+            href="https://bd-s.tripcdn.cn/modules/corp/corp-fe-hailing-h5/static/css/main.c0cff85a.chunk.css"
+            rel="stylesheet"
+        />
+
+        <title>商旅</title>
+        <style>
+            :root{--corp-search-btn-bg-color:#0B52D1;--corp-search-btn-fr-color:#fff;--corp-base-header-bg-color:#0b52d1;--corp-base-btn-bg-color:#0b52d1;--corp-base-btn-border-color:#0b52d1;--corp-base-checked-color:#0b52d1;--corp-base-optext-text-color:#0b52d1;--corp-base-box-soft-bg-color:#eff6fc;--corpdesign-global-loading-img-url:url('https://pic.c-ctrip.com/corp_pic/flight/booking/blueLoading.gif');--corp-travelmanage-theme-primary:#0B52D1;--corp-home-todoButtonColor-color:#fff;--corp-home-todoButtonBackgroundColor-color1:#0B52D1;--corp-home-todoButtonBackgroundColor-color2:#0B52D1;--corp-home-headerButtonColor-color:#fff;--corp-home-headerBackgroundColor-color1:#0B52D1;--corp-home-headerBackgroundColor-color2:#0B52D1;--corp-home-headerColor-color2:#fff;--corp-home-brandProtectIconColor:#0b52d1;--corp-home-brandProtectIconBackground:#e8ebf8;--corp-home-hotel-overseaTab-line-color:#0B52D1;--corp-home-hotel-overseaTab-text-color:#0B52D1;--corp-home-hotel-search-footer-chaibao-url:https://pic.c-ctrip.com/corp_pic/common/images/corp-fe-bizcomp-hotel-search/chaibao@2x.png;--corp-home-hotel-search-footer-xihuan-url:https://pic.c-ctrip.com/corp_pic/common/images/corp-fe-bizcomp-hotel-search/xihuan@2x.png;--corp-home-hotel-search-footer-dianping-url:https://pic.c-ctrip.com/corp_pic/common/images/corp-fe-bizcomp-hotel-search/dianping@2x.png;--corp-home-hotel-search-bottom-tuanduishenqing-url:https://pic.c-ctrip.com/corp_pic/common/images/corp-fe-bizcomp-hotel-search/tuanduishenqing@2x.png;--corp-home-approval-img-url:/modules/corp/corp-common-pic/app-home/default/approval-48ae13fe95.png;--corp-home-approval-img-new-url:/modules/corp/corp-common-pic/app-home/default/approvalNew-94b06fbffd.png;--corp-home-approval-img-popover-url:/modules/corp/corp-common-pic/app-home/default/approvalPopoverImg-33557974da.png;--corp-home-approval-img-1226-url:/modules/corp/corp-common-pic/app-home/default/approval1226_2x-fff7860045.png;--corp-home-default-banner-img-url:/modules/corp/corp-common-pic/app-home/default/banner-c94a564e2b.png;--corp-home-default-hotel-img-url:/modules/corp/corp-common-pic/app-home/default/hotelAdv-5ee6931fb8.png;--corp-home-default-flight-img-url:/modules/corp/corp-common-pic/app-home/default/flightAdv-6e2604b83a.png;--corp-home-default-marker1-img-url:/modules/corp/corp-common-pic/app-home/default/marker1-c938834fd0.png;--corp-home-default-marker2-img-url:/modules/corp/corp-common-pic/app-home/default/marker2-605bff839e.png;--corp-home-default-marker3-img-url:/modules/corp/corp-common-pic/app-home/default/marker3-8935781ef6.png;--corp-home-default-banner-webp-img-url:/modules/corp/corp-common-pic/app-home/default/banner-574ddc5923.webp;--corp-home-default-hotel-webp-img-url:/modules/corp/corp-common-pic/app-home/default/hotelAdv-c18ddd711f.webp;--corp-home-default-flight-webp-img-url:/modules/corp/corp-common-pic/app-home/default/flightAdv-89f97abc8a.webp;--corp-home-default-marker1-webp-img-url:/modules/corp/corp-common-pic/app-home/default/marker1-dc5809354b.webp;--corp-home-default-marker2-webp-img-url:/modules/corp/corp-common-pic/app-home/default/marker2-c8aee50d63.webp;--corp-home-default-marker3-webp-img-url:/modules/corp/corp-common-pic/app-home/default/marker3-6f2b5966ba.webp;--corp-home-flight-search-transfer-img-url:https://pic.c-ctrip.com/corp_pic/common/images/corp-fe-bizcomp-flight-search/transfer.png;--corp-home-flight-search-chai-img-url:https://pic.c-ctrip.com/corp_pic/common/images/corp-fe-bizcomp-flight-search/chaibao@2x.png;--corp-home-flight-search-transfer-hbdt-url:https://pic.c-ctrip.com/corp_pic/common/images/corp-fe-bizcomp-flight-search/hbdt@2x.png;--corp-home-flight-search-transfer-seat-url:https://pic.c-ctrip.com/corp_pic/common/images/corp-fe-bizcomp-flight-search/xuanzuo@2x.png;--corp-home-hotel-loading-img-url:url(https://pic.c-ctrip.com/pic/corp_pic/common/images/corp-design-component-h5/spin.gif);--corp-beforeLogin-text-color-secondary:#6da6e8;--corp-beforeLogin-bg:url(https://static.tripcdn.com/packages/corp/corp-common-pic/1.0.24/before-login/LoginBg.png);--corp-beforeLogin-bg1242:url(https://static.tripcdn.com/packages/corp/corp-common-pic/1.0.24/before-login/LoginBg1242.png);--corp-beforeLogin-bg1125:url(https://static.tripcdn.com/packages/corp/corp-common-pic/1.0.24/before-login/LoginBg1125.png);--corp-app-login-bg:url(https://dimg04.c-ctrip.com/images/0AS0j12000aee0n2j2E47.png);--corp-app-login-onekeyLogin-bg-1125:url(https://dimg04.c-ctrip.com/images/1nq1y12000b2irzav5384.jpg);--corp-app-login-onekeyLogin-bg-1242:url(https://dimg04.c-ctrip.com/images/1nq1d12000b2is0mt9FE5.jpg);--corp-online-home-userInfo-bg:url(https://static.tripcdn.com/packages/corp/corp-common-pic/1.0.24/online-home/userinfo-card.png);--corp-online-home-travel-bg:url(https://static.tripcdn.com/packages/corp/corp-common-pic/1.0.24/online-home/travel-card.png);--corp-common-menu-active-bg-color:#0740b3;--corp-home-flight-search-private-btn-bg-url:url('https://pic.c-ctrip.com/corp_pic/common/images/corp-fe-bizcomp-flight-search/default.png');--corp-travelManagement-bg-color:#0B52D1;--corp-corpmanage-base-btn-bg-color:#0B52D1;--corp-corpmanage-base-btn-text-color:#fff;--corp-corpmanage-default-btn-bg-color:#fff;--corp-corpmanage-default-btn-border-color:#0B52D1;--corp-corpmanage-default-btn-text-color:#0B52D1;--corp-corpmanage-monthly-bg-color:rgb(11,82,209,0.1);--corp-corpmanage-preStore-text-color:#fff;--corp-biz-online-home-business-bg:/modules/corp/corp-common-pic/biz-online-home/business-c29a62eee8.png;--corp-biz-online-home-leisure-bg:/modules/corp/corp-common-pic/biz-online-home/leisure-a57cc95026.png;--corp-biz-online-home-business-bg-webp:/modules/corp/corp-common-pic/biz-online-home/business-7dce96405d.webp;--corp-biz-online-home-leisure-bg-webp:/modules/corp/corp-common-pic/biz-online-home/leisure-3671317926.png;--corp-biz-online-home-hotel-leisure-bg:/modules/corp/corp-common-pic/biz-online-home/hotelsPersonal-140107cc7b.png;--corp-biz-online-home-hotel-business-bg:/modules/corp/corp-common-pic/biz-online-home/hotelsBusiness-ad1b0c2667.png;--corp-biz-online-home-flight-leisure-bg:/modules/corp/corp-common-pic/biz-online-home/flightsPersonal-457af7040b.png;--corp-biz-online-home-flight-business-bg:/modules/corp/corp-common-pic/biz-online-home/flightsBusiness-315c8c6bf9.png;--corp-biz-online-choose-admin-bg:/modules/corp/corp-common-pic/biz-online-choose/admin-268782f4f4.png;--corp-biz-online-choose-business-bg:/modules/corp/corp-common-pic/biz-online-choose/business-f1db6e4e1c.png;--corp-biz-online-choose-leisure-bg:/modules/corp/corp-common-pic/biz-online-choose/leisure-a8702468db.png;--corp-biz-online-home-favicon:/modules/corp/corp-common-pic/biz-online-home/favicon-e02102c6d5.ico;--corp-corpmanage-preStore-bg-img:url(http://pic.c-ctrip.com/corp_niv/pic/corp-month.png);--corp-corpmanage-monthly-default-text-color:#0B52D1;--corp-biz-online-login-login-bg:/modules/corp/corp-common-pic/biz-online-login/loginBg-132380d1ad.png;--corp-biz-online-choose-new-business-bg:/modules/corp/corp-common-pic/biz-online-choose/newBusiness-1a823aee49.png;--corp-biz-online-choose-travel-bg:/modules/corp/corp-common-pic/biz-online-choose/travel-2d247539ee.png;--corp-biz-online-choose-vacation-bg:/modules/corp/corp-common-pic/biz-online-choose/vacation-4451bbab75.png;--corp-login-logo-url:url(https://pic.c-ctrip.com/corp_niv/login_pic/LogoWhite.png);--corp-login-logo-width:203px;--corp-login-logo-height:39px;--corp-login-logo-background-size:203px 39px;--corp-biz-online-choose-new-business-bg-webp:/modules/corp/corp-common-pic/biz-online-choose/newBusiness-b28877e714.webp;--corp-biz-online-choose-travel-bg-webp:/modules/corp/corp-common-pic/biz-online-choose/travel-36813b1f50.webp;--corp-biz-online-choose-vacation-bg-webp:/modules/corp/corp-common-pic/biz-online-choose/vacation-e152eb4055.webp;--corp-biz-online-home-hotel-leisure-bg-webp:/modules/corp/corp-common-pic/biz-online-home/hotelsPersonal-e831113d03.webp;--corp-biz-online-home-hotel-business-bg-webp:/modules/corp/corp-common-pic/biz-online-home/hotelsBusiness-e4a41fe5f0.webp;--corp-biz-online-home-flight-leisure-bg-webp:/modules/corp/corp-common-pic/biz-online-home/flightsPersonal-2d5286697d.webp;--corp-biz-online-home-flight-business-bg-webp:/modules/corp/corp-common-pic/biz-online-home/flightsBusiness-aa889bf71d.webp;--corp-biz-online-login-login-bg-webp:/modules/corp/corp-common-pic/biz-online-login/loginbg-9d89815389.webp;--customTheme:{"zh-CN":{"title":"商旅"},"en-US":{"title":"CtripBIZ"}};--iphoneStatusBarHeight:50px;--iphoneStatusHeightByCorp:50;--corp-login-hs-logo-url:url(https://static.tripcdn.com/packages/corp/corp-common-pic/1.0.29/before-login/huanshen/logo.png);}
+        </style>
+
+        <script src="https://bd-s.tripcdn.cn/locale/v2/100035189/zh-CN.js?etagc=c890666b41e6f8845aaa034e11d770b7"></script>
+
+        <script>
+            if (
+                window.navigator &&
+                navigator.userAgent.toLowerCase().indexOf('dingtalk') > -1
+            ) {
+                document.writeln(
+                    '<script async="async" src="https://appx/web-view.min.js"' +
+                        '>' +
+                        '<' +
+                        '/' +
+                        'script>'
+                );
+            }
+        </script>
+    </head>
+
+    <body>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <input type="hidden" id="page_id" value="wait" />
+        <script type="preload" src="/hailing-preload.js"></script>
+        <script>
+            window.renderStartTime = Date.now();
+            window.__ARES_MODULE_BASE__ =
+                'https://bd-s.tripcdn.cn/modules/corp/corp-fe-hailing-h5/';
+            window.__SHARK_RESOURCE =
+                'https://bd-s.tripcdn.cn/locale/v2/100035189/zh-CN.js?etagc=c890666b41e6f8845aaa034e11d770b7';
+            window.corpHailingUseWebglMap = JSON.parse(
+                '{"native":true,"h5":false}'
+            );
+            window.$_bf = { loaded: true };
+            window.UBT_BIZCONFIG = JSON.parse(
+                '{"isLoadMarketing":false,"isLoadFP":false}'
+            );
+        </script>
+
+        <!-- SPA ROOT -->
+        <div id="root"></div>
+        <!--白屏资源-->
+
+        <script>
+            window.detectWhiteScreenScriptFullConfig = JSON.parse(
+                '[{"url":"/webapp/hailing/search","trackPageId":"10650069163","elementId":"whiteScreen-search","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":true,"showErrorUIIntervalTime":4000,"locale":""},{"url":"/webapp/hailing/list","trackPageId":"10650069169","elementId":"whiteScreen-list","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":true,"showErrorUIIntervalTime":4000,"locale":""},{"url":"/webapp/hailing/destination","trackPageId":"10650100012","elementId":"whiteScreen-destination","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":false,"locale":""},{"url":"/webapp/hailing/authProcess","trackPageId":"10650100016","elementId":"whiteScreen-authProcess","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":false,"locale":""},{"url":"/webapp/hailing/process","trackPageId":"10650085139","elementId":"whiteScreen-process","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":true,"showErrorUIIntervalTime":4000,"locale":""},{"url":"/webapp/hailing/tripShare","trackPageId":"10650089953","elementId":"whiteScreen-tripShare","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":false,"locale":""},{"url":"/webapp/hailing/oneButtonAlarm","trackPageId":"10650092088","elementId":"whiteScreen-oneButtonAlarm","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":false,"locale":""},{"url":"/webapp/hailing/cancelReason","trackPageId":"10650100010","elementId":"whiteScreen-cancelReason","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":false,"locale":""},{"url":"/webapp/hailing/securityPage","trackPageId":"10650092297","elementId":"whiteScreen-securityPage","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":false,"locale":""}]'
+            );
+            window.detectionWhiteScreen = JSON.parse(
+                '{"url":"/webapp/hailing/search","trackPageId":"10650069163","elementId":"whiteScreen-search","detectionIntervalTime":6000,"sourceFrom":"H5","showErrorUI":true,"showErrorUIIntervalTime":4000,"locale":""}'
+            );
+        </script>
+
+        <script
+            crossorigin=""
+            src="https://bd-s.tripcdn.cn/modules/corp/corp-fe-bizcomp-detection-white-screen/dist/common/js/detectionWhiteScreen-4.12.0.js"
+        ></script>
+
+        <!-- Ares 业务代码 -->
+
+        <script src="https://bd-s.tripcdn.cn/modules/corp/corp-fe-hailing-h5/static/js/runtime-main.6f5ff2e6389c7eaef.4780951.js"></script>
+
+        <script src="https://bd-s.tripcdn.cn/modules/corp/corp-fe-hailing-h5/static/js/vendors~main.8916c29da57516fed.4780951.js"></script>
+
+        <script src="https://bd-s.tripcdn.cn/modules/corp/corp-fe-hailing-h5/static/js/main.0fb2fab1aec779750.4780951.js"></script>
+
+        <script>
+            (function (doc) {
+                var root = doc.querySelector('html');
+                (resizeEvt =
+                    'orientationchange' in window
+                        ? 'orientationchange'
+                        : 'resize'),
+                    (recalc = function () {
+                        var clientWidth = root.getBoundingClientRect().width;
+                        root.style.fontSize =
+                            Math.min(100, clientWidth / 10) + 'px';
+                    });
+                window.addEventListener(resizeEvt, recalc, false);
+                return recalc();
+            })(document);
+        </script>
+    </body>
+</html>

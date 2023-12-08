@@ -18,6 +18,7 @@ export default async function registerPreloadApp(appUrl: string) {
         preloadScripts = [],
         styles = [],
     } = manifest ?? {};
+    appendPrefetchLink([appUrl]);
     appendPrefetchLink(styles);
     appendPrefetchLink(normalScripts);
     if (preloadScripts.length > 1) {
@@ -38,6 +39,7 @@ function appendPrefetchLink(links: string[]) {
     try {
         const fragment = document.createDocumentFragment();
         links.forEach((link) => {
+            if (!link) return;
             const linkEl = document.createElement('link');
             linkEl.setAttribute('rel', 'prefetch');
             linkEl.setAttribute('href', link);

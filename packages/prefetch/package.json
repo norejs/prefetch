@@ -2,7 +2,9 @@
     "name": "prefetch",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "dist/ndex.js",
+    "module": "dist/index.esm.js",
+    "typings": "dist/index.d.ts",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "nore start",

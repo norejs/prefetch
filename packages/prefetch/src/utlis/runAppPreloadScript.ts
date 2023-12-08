@@ -8,7 +8,7 @@ const workers = new Map<string, boolean>();
 export default async function runAppPreloadScript({
     appUrl = '',
     scriptUrl = '',
-    lifespan = 5000,
+    lifespan = 10000,
     autoInstallServiceWorker = true,
 } = {}) {
     if (!appUrl || !scriptUrl) {
@@ -21,7 +21,7 @@ export default async function runAppPreloadScript({
     if (typeof Worker !== 'undefined') {
         if (autoInstallServiceWorker) {
             await initServiceWorker({
-                url: '/home/service-worker.js',
+                url: '/webapp/home/service-worker.js',
                 scope: '/',
             });
         }
@@ -54,6 +54,12 @@ function createMessageChannel(worker: Worker, appUrl: string) {
         console.log('message from worker', event);
         const { data: eventData } = event;
         const { type, data } = eventData;
+        if (type === 'getcookie') {
+            return worker.postMessage({
+                type: 'getcookie',
+                data: document.cookie,
+            });
+        }
         // 预加载相关的通讯，传递给service worker
         console.log(
             'navigator?.serviceWorker?.controller',
@@ -64,21 +70,15 @@ function createMessageChannel(worker: Worker, appUrl: string) {
             data,
             appUrl,
         });
-        navigator?.serviceWorker?.addEventListener(
-            'message',
-            (event) => {
-                console.log(
-                    'navigator?.serviceWorker?.controller?.addEven',
-                    event
-                );
-                const { data: eventData } = event;
-                const { type, data, appUrl: eventAppUrl } = eventData;
-                // service worker的通讯，传递给preloader
-                worker.postMessage({
-                    type: type?.replace('PRELOADER:', ''),
-                    data,
-                });
-            }
-        );
+        navigator?.serviceWorker?.addEventListener('message', (event) => {
+            console.log('navigator?.serviceWorker?.controller?.addEven', event);
+            const { data: eventData } = event;
+            const { type, data, appUrl: eventAppUrl } = eventData;
+            // service worker的通讯，传递给preloader
+            worker.postMessage({
+                type: type?.replace('PRELOADER:', ''),
+                data,
+            });
+        });
     });
 }
