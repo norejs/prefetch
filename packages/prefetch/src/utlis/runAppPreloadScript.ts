@@ -42,6 +42,7 @@ export default async function runAppPreloadScript({
 function createMessageChannel(worker: Worker, appUrl: string) {
     window.addEventListener('message', (event) => {
         const { data: eventData } = event;
+        console.log('message from window', eventData);
         // const { type, data } = eventData;
         // console.log('message from window', eventData);
         // // service worker的通讯，传递给preloader
