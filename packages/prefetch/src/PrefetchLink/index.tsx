@@ -1,7 +1,7 @@
 /**
  * PrefetchLinks 组件，用于预加载应用资源
  */
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import registerPreloadApp from '../utlis/registerPreloadApp';
 // 加载应用的资源
 export default function PrefetchLinks(props: {
@@ -12,5 +12,5 @@ export default function PrefetchLinks(props: {
     useEffect(() => {
         registerPreloadApp(appUrl);
     }, []);
-    return <>{children}</>;
+    return <Fragment>{children}</Fragment>;
 }
