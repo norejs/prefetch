@@ -7,6 +7,7 @@
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^13.5.0",
         "axios": "^1.6.2",
+        "lodash-es": "^4.17.21",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-scripts": "5.0.1",
@@ -40,6 +41,7 @@
     "devDependencies": {
         "@rsbuild/core": "^0.2.5",
         "@rsbuild/plugin-react": "^0.2.5",
+        "lodash": "^4.17.21",
         "microbundle": "^0.15.1",
         "react-app-rewired": "^2.2.1"
     }
