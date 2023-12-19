@@ -94,9 +94,11 @@ importers:
     specifiers:
       '@norejs/cli': ^0.0.5
       '@types/react': '17'
+      core-js: '3'
       tsdx: ^0.14.1
       tslib: ^2.6.2
     dependencies:
+      core-js: 3.34.0
       tsdx: 0.14.1
     devDependencies:
       '@norejs/cli': 0.0.5
