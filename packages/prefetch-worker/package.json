@@ -13,9 +13,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@rsbuild/core": "^0.6.1",
+    "@types/crypto-js": "^4.2.2",
     "@types/express": "4.17.21"
   },
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "express": "4"
   }
 }

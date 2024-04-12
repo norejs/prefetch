@@ -14,7 +14,8 @@
     "deploy": "modern deploy",
     "lint": "modern lint",
     "upgrade": "modern upgrade",
-    "start-proxy": "node scripts/proxy.js"
+    "start-proxy": "node scripts/proxy.js",
+    "dev": "npm run start-proxy && turbo dev"
   },
   "engines": {
     "node": ">=16.18.1"
@@ -44,6 +45,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
+    "turbo": "^1.13.2",
     "whistle": "^2.9.67"
   }
 }

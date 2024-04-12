@@ -1,4 +1,3 @@
-
 import sha256 from 'crypto-js/sha256';
 /**
  * 将request 转化为cache key
@@ -32,4 +31,11 @@ export async function requestToCacheKey(oriRequest: Request): Promise<string> {
     return key;
 }
 
-
+// 根据请求生成url,用于和规则中的声明做判断
+export function requestToUrl(oriRequest: Request) {
+    // TODO
+    const request = oriRequest.clone();
+    const url = request.url;
+    const method = request.method;
+    return `${method.toUpperCase()}-${url}`;
+}

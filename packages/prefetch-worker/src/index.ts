@@ -7,18 +7,6 @@ const cacheStrategies = {};
 const sessionCache = new Map();
 const PRELOADER_PREFIX = 'PRELOADER:';
 
-/**
- * api 白名单
- */
-const apiHostWhiteList = [
-  'qa.nt.ctripcorp.com',
-  'trip.com',
-  'trip.biz',
-  'ctrip.com',
-];
-const isInWhiteList = (url: string) => {
-  return apiHostWhiteList.some(host => url.indexOf(host) > -1);
-};
 
 function getAppUrlByEvent(event: MessageEvent) {
   console.log('getAppUrlByEvent', event);
