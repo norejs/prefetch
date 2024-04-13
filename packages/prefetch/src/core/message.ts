@@ -1,4 +1,4 @@
-import { generateUUID } from '../utils/index';
+import { generateUUID } from "../utils/index";
 
 class Massenger {
   private methods: {
@@ -20,11 +20,11 @@ class Massenger {
   }
 
   init() {
-    window.addEventListener('message', event => {
+    window.addEventListener("message", (event) => {
       const { type, data } = event.data;
       const { callbackId, customData } = data || {};
       // 收到信息后执行特定的方法
-      if (type === 'prefetch:worker-to-main-callback') {
+      if (type === "prefetch:worker-to-main-callback") {
         const callback = this.callbacks[callbackId];
         if (callback) {
           callback(customData);
@@ -47,18 +47,18 @@ class Massenger {
   }
 
   private callRemote(name: string, data: any) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const callbackId = this.addCallback(resolve);
       window.postMessage(
         {
-          type: 'prefetch:main-to-worker-callback',
+          type: "prefetch:main-to-worker-callback",
           data: {
             name,
             data,
             callbackId,
           },
         },
-        '*',
+        "*"
       );
     });
   }
@@ -72,7 +72,7 @@ class Massenger {
             return this.callRemote(prop.toString(), data);
           };
         },
-      },
+      }
     );
   }
 }

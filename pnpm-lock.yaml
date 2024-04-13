@@ -137,6 +137,9 @@ importers:
 
   packages/prefetch-worker:
     dependencies:
+      '@ctrip/corp-fe-prefetch':
+        specifier: workspace:^
+        version: link:../prefetch
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
@@ -3735,7 +3738,7 @@ packages:
       '@rsbuild/shared': 0.4.15(@swc/helpers@0.5.3)
       fast-glob: 3.3.2
       globby: 11.1.0
-      html-webpack-plugin: /html-rspack-plugin@5.6.2(@rspack/core@0.6.1)
+      html-webpack-plugin: /html-rspack-plugin@5.6.2(@rspack/core@0.5.7)
       mini-css-extract-plugin: 2.8.1(webpack@5.91.0)
       postcss: 8.4.38
       terser-webpack-plugin: 5.3.10(esbuild@0.17.19)(webpack@5.91.0)

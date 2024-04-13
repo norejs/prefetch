@@ -1,4 +1,5 @@
 const { exec } = require('child_process');
+const { existsSync } = require('fs');
 const path = require('path');
 const whistleConfig = path.resolve(__dirname, '../.whistle.js');
 
@@ -35,6 +36,11 @@ function startW2() {
 
 function addRules() {
   return new Promise((resolve, reject) => {
+    if(!existsSync(whistleConfig)){
+      console.log('whistle config not found');
+      resolve(false);
+      return;
+    }
     exec(`w2 add ${whistleConfig}`, (err, stdout, stderr) => {
       if (err) {
         reject(err);
