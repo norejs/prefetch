@@ -1,4 +1,4 @@
-import initServiceWorker from "./initServiceWorker";
+import initServiceWorker from "./preloader-worker";
 
 /**
  * 运行Preload

@@ -27,13 +27,7 @@ export default async function registerPreloadApp(
   } = manifest ?? {};
   appendPrefetchLink(styles);
   appendPrefetchLink(normalScripts);
-  // if (preloadScripts.length > 1) {
-  //   console.warn("preload script must be one");
-  // } else if (preloadScripts.length === 1) {
-  //   runAppPreloadScript({ scriptUrl: preloadScripts[0], appUrl });
-  // } else {
-  //   console.warn(`app:${appUrl} no preload script`);
-  // }
+
   registedApps[appUrl] = true;
 }
 

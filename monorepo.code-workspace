@@ -1,6 +1,10 @@
 {
   "folders": [
     {
+      "name": "swiftcom",
+      "path": "packages/swiftcom/"
+    },
+    {
       "name": "common",
       "path": "packages/common/"
     },

@@ -1,13 +1,17 @@
 import { generateUUID } from "../utils/index";
+import {
+  remoteMessageType,
+  callbackMessageType,
+  authMessageType,
+} from "../contants/index";
 // import { getPrefetchWorker } from "./preloader-worker";
-
 /**
  * 消息通信类
  * */
-const MassengerInstances = new WeakMap();
+const MassengerInstances = new Map();
 export class Massenger {
   private worker: Worker | null = null;
-
+  private messageChannel: string;
   private methods: {
     [key: string]: (data: any) => any;
   } = {};
@@ -16,14 +20,12 @@ export class Massenger {
     [key: string]: (data: any) => void;
   } = {};
 
-  constructor(worker: Worker) {
-    // 避免重复初始化
-    if (MassengerInstances.has(worker)) {
-      return MassengerInstances.get(worker);
+  constructor(messageChannel: string) {
+    if (MassengerInstances.has(messageChannel)) {
+      throw new Error("messageChannel is exist");
     }
-    this.worker = worker;
+    this.messageChannel = messageChannel;
     this.init();
-    MassengerInstances.set(worker, this);
   }
 
   private addCallback(callback: (data: any) => any) {
@@ -32,35 +34,27 @@ export class Massenger {
     return id;
   }
 
+  private async auth() {
+    const res = await this.remoteInstance.__swiftcom__auth__();
+    return res.messageChannel === this.messageChannel;
+  }
+
   private init() {
-    window.addEventListener("message", (event) => {
+    self.addEventListener("message", async (event) => {
       const { type, data } = event.data;
-      const { callbackId, customData } = data || {};
-      // 收到信息后执行特定的方法
-      if (type === "prefetch:worker-to-main-callback") {
-        const callback = this.callbacks[callbackId];
-        if (callback) {
-          callback(customData);
-        }
-        try {
-          delete this.callbacks[callbackId];
-        } catch (error) {}
+      const { customData, callbackId } = data || {};
+      switch (type) {
+        case callbackMessageType:
+          const callback = this.callbacks[callbackId];
+          if (callback) {
+            callback(customData);
+          }
+          try {
+            delete this.callbacks[callbackId];
+          } catch (error) {}
+          break;
       }
     });
-  }
-
-  // 注册方法，用于远程调用
-
-  register(name: string, method: any) {
-    this.methods[name] = method;
-  }
-
-  // 取消注册方法，用于远程调用
-
-  unRegister(name: string) {
-    try {
-      delete this.methods[name];
-    } catch (error) {}
   }
 
   private callRemote(funName: string, data: any) {
@@ -68,7 +62,7 @@ export class Massenger {
       if (this.worker) {
         const callbackId = this.addCallback(resolve);
         this.worker.postMessage({
-          type: "prefetch:main-to-worker-callback",
+          type: remoteMessageType,
           data: {
             funName,
             data,
@@ -86,7 +80,7 @@ export class Massenger {
 
   get remoteInstance() {
     return new Proxy(
-      {},
+      {} as any,
       {
         get: (target, prop) => {
           return (...data: any[]) => {
