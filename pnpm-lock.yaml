@@ -39,7 +39,7 @@ importers:
 
   apps/demo:
     dependencies:
-      '@ctrip/corp-fe-prefetch':
+      '@cotrip/corp-fe-prefetch':
         specifier: workspace:^
         version: link:../../packages/prefetch
       '@modern-js/runtime':

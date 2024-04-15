@@ -1,4 +1,4 @@
-import { PrefetchLink, IRule } from "@ctrip/corp-fe-prefetch";
+import { PrefetchRoot, IRule } from "@ctrip/corp-fe-prefetch";
 
 const rules: IRule[] = [
   {
@@ -48,9 +48,9 @@ const rules: IRule[] = [
 
 const Index = () => (
   <div className="container-box w-full">
-    <PrefetchLink appUrl="/webapp/hailing/search" rules={rules}>
+    <PrefetchRoot appUrl="/webapp/hailing/search" rules={rules}>
       <a>打车</a>
-    </PrefetchLink>
+    </PrefetchRoot>
     <iframe
       width="100%"
       height={"100%"}
