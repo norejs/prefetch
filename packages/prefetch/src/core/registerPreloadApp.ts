@@ -27,7 +27,7 @@ export default async function registerPreloadApp(
   } = manifest ?? {};
   appendPrefetchLink(styles);
   appendPrefetchLink(normalScripts);
-
+  registerRules(appUrl, rules);
   registedApps[appUrl] = true;
 }
 
@@ -51,7 +51,7 @@ function appendPrefetchLink(links: string[]) {
 }
 
 export function registerRules(appUrl: string, rules: IRule[]) {
-  rules.forEach((rule) => {
-    // TODO
-  });
+  console.log("registerRules", appUrl, rules);
+  // TODO 通知worker 当前的规则
+  // 等待worker返回结果并发起请求
 }

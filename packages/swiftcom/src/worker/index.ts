@@ -1,10 +1,11 @@
 // 运行在worker 中
-import { generateUUID } from "../utils/index";
 import { remoteMessageType, callbackMessageType } from "../contants/index";
 // import { getPrefetchWorker } from "./preloader-worker";
 /**
  * 消息通信类
  * */
+// 传递消息的统一前缀
+const uniquePrefix = "swifcom:";
 export class Massenger {
   private methods: {
     [key: string]: (data: any) => any;
@@ -20,13 +21,13 @@ export class Massenger {
     this.init();
   }
 
-  private addCallback(callback: (data: any) => any) {
-    const id = generateUUID();
-    this.callbacks[id] = callback;
-    return id;
+  private init() {
+    this.listenRemoteCall();
+    this.listenCheck();
   }
 
-  private init() {
+  // 监听远程调用
+  private listenRemoteCall() {
     self.addEventListener("message", async (event) => {
       const { type, data } = event.data;
       const { customData } = data || {};
@@ -50,21 +51,27 @@ export class Massenger {
           break;
       }
     });
-    this.register("__swiftcom__auth__", (data: any) => {
-      return {
-        messageChannel: this.messageChannel,
-      };
+  }
+
+  // 监听主线程的检查消息
+  private listenCheck() {
+    self.addEventListener("message", (event) => {
+      const { type, data } = event.data;
+      if (type === `${uniquePrefix}-check:${this.messageChannel}`) {
+        event.source?.postMessage({
+          type: `${uniquePrefix}-check:${this.messageChannel}`,
+          data: data,
+        });
+      }
     });
   }
 
   // 注册方法，用于远程调用
-
   register(name: string, method: any) {
     this.methods[name] = method;
   }
 
   // 取消注册方法，用于远程调用
-
   unRegister(name: string) {
     try {
       delete this.methods[name];

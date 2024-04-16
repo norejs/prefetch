@@ -11,7 +11,7 @@ export type Manifest = {
  * @returns
  */
 export default async function loadMaifest(
-  appUrl: string,
+  appUrl: string
 ): Promise<Manifest | null> {
   if (manifestCache[appUrl]) {
     return manifestCache[appUrl];
@@ -19,19 +19,19 @@ export default async function loadMaifest(
   const res = await fetch(appUrl);
   if (res && res.status === 200) {
     const html = await res.text();
-    const dom = new DOMParser().parseFromString(html, 'text/html');
-    const scripts = dom.querySelectorAll('script');
-    const links = dom.querySelectorAll('link');
+    const dom = new DOMParser().parseFromString(html, "text/html");
+    const scripts = dom.querySelectorAll("script");
+    const links = dom.querySelectorAll("link");
     const styles = Array.from(links).reduce((pre: string[], link) => {
-      if (link.rel === 'stylesheet') {
+      if (link.rel === "stylesheet") {
         pre.push(link.href);
       }
       return pre;
     }, []);
     const normalScripts: string[] = [];
     const preloadScripts: string[] = [];
-    Array.from(scripts).forEach(script => {
-      if ((script as any)?.type === 'preload') {
+    Array.from(scripts).forEach((script) => {
+      if ((script as any)?.type === "preload") {
         preloadScripts.push(script.src);
       } else {
         normalScripts.push(script.src);
