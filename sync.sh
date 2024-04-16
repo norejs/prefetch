@@ -2,7 +2,7 @@ rsync -av --exclude "**/.turbo" --exclude ".DS_Store" --exclude "sync.sh" --excl
 
 # Path: sync.sh
 
-find . -type d -name node_modules -prune -o -type f -print | xargs grep -rl '@cotrip/'  ~/www/ctrip/corp-fe-prefetch/ | xargs sed -i 's/@cotrip/@ctrip/g'
+find ~/www/ctrip/corp-fe-prefetch/  -type d -name node_modules -prune -o -type f -print | xargs grep -rl '@cotrip/'  ~/www/ctrip/corp-fe-prefetch/ | xargs sed -i 's/@cotrip/@ctrip/g'
 
 find ~/www/ctrip/corp-fe-prefetch/ -type d -name node_modules -prune -o -type f -print | xargs grep -rl '__TRIPHOST__'  ~/www/ctrip/corp-fe-prefetch/ | xargs sed -i 's/__TRIPHOST__/ctripcorp.com/g'
 
