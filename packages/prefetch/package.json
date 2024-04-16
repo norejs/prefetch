@@ -1,5 +1,5 @@
 {
-  "name": "@cotrip/corp-fe-prefetch",
+  "name": "@ctrip/corp-fe-prefetch",
   "version": "0.1.0",
   "types": "./dist/types/index.d.ts",
   "main": "./dist/lib/index.js",

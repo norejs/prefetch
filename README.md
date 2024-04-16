@@ -4,8 +4,7 @@ A tool to prefetch corp Api data from the server.
 # Progress
 It's WIP now. please wait for a while.
 
-# Document
-[Document]([http://conf.ctripcorp.com/pages/viewpage.action?pageId=2015168916]: #)
+# Documenthttp://conf.__TRIPHOST__/pages/viewpage.action?pageId=2015168916 
 
 # Development
 ```bash
