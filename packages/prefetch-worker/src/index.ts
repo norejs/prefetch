@@ -3,6 +3,7 @@
 /**
  * 仅用于修复代码提示报错
  */
+declare var self: ServiceWorkerGlobalScope;
 const cacheStrategies = {};
 const sessionCache = new Map();
 const PRELOADER_PREFIX = 'PRELOADER:';
