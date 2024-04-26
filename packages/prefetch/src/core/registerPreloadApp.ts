@@ -1,4 +1,4 @@
-import { IRule } from "..";
+import { IRule } from "../interfaces";
 import loadMaifest from "./loadMaifest";
 // import runAppPreloadScript from "./runAppPreloadScript";
 
@@ -51,6 +51,7 @@ function appendPrefetchLink(links: string[]) {
 }
 
 export function registerRules(appUrl: string, rules: IRule[]) {
+  // TODO 注册规则
   console.log("registerRules", appUrl, rules);
   // TODO 通知worker 当前的规则
   // 等待worker返回结果并发起请求

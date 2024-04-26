@@ -137,7 +137,7 @@ importers:
 
   packages/prefetch-worker:
     dependencies:
-      '@ctrip/corp-fe-prefetch':
+      '@cotrip/corp-fe-prefetch':
         specifier: workspace:^
         version: link:../prefetch
       crypto-js:
@@ -159,7 +159,7 @@ importers:
 
   packages/swiftcom:
     dependencies:
-      '@ctrip/corp-fe-prefetch':
+      '@cotrip/corp-fe-prefetch':
         specifier: workspace:^
         version: link:../prefetch
       crypto-js:

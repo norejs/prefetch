@@ -3,10 +3,7 @@
  * api 白名单
  */
 const apiHostWhiteList = [
-  'qa.nt.ctripcorp.com',
-  'trip.com',
-  'trip.biz',
-  'ctrip.com',
+
 ];
 
 const isInWhiteList = (url: string) => {

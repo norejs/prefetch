@@ -1,11 +1,25 @@
 # Corp Prefetch
 A tool to prefetch corp Api data from the server.
 
-# Progress
-It's WIP now. please wait for a while.
+# Quick Start
+
+```bash
+pnpm install @cotrip/corp-prefetch
+```
+
+```javascript
+// 发起预请求
+import { createPreRequest } from '@cotrip/corp-prefetch';
+
+// res 同@cotrip/corp-cross-request 的res
+// req 同@cotrip/corp-cross-request 的req
+// config config.expireTime 为缓存时间
+createPreRequest(res,req,config).post("/restapi/restapi", requestParams)
+
+```
 
 # Document
-http://conf.__TRIPHOST__/pages/viewpage.action?pageId=2015168916 
+
 
 # Development
 ```bash

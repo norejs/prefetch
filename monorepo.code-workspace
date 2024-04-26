@@ -1,14 +1,6 @@
 {
   "folders": [
     {
-      "name": "swiftcom",
-      "path": "packages/swiftcom/"
-    },
-    {
-      "name": "common",
-      "path": "packages/common/"
-    },
-    {
       "name": "preload-sw",
       "path": "apps/preload-sw/"
     },

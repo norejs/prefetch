@@ -1,11 +1,10 @@
 {
-  "name": "@ctrip/corp-fe-prefetch",
+  "name": "@cotrip/corp-fe-prefetch",
   "version": "0.1.0",
   "types": "./dist/types/index.d.ts",
   "main": "./dist/lib/index.js",
   "module": "./dist/es/index.js",
   "scripts": {
-    "prepare": "modern build",
     "dev": "npm run build:watch",
     "build": "modern build",
     "build:watch": "modern build -w",
@@ -28,5 +27,11 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@babel/runtime-corejs3": "^7.24.4",
+    "@cotrip/corp-cross-request": "2.12.1",
+    "@cotrip/corp-cross-utils": "5.21.2-refund.1",
+    "@cotrip/corp-fe-libs-crypto": "^1.1.4"
   }
 }

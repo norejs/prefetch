@@ -1,3 +1,16 @@
-export { default as PrefetchRoot } from "./react/PrefetchLink";
-export type { IRule } from "./interfaces";
-// export { default as ServiceWorker } from './ServiceWorker';
+import setup from "./core/setup";
+import { serviceWorkerUrl, scope } from "./constants";
+
+export { default as PrefetchLink } from "./react/PrefetchLink";
+export { default as preRequest } from "./core/preRequest";
+export { headName, expireTimeHeadName } from "./constants";
+
+function main() {
+  try {
+    setup({
+      serviceWorkerUrl,
+      scope,
+    });
+  } catch (error) {}
+}
+main();

@@ -20,11 +20,4 @@ Build the module for production:
 pnpm run build
 ```
 
-Enable optional features:
-
-```bash
-pnpm run new
-```
-
-
 For more information, see the [Modern.js Module documentation](https://modernjs.dev/module-tools/en).

@@ -1,65 +1,90 @@
-import { PrefetchRoot, IRule } from "@ctrip/corp-fe-prefetch";
+import { preRequest } from "@cotrip/corp-fe-prefetch";
 
-const rules: IRule[] = [
-  {
-    apiUrl: "https://m.ctrip.com/restapi/soa2/18088/getAppConfig.json",
-    type: "POST",
-    expireTime: 10000,
-    triger: "idle",
-    fetch: () => {
-      return fetch("https://m.ctrip.com/restapi/soa2/18088/getAppConfig.json", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          appId: "5278",
-          categoryList: ["ubtconfig"],
-          head: {
-            appid: "5278",
-            cid: "1702042292907.ix5qc4",
-            cver: "000.001",
-            sid: "8892",
-          },
-        }),
+import { useEffect } from "react";
+import RequestModel from "@cotrip/ctweb-util/esm/ctmodel";
+
+const customPreRequest = () => {
+  const customerServiceSwitchModel = new RequestModel({
+    isCorpRestApi: true,
+    serviceName: "CorpFrontendIMService",
+    serviceOperation: "customerServiceSwitch",
+  });
+
+  const customerServiceSwitch = async (params: any) => {
+    try {
+      const response = await customerServiceSwitchModel.fetch({
+        body: { params },
+        silence: true,
       });
-      // return fetch("https://m.ctrip.com/restapi/soa2/18088/getAppConfig.json", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     head: {
-      //       cid: "09031015410962490138",
-      //       ctok: "",
-      //       cver: "1.0",
-      //       lang: "01",
-      //       sid: "8888",
-      //       syscode: "09",
-      //       auth: "",
-      //       extension: [],
-      //     },
-      //     contentType: "json",
-      //   }),
-      // });
-    },
-  },
-];
+      return response;
+    } catch (error) {
+      return null;
+    }
+  };
+  customerServiceSwitch({
+    productLine: "4",
+    pageCode: "DC0102",
+    Channel: "html5",
+    resourceSink: true,
+    SecondaryChannel: "Other",
+  }).then((res) => {
+    console.log("customerServiceSwitch", res);
+  });
+};
 
-const Index = () => (
-  <div className="container-box w-full">
-    <PrefetchRoot appUrl="/webapp/hailing/search" rules={rules}>
+const language = "zh-CN";
+const Index = () => {
+  const requestParams = {
+    params: {
+      language,
+    },
+    operation: "getAllCategoricalCountryCode",
+    language,
+    serviceName: "CorpNodeCommon",
+  };
+  useEffect(() => {
+    // PrefetchRoot.init(rules);
+    let clock: any = 0;
+    preRequest(undefined, undefined)
+      .post("/restapi/restapi", requestParams)
+      .then((res) => {
+        console.log("prefetch request 这是预请求", res);
+      });
+
+    customPreRequest();
+    clock = setTimeout(() => {
+      realRequest();
+    }, 2000);
+    return () => {
+      clearTimeout(clock);
+    };
+  }, []);
+
+  const realRequest = () => {
+    console.time("real request");
+    creatrerequest()
+      .post("/restapi/restapi", requestParams)
+      .then((res) => {
+        console.log("real request 这是真实请求", res);
+        console.timeEnd("real request");
+      });
+  };
+
+  return (
+    <div className="container-box w-full">
+      {/* <PrefetchRoot appUrl="/webapp/hailing/search" rules={rules}>
       <a>打车</a>
-    </PrefetchRoot>
-    <iframe
-      width="100%"
-      height={"100%"}
-      frameBorder={0}
-      style={{ border: 0 }}
-      allowFullScreen={true}
-      src="https://ct.ctrip.com/webapp/home"
-    />
-  </div>
-);
+    </PrefetchRoot> */}
+      <iframe
+        width="100%"
+        height={"100%"}
+        frameBorder={0}
+        style={{ border: 0 }}
+        allowFullScreen={true}
+        src=""
+      />
+    </div>
+  );
+};
 
 export default Index;
