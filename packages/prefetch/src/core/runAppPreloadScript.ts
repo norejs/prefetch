@@ -1,78 +1,87 @@
-import initServiceWorker from "./preloader-worker";
+import loadMaifest from "./loadMaifest";
 
 /**
  * 运行Preload
  * @param url
  */
-const workers = new Map<string, boolean>();
 export default async function runAppPreloadScript({
   appUrl = "",
-  scriptUrl = "",
-  lifespan = 5000,
-  autoInstallServiceWorker = true,
+  lifespan = 10000,
 } = {}) {
-  if (!appUrl || !scriptUrl) {
+  if (!appUrl) {
     return null;
   }
-  if (workers.get(scriptUrl)) {
-    return workers.get(scriptUrl);
+  const iframeWindow = createSandBox(appUrl, lifespan);
+  if (!iframeWindow) {
+    return null;
   }
+  const iframeDocument = iframeWindow.document;
+  const manifest = (await loadMaifest(appUrl)) ?? ({} as any);
+  const { prefetchLinks = [], preScripts = [] } = manifest;
+  const fragment = iframeDocument.createDocumentFragment();
+  prefetchLinks.forEach((link: string) => {
+    const linkElement = iframeDocument.createElement("link");
+    linkElement.rel = "prefetch";
+    linkElement.href = link;
+    fragment.appendChild(linkElement);
+  });
 
-  if (typeof Worker !== "undefined") {
-    if (autoInstallServiceWorker) {
-      await initServiceWorker({
-        url: "/home/service-worker.js",
-        scope: "/",
-      });
-    }
-    const worker = new Worker(scriptUrl);
-    createMessageChannel(worker, appUrl);
-    workers.set(scriptUrl, true);
-    // 5s后销毁
-    setTimeout(() => {
-      worker.terminate();
-      workers.set(scriptUrl, true);
-    }, lifespan);
-    return true;
-  }
+  preScripts.forEach((src: string) => {
+    const scriptElement = iframeDocument.createElement("script");
+    scriptElement.src = src;
+    fragment.appendChild(scriptElement);
+  });
+  iframeDocument.head.appendChild(fragment);
   return null;
 }
 
-// 建立preloader与sw的通信
-function createMessageChannel(worker: Worker, appUrl: string) {
-  window.addEventListener("message", (event) => {
-    const { data: eventData } = event;
-    // const { type, data } = eventData;
-    // console.log('message from window', eventData);
-    // // service worker的通讯，传递给preloader
-    // worker.postMessage({
-    //     type: 'PRELOADER:' + type,
-    //     data,
-    // });
-  });
-  worker.addEventListener("message", (event) => {
-    console.log("message from worker", event);
-    const { data: eventData } = event;
-    const { type, data } = eventData;
-    // 预加载相关的通讯，传递给service worker
-    console.log(
-      "navigator?.serviceWorker?.controller",
-      navigator?.serviceWorker?.controller
-    );
-    navigator?.serviceWorker?.controller?.postMessage({
-      type: `PRELOADER:${type}`,
-      data,
-      appUrl,
-    });
-    navigator?.serviceWorker?.addEventListener("message", (event) => {
-      console.log("navigator?.serviceWorker?.controller?.addEven", event);
-      const { data: eventData } = event;
-      const { type, data, appUrl: eventAppUrl } = eventData;
-      // service worker的通讯，传递给preloader
-      worker.postMessage({
-        type: type?.replace("PRELOADER:", ""),
-        data,
-      });
-    });
+function createSandBox(appUrl: string, lifespan = -1) {
+  if (!appUrl) {
+    return null;
+  }
+  const oldIframe = document.getElementById(appUrl) as HTMLIFrameElement;
+  if (oldIframe) {
+    return oldIframe?.contentWindow;
+  }
+  const iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  iframe.src = appUrl;
+  iframe.sandbox.add("allow-scripts");
+  iframe.sandbox.add("allow-same-origin");
+  iframe.id = appUrl;
+
+  document.body.appendChild(iframe);
+  iframe.contentWindow && stopIframeLoading(iframe.contentWindow);
+  lifespan > 0 &&
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, lifespan);
+  return iframe.contentWindow;
+}
+
+function stopIframeLoading(iframeWindow: Window) {
+  const oldDoc = iframeWindow.document;
+  return new Promise<void>((resolve) => {
+    function loop() {
+      setTimeout(() => {
+        let newDoc;
+        try {
+          newDoc = iframeWindow.document;
+        } catch (err) {
+          newDoc = null;
+        }
+        // wait for document ready
+        if (!newDoc || newDoc === oldDoc) {
+          loop();
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          iframeWindow?.stop
+            ? iframeWindow?.stop()
+            : iframeWindow.document.execCommand("Stop");
+          resolve();
+        }
+      }, 1);
+    }
+    loop();
   });
 }

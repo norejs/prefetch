@@ -37,3 +37,18 @@ pnpm build
 
 # TODO
 - [ ] Add SwiftCom Test
+
+prefetch-manifest
+```json
+{
+  links: [],
+  scripts: [],
+}
+```
+
+```html
+<link href="style.css">
+<script src="main.js"></script>
+<link rel="prefetch-manifest" href="xxx.json">
+<script type="prefetch" src="prefetch.js"></script>
+```

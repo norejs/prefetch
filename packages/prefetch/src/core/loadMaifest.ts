@@ -1,8 +1,7 @@
 const manifestCache: { [key: string]: any } = {};
 export type Manifest = {
-  normalScripts: string[];
-  preloadScripts: string[];
-  styles: string[];
+  preScripts: string[];
+  prefetchLinks: string[];
 };
 
 /**
@@ -22,28 +21,54 @@ export default async function loadMaifest(
     const dom = new DOMParser().parseFromString(html, "text/html");
     const scripts = dom.querySelectorAll("script");
     const links = dom.querySelectorAll("link");
-    const styles = Array.from(links).reduce((pre: string[], link) => {
-      if (link.rel === "stylesheet") {
-        pre.push(link.href);
+    // const styles: string[] = [];
+    const prefetchLinks: string[] = [];
+    const prefetchManifests: string[] = [];
+    Array.from(links).forEach((link) => {
+      if (!link.href) {
+        return;
       }
-      return pre;
-    }, []);
-    const normalScripts: string[] = [];
-    const preloadScripts: string[] = [];
-    Array.from(scripts).forEach((script) => {
-      if ((script as any)?.type === "preload") {
-        preloadScripts.push(script.src);
-      } else {
-        normalScripts.push(script.src);
+      switch (link.rel) {
+        case "prefetch":
+        case "stylesheet":
+          prefetchLinks.push(link.href);
+          break;
+        case "prefetch-manifest":
+          prefetchManifests.push(link.href);
+          break;
+        default:
+          break;
       }
     });
+    const preScripts: string[] = [];
+    Array.from(scripts).forEach((script) => {
+      if ((script as any)?.type === "prefetch") {
+        preScripts.push(script.src);
+      } else {
+        prefetchLinks.push(script.src);
+      }
+    });
+    // 如果manifest中有资源，需要加载manifest中的资源
+    if (prefetchManifests.length) {
+      const promises = prefetchManifests.map(getPrefetchManifests);
+      const res = await Promise.all(promises);
+      res.forEach((manifest) => {
+        if (manifest) {
+          preScripts.push(...manifest.scripts);
+          prefetchLinks.push(...manifest.links);
+        }
+      });
+    }
     const manifest = {
-      normalScripts,
-      preloadScripts,
-      styles,
+      preScripts,
+      prefetchLinks,
     };
     manifestCache[appUrl] = manifest;
     return manifest;
   }
   return null;
+}
+
+function getPrefetchManifests(url: string): Promise<any> {
+  return fetch(url).then((res) => res.json());
 }
