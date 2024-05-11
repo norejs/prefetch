@@ -15,8 +15,13 @@
   "devDependencies": {
     "@modern-js/eslint-config": "2.48.1",
     "@modern-js/module-tools": "2.48.1",
+    "@modern-js/plugin-rspress": "1.20.1",
+    "@modern-js/plugin-testing": "2.48.1",
+    "@types/express": "4.17.21",
+    "@types/jest": "~29.2.6",
     "@types/node": "~16.11.7",
     "@types/react": "~18.0.26",
+    "express": "4",
     "husky": "~8.0.1",
     "jest-puppeteer": "^10.0.1",
     "lint-staged": "~13.1.0",
@@ -24,9 +29,7 @@
     "react": "17",
     "rimraf": "~3.0.2",
     "typescript": "~5.0.4",
-    "@modern-js/plugin-testing": "2.48.1",
-    "@types/jest": "~29.2.4",
-    "@modern-js/plugin-rspress": "1.20.1"
+    "url": "^0.11.3"
   },
   "sideEffects": [],
   "publishConfig": {
@@ -34,6 +37,11 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.24.4"
+    "@babel/runtime-corejs3": "^7.24.4",
+    "axios": "1.7.0-beta.1",
+    "node-fetch": "2"
+  },
+  "volta": {
+    "node": "18.20.2"
   }
 }
