@@ -4,7 +4,7 @@ import loadMaifest from "./loadMaifest";
  * 运行Preload
  * @param url
  */
-export default async function runAppPreloadScript({
+export default async function runAppPrefetchScript({
   appUrl = "",
   lifespan = 10000,
 } = {}) {
