@@ -5,10 +5,7 @@ export type ISetupOptions = {
   serviceWorkerUrl: string;
   scope?: string;
   defaultExpireTime?: number;
-  headName?: string;
-  expireTimeHeadName?: string;
   isDebug?: boolean;
-  headValue?: string;
 };
 declare global {
   interface Window {
