@@ -9,7 +9,8 @@
     "build": "modern build",
     "build:watch": "modern build -w",
     "new": "modern new",
-    "upgrade": "modern upgrade"
+    "upgrade": "modern upgrade",
+    "test": "modern test"
   },
   "devDependencies": {
     "@modern-js/eslint-config": "2.48.1",
@@ -17,11 +18,14 @@
     "@types/node": "~16.11.7",
     "@types/react": "~18.0.26",
     "husky": "~8.0.1",
+    "jest-puppeteer": "^10.0.1",
     "lint-staged": "~13.1.0",
     "prettier": "~2.8.1",
     "react": "17",
     "rimraf": "~3.0.2",
-    "typescript": "~5.0.4"
+    "typescript": "~5.0.4",
+    "@modern-js/plugin-testing": "2.48.1",
+    "@types/jest": "~29.2.4"
   },
   "sideEffects": [],
   "publishConfig": {
