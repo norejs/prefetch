@@ -25,7 +25,8 @@
     "rimraf": "~3.0.2",
     "typescript": "~5.0.4",
     "@modern-js/plugin-testing": "2.48.1",
-    "@types/jest": "~29.2.4"
+    "@types/jest": "~29.2.4",
+    "@modern-js/plugin-rspress": "1.20.1"
   },
   "sideEffects": [],
   "publishConfig": {

@@ -20,15 +20,15 @@ export default async function registerPreloadApp(
     return;
   }
   const manifest = await loadMaifest(appUrl);
-  const {
-    normalScripts = [],
-    // preloadScripts = [],
-    styles = [],
-  } = manifest ?? {};
-  appendPrefetchLink(styles);
-  appendPrefetchLink(normalScripts);
-  registerRules(appUrl, rules);
-  registedApps[appUrl] = true;
+  // const {
+  //   normalScripts = [],
+  //   // preloadScripts = [],
+  //   styles = [],
+  // } = manifest ?? {};
+  // appendPrefetchLink(styles);
+  // appendPrefetchLink(normalScripts);
+  // registerRules(appUrl, rules);
+  // registedApps[appUrl] = true;
 }
 
 /**
