@@ -4,12 +4,12 @@ A tool to prefetch corp Api data from the server.
 # Quick Start
 
 ```bash
-pnpm install @cotrip/corp-prefetch
+pnpm install @norejs/prefetch
 ```
 
 ```javascript
 // 发起预请求
-import { createPreRequest } from '@cotrip/corp-prefetch';
+import { createPreRequest } from '@norejs/prefetch';
 
 // res 同@cotrip/corp-cross-request 的res
 // req 同@cotrip/corp-cross-request 的req

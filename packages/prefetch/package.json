@@ -1,5 +1,5 @@
 {
-  "name": "@cotrip/corp-fe-prefetch",
+  "name": "@norejs/prefetch",
   "version": "0.1.0",
   "types": "./dist/types/index.d.ts",
   "main": "./dist/lib/index.js",
@@ -29,9 +29,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.24.4",
-    "@cotrip/corp-cross-request": "2.12.1",
-    "@cotrip/corp-cross-utils": "5.21.2-refund.1",
-    "@cotrip/corp-fe-libs-crypto": "^1.1.4"
+    "@babel/runtime-corejs3": "^7.24.4"
   }
 }

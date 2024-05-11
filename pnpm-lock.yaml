@@ -39,12 +39,12 @@ importers:
 
   apps/demo:
     dependencies:
-      '@cotrip/corp-fe-prefetch':
-        specifier: workspace:^
-        version: link:../../packages/prefetch
       '@modern-js/runtime':
         specifier: 2.48.1
         version: 2.48.1(@types/react-dom@18.0.11)(@types/react@18.0.38)(react-dom@18.2.0)(react@18.2.0)
+      '@norejs/prefetch':
+        specifier: workspace:^
+        version: link:../../packages/prefetch
       react:
         specifier: ~18.2.0
         version: 18.2.0
@@ -103,6 +103,10 @@ importers:
         version: 16.11.68
 
   packages/prefetch:
+    dependencies:
+      '@babel/runtime-corejs3':
+        specifier: ^7.24.4
+        version: 7.24.5
     devDependencies:
       '@modern-js/eslint-config':
         specifier: 2.48.1
@@ -137,7 +141,7 @@ importers:
 
   packages/prefetch-worker:
     dependencies:
-      '@cotrip/corp-fe-prefetch':
+      '@norejs/prefetch':
         specifier: workspace:^
         version: link:../prefetch
       crypto-js:
@@ -159,7 +163,7 @@ importers:
 
   packages/swiftcom:
     dependencies:
-      '@cotrip/corp-fe-prefetch':
+      '@norejs/prefetch':
         specifier: workspace:^
         version: link:../prefetch
       crypto-js:
@@ -1635,6 +1639,14 @@ packages:
   /@babel/regjsgen@0.8.0:
     resolution: {integrity: sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==}
     dev: true
+
+  /@babel/runtime-corejs3@7.24.5:
+    resolution: {integrity: sha512-GWO0mgzNMLWaSYM4z4NVIuY0Cd1fl8cPnuetuddu5w/qGuvt5Y7oUi/kvvQGK9xgOkFJDQX2heIvTRn/OQ1XTg==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      core-js-pure: 3.36.1
+      regenerator-runtime: 0.14.1
+    dev: false
 
   /@babel/runtime@7.24.4:
     resolution: {integrity: sha512-dkxf7+hn8mFBwKjs9bvBlArzLVxVbS8usaPUDd5p2a9JCL9tB8OaOVN1isD4+Xyk4ns89/xeOmbQvgdK7IIVdA==}
@@ -6282,7 +6294,6 @@ packages:
   /core-js-pure@3.36.1:
     resolution: {integrity: sha512-NXCvHvSVYSrewP0L5OhltzXeWFJLo2AL2TYnj6iLV3Bw8mM62wAQMNgUCRI6EBu6hVVpbCxmOPlxh1Ikw2PfUA==}
     requiresBuild: true
-    dev: true
 
   /core-js@3.36.1:
     resolution: {integrity: sha512-BTvUrwxVBezj5SZ3f10ImnX2oRByMxql3EimVqMysepbC9EeMUOpLwdy6Eoili2x6E4kf+ZUB5k/+Jv55alPfA==}

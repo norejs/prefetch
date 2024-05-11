@@ -15,7 +15,7 @@
     "lint": "modern lint",
     "upgrade": "modern upgrade",
     "start-proxy": "node scripts/proxy.js",
-    "dev": "npm run start-proxy && turbo dev --filter=demo --filter=@cotrip/corp-fe-prefetch --filter=prefetch-worker"
+    "dev": "npm run start-proxy && turbo dev --filter=demo --filter=@norejs/prefetch --filter=prefetch-worker"
   },
   "engines": {
     "node": ">=16.18.1"

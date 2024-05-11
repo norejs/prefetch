@@ -1,5 +1,5 @@
 {
-  "name": "@cotrip/swiftcom",
+  "name": "@norejs/swiftcom",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -19,7 +19,7 @@
     "@types/node": "^20.12.7"
   },
   "dependencies": {
-    "@cotrip/corp-fe-prefetch": "workspace:^",
+    "@norejs/prefetch": "workspace:^",
     "crypto-js": "^4.2.0",
     "express": "4"
   }

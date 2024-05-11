@@ -1,4 +1,4 @@
-import { preRequest } from "@cotrip/corp-fe-prefetch";
+import { preRequest } from "@norejs/prefetch";
 
 import { useEffect } from "react";
 import RequestModel from "@cotrip/ctweb-util/esm/ctmodel";

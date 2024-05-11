@@ -1,4 +1,4 @@
-import { IRule } from "@cotrip/corp-fe-prefetch";
+import { IRule } from "@norejs/prefetch";
 // 是否在SW 中可运行
 import MD5 from "crypto-js/md5";
 

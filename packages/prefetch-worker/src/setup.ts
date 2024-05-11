@@ -74,7 +74,9 @@ export default function setupWorker(props: ISetupWorker) {
         return;
       }
       const url = request?.url;
-      const isApi = url?.match(apiMatcher);
+      const isApiMethod = ["POST", "PUT", "DELETE"].includes(request.method);
+      const isApi = url?.match(apiMatcher) || isApiMethod;
+      
       if (!url || !isApi) {
         return;
       }
