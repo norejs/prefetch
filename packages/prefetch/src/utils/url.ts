@@ -18,14 +18,15 @@ export function getAbsoluteUrl(releativeUrl = "", baseUrl = "") {
   // 获取pathName
   const pathName = baseUrlObj.pathname;
   const endFileorFold = pathName.split("/").pop();
-  const extname = endFileorFold?.split(".").pop();
-  const isFold = !extname;
+
+  const isFold = !endFileorFold?.includes(".");
   let fullPathName = isFold
     ? pathName
     : pathName.replace(endFileorFold || "", "");
   if (!fullPathName.endsWith("/")) {
     fullPathName += "/";
   }
+
   if (releativeUrl.startsWith("/")) {
     return baseUrlObj.origin + releativeUrl;
   }

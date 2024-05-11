@@ -85,6 +85,5 @@ export async function parseHtml(html: string, appUrl = "") {
 }
 
 function getPrefetchManifests(url: string): Promise<any> {
-  console.log("getPrefetchManifests", url);
   return get(url);
 }
