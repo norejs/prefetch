@@ -3,12 +3,12 @@ export default {
     entry({ target }) {
       if (target === 'service-worker') {
         return {
-          index: './src/message-worker.ts',
+          index: './src/worker/index.ts',
         };
       }
       if (target === 'web') {
         return {
-          index: './src/message-main.ts',
+          index: './src/main/index.ts',
         };
       }
     },
@@ -23,6 +23,6 @@ export default {
     },
   },
   output: {
-    targets: ['service-worker', 'node'],
+    targets: ['service-worker', 'web'],
   },
 };
