@@ -1,0 +1,45 @@
+{
+  "name": "@norejs/prefetch",
+  "version": "0.1.0-alpha.11",
+  "types": "./dist/types/index.d.ts",
+  "main": "./dist/lib/index.js",
+  "module": "./dist/es/index.js",
+  "scripts": {
+    "custom:install": "npx pnpm@7.32.2 install",
+    "dev": "npm run build:watch",
+    "build": "modern build",
+    "build:watch": "modern build -w",
+    "prepublishOnly": "npm run custom:install && npm run build",
+    "new": "modern new",
+    "upgrade": "modern upgrade",
+    "test": "modern test"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@modern-js/eslint-config": "2.48.1",
+    "@modern-js/module-tools": "2.48.1",
+    "@modern-js/plugin-rspress": "0.0.0-nightly-20230913160237",
+    "@modern-js/plugin-testing": "^2.49.3",
+    "@types/node": "~16.11.7",
+    "@types/react": "17",
+    "husky": "~8.0.1",
+    "lint-staged": "~13.1.0",
+    "prettier": "~2.8.1",
+    "react": "17",
+    "rimraf": "~3.0.2",
+    "typescript": "~5.0.4"
+  },
+  "sideEffects": [],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0",
+    "@babel/runtime-corejs3": "^7.24.4"
+  },
+  "peerDependencies": {
+    "react": ">=16.9.0"
+  }
+}
