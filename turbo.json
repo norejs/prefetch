@@ -11,7 +11,7 @@
             // (and not the monorepo root)
             "outputs": [".next/**", "!.next/cache/**"]
         },
-        "deploy": {
+        "publish": {
             // A package's `deploy` script depends on the `build`,
             // `test`, and `lint` scripts of the same package
             // being completed. It also has no filesystem outputs.

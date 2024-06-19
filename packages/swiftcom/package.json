@@ -1,12 +1,13 @@
 {
-  "name": "@norejs/swiftcom",
+  "name": "swiftcom",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "dev": "rsbuild dev",
     "build": "rsbuild build",
-    "e2e": "npx playwright test"
+    "e2e": "npx playwright test",
+    "publish": "npm publish"
   },
   "keywords": [],
   "author": "",

@@ -6,7 +6,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "turbo start",
-        "build": "turbo build"
+        "build": "turbo build",
+        "publish": "turbo publish"
     },
     "keywords": [],
     "author": "",
