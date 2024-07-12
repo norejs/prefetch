@@ -1,0 +1,26 @@
+{
+  "name": "@norejs/prefetch-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "./dist/index.module.js",
+  "unpkg": "./dist/index.umd.js",
+  "source": "./src/index.ts",
+  "scripts": {
+    "test": "node ./tests/index.test.js",
+    "dev": "microbundle watch --no-compress",
+    "build": "microbundle build --no-compress"
+  },
+  "keywords": [],
+  "author": "paul",
+  "license": "ISC",
+  "dependencies": {
+    "@norejs/prefetch-worker": "workspace:^1.0.0",
+    "fs-extra": "^11.2.0",
+    "microbundle": "^0.15.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "express": "4"
+  }
+}

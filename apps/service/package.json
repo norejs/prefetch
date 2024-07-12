@@ -1,0 +1,16 @@
+{
+  "name": "service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/foo.module.js",
+  "unpkg": "./dist/foo.umd.js",    
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "microbundle watch --no-compress",
+    "build": "microbundle build --no-compress"
+  },
+  "keywords": [],
+  "author": "paul",
+  "license": "ISC"
+}
