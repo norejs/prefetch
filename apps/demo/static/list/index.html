@@ -1,0 +1,225 @@
+<html>
+<head>
+    <title>Flight Search</title>
+    <script src="https://unpkg.com/react/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .date-slider {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .date-slider div {
+            flex: 0 0 auto;
+        }
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+        .sticky-bottom {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const generateMockFlightData = (page) => {
+            const flights = [];
+            for (let i = 0; i < 10; i++) {
+                flights.push({
+                    time: `17:${30 + i}`,
+                    arrival: `19:${30 + i}`,
+                    departure: "虹桥 T2",
+                    destination: "大兴",
+                    flight: `东航MU857${page}${i} 共享 波音737(中)`,
+                    carbon: `+${17 + i}%`,
+                    price: `¥${1760 - i * 10}`
+                });
+            }
+            return flights;
+        };
+
+        const Header = ({ departureCity, arrivalCity }) => (
+            <div className="flex justify-between items-center mb-4 sticky-top p-4">
+                <i className="fas fa-arrow-left text-xl"></i>
+                <div className="text-xl font-bold">{departureCity} → {arrivalCity}</div>
+                <div className="flex space-x-4">
+                    <i className="fas fa-balance-scale text-xl"></i>
+                    <i className="fas fa-comment-dots text-xl"></i>
+                    <i className="fas fa-calendar-alt text-xl"></i>
+                </div>
+            </div>
+        );
+
+        const DateSlider = ({ selectedDate }) => {
+            const getDateRange = (date, range) => {
+                const dates = [];
+                for (let i = -range; i <= range; i++) {
+                    const newDate = new Date(date);
+                    newDate.setDate(newDate.getDate() + i);
+                    dates.push(newDate);
+                }
+                return dates;
+            };
+
+            const formatDate = (date) => {
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                return `${month}-${day}`;
+            };
+
+            const formatDay = (date) => {
+                const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                return days[date.getDay()];
+            };
+
+            const dateRange = getDateRange(new Date(selectedDate), 7);
+
+            return (
+                <div className="flex justify-between items-center mb-4 sticky-top p-4">
+                    <div className="date-slider">
+                        {dateRange.map((date, index) => (
+                            <div key={index} className={`px-4 py-2 ${date.toDateString() === new Date(selectedDate).toDateString() ? 'bg-blue-500 text-white rounded' : ''}`}>
+                                {formatDate(date)} {formatDay(date)}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const FlightTypeTabs = () => (
+            <div className="flex justify-center mb-4 sticky-top p-4">
+                <div className="px-4 py-2 border-b-2 border-blue-500">飞机</div>
+            </div>
+        );
+
+        const MembershipBanner = () => (
+            <div className="bg-gray-100 p-2 mb-4">
+                <div className="flex justify-between items-center">
+                    <div>钻石会员挑战航司活动，解锁更多权益</div>
+                    <button className="text-blue-500">查看详情</button>
+                </div>
+            </div>
+        );
+
+        const FlightCard = ({ flight }) => {
+            const isNearDeparture = (time) => {
+                const currentTime = new Date();
+                const flightTime = new Date();
+                const [hours, minutes] = time.split(':');
+                flightTime.setHours(hours, minutes, 0, 0);
+                return (flightTime - currentTime) < 2 * 60 * 60 * 1000;
+            };
+
+            return (
+                <div className="border p-4 rounded">
+                    <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center space-x-2">
+                            <img src="https://placehold.co/20x20" alt="东方航空 logo" />
+                            <div className="text-lg">{flight.time}</div>
+                            <i className="fas fa-arrow-right"></i>
+                            <div className="text-lg">{flight.arrival}</div>
+                        </div>
+                        <div className="text-blue-500 text-xl">{flight.price}</div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <div className="text-gray-500">{flight.departure}</div>
+                        <div className="text-gray-500">{flight.destination}</div>
+                    </div>
+                    <div className="text-gray-500">{flight.flight}</div>
+                    <div className="flex justify-between items-center mt-2">
+                        <div className="text-gray-500">碳排放量{flight.carbon}</div>
+                        {isNearDeparture(flight.time) && <button className="text-blue-500">临近起飞</button>}
+                    </div>
+                </div>
+            );
+        };
+
+        const FlightList = ({ flights }) => (
+            <div className="space-y-4">
+                {flights.map((flight, index) => (
+                    <FlightCard key={index} flight={flight} />
+                ))}
+            </div>
+        );
+
+        const Footer = ({ sortByTime, sortByPrice }) => (
+            <div className="flex justify-around mt-4 sticky-bottom p-4">
+                <button className="text-blue-500" onClick={sortByTime}>时间排序</button>
+                <button className="text-blue-500" onClick={sortByPrice}>价格排序</button>
+            </div>
+        );
+
+        const App = () => {
+            const [flights, setFlights] = React.useState([]);
+            const [page, setPage] = React.useState(1);
+            const [loading, setLoading] = React.useState(false);
+            const urlParams = new URLSearchParams(window.location.search);
+            const departureCity = decodeURIComponent(urlParams.get('departureCity'));
+            const arrivalCity = decodeURIComponent(urlParams.get('arrivalCity'));
+            const travelDate = urlParams.get('travelDate');
+            const travelType = decodeURIComponent(urlParams.get('travelType'));
+            const tripType = decodeURIComponent(urlParams.get('tripType'));
+
+            const loadMoreFlights = () => {
+                if (loading || page > 10) return;
+                setLoading(true);
+                setTimeout(() => {
+                    setFlights(prevFlights => [...prevFlights, ...generateMockFlightData(page)]);
+                    setPage(prevPage => prevPage + 1);
+                    setLoading(false);
+                }, 3000);
+            };
+
+            React.useEffect(() => {
+                loadMoreFlights();
+            }, []);
+
+            React.useEffect(() => {
+                const handleScroll = () => {
+                    if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
+                        loadMoreFlights();
+                    }
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, [loading, page]);
+
+            const sortByTime = () => {
+                setFlights([...flights].sort((a, b) => a.time.localeCompare(b.time)));
+            };
+
+            const sortByPrice = () => {
+                setFlights([...flights].sort((a, b) => parseFloat(a.price.slice(1)) - parseFloat(b.price.slice(1))));
+            };
+
+            return (
+                <div className="p-4">
+                    <Header departureCity={departureCity} arrivalCity={arrivalCity} />
+                    <DateSlider selectedDate={travelDate} />
+                    <FlightTypeTabs />
+                    <MembershipBanner />
+                    <FlightList flights={flights} />
+                    {loading && <div className="text-center mt-4">加载中...</div>}
+                    <Footer sortByTime={sortByTime} sortByPrice={sortByPrice} />
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
