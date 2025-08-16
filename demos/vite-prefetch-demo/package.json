@@ -1,0 +1,24 @@
+{
+  "name": "vite-prefetch-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "copy-sw": "cp ../../packages/prefetch-worker/dist/worker/service-worker.js public/",
+    "start-api": "node server.js",
+    "start": "concurrently \"npm run start-api\" \"npm run dev\""
+  },
+  "dependencies": {
+    "@norejs/prefetch": "workspace:^",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "concurrently": "^8.2.2"
+  },
+  "devDependencies": {
+    "typescript": "~4.9.4",
+    "vite": "^4.5.0"
+  }
+}
