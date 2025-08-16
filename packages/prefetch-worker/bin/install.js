@@ -5,29 +5,44 @@ const path = require('path');
 
 // 获取命令行参数
 const args = process.argv.slice(2);
+
+// 检查是否是子命令格式
+const isSubcommandFormat = args.length > 0 && args[0] === 'install';
 let targetDir = 'public'; // 默认目标目录
 
-// 解析命令行参数
-for (let i = 0; i < args.length; i++) {
-  if (args[i] === '--dir' || args[i] === '-d') {
-    if (i + 1 < args.length) {
-      targetDir = args[i + 1];
-      i++; // 跳过下一个参数
-    }
-  } else if (args[i] === '--help' || args[i] === '-h') {
-    console.log(`
-使用方法: npx @norejs/prefetch-worker --dir <目标目录>
+// 显示帮助信息
+function showHelp() {
+  console.log(`
+使用方法: 
+  prefetch-worker install [选项]
+  prefetch-worker [选项]                        # 兼容旧格式
 
 选项:
   --dir, -d <目录>    指定复制文件的目标目录 (默认: public)
   --help, -h          显示帮助信息
 
 示例:
-  npx @norejs/prefetch-worker                    # 复制到 public 目录
-  npx @norejs/prefetch-worker --dir static      # 复制到 static 目录
-  npx @norejs/prefetch-worker -d assets         # 复制到 assets 目录
+  prefetch-worker install                       # 复制到 public 目录
+  prefetch-worker install --dir static         # 复制到 static 目录  
+  prefetch-worker install -d assets            # 复制到 assets 目录
+  
+  # 兼容旧格式
+  prefetch-worker --dir public                  # 复制到 public 目录
 `);
-    process.exit(0);
+  process.exit(0);
+}
+
+// 解析命令行参数
+let startIndex = isSubcommandFormat ? 1 : 0; // 如果有 install 子命令，从索引1开始
+
+for (let i = startIndex; i < args.length; i++) {
+  if (args[i] === '--dir' || args[i] === '-d') {
+    if (i + 1 < args.length) {
+      targetDir = args[i + 1];
+      i++; // 跳过下一个参数
+    }
+  } else if (args[i] === '--help' || args[i] === '-h') {
+    showHelp();
   }
 }
 
@@ -40,7 +55,7 @@ const packageDir = path.dirname(__dirname);
 const distWorkerDir = path.join(packageDir, 'dist', 'worker');
 
 // 要复制的文件列表
-const filesToCopy = ['index.js', 'service-worker.js'];
+const filesToCopy = ['service-worker.js'];
 
 function copyFile(src, dest) {
   try {

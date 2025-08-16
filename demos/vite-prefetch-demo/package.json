@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "copy-sw": "cp ../../packages/prefetch-worker/dist/worker/service-worker.js public/",
+    "copy-sw": "node ../../packages/prefetch-worker/bin/install.js install --dir public",
     "start-api": "node server.js",
     "start": "concurrently \"npm run start-api\" \"npm run dev\""
   },
