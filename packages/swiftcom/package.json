@@ -1,27 +1,26 @@
 {
-  "name": "swiftcom",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "scripts": {
-    "dev": "rsbuild dev",
-    "build": "rsbuild build",
-    "e2e": "npx playwright test",
-    "publish": "npm publish"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@playwright/test": "^1.43.1",
-    "@rsbuild/core": "^0.6.1",
-    "@types/crypto-js": "^4.2.2",
-    "@types/express": "4.17.21",
-    "@types/node": "^20.12.7"
-  },
-  "dependencies": {
-    "@norejs/prefetch": "workspace:^",
-    "crypto-js": "^4.2.0",
-    "express": "4"
-  }
+    "name": "swiftcom",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/index.js",
+    "scripts": {
+        "dev": "rsbuild dev",
+        "build": "rsbuild build",
+        "e2e": "npx playwright test",
+        "publish": "npm publish"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@playwright/test": "^1.43.1",
+        "@rsbuild/core": "^0.6.1",
+        "@types/crypto-js": "^4.2.2",
+        "@types/express": "4.17.21",
+        "@types/node": "^20.12.7"
+    },
+    "dependencies": {
+        "crypto-js": "^4.2.0",
+        "express": "4"
+    }
 }

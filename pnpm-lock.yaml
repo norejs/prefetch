@@ -57,20 +57,20 @@ importers:
       '@modern-js/module-tools': 2.48.1
       '@modern-js/plugin-rspress': 0.0.0-nightly-20230913160237
       '@modern-js/plugin-testing': ^2.49.3
+      '@norejs/prefetch-worker': workspace:^1.0.0
       '@types/node': ~16.11.7
       '@types/react': '17'
       husky: ~8.0.1
       lint-staged: ~13.1.0
       node-fetch: ^2.7.0
-      prefetch-worker: workspace:^
       prettier: ~2.8.1
       react: '17'
       rimraf: ~3.0.2
       typescript: ~5.0.4
     dependencies:
       '@babel/runtime-corejs3': 7.24.7
+      '@norejs/prefetch-worker': link:../prefetch-worker
       node-fetch: 2.7.0
-      prefetch-worker: link:../prefetch-worker
     devDependencies:
       '@modern-js/eslint-config': 2.48.1_typescript@5.0.4
       '@modern-js/module-tools': 2.48.1_typescript@5.0.4

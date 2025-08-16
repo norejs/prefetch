@@ -36,8 +36,9 @@
     "access": "public"
   },
   "dependencies": {
-    "node-fetch": "^2.7.0",
-    "@babel/runtime-corejs3": "^7.24.4"
+    "@babel/runtime-corejs3": "^7.24.4",
+    "@norejs/prefetch-worker": "workspace:^1.0.0",
+    "node-fetch": "^2.7.0"
   },
   "peerDependencies": {
     "react": ">=16.9.0"
