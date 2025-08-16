@@ -7,7 +7,7 @@
     "dev": "rsbuild dev",
     "start": "node dist/server/index.js",
     "build": "rsbuild build",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "",
     "publish": "npm publish"
   },
   "keywords": [],

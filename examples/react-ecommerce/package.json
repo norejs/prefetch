@@ -1,0 +1,26 @@
+{
+  "name": "react-ecommerce-prefetch-example",
+  "version": "1.0.0",
+  "description": "React 电商应用集成 Prefetch 示例",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "copy-sw": "cp node_modules/@norejs/prefetch/dist/service-worker.js public/prefetch-worker/"
+  },
+  "dependencies": {
+    "@norejs/prefetch": "^0.1.0-alpha.11",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0",
+    "axios": "^1.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@vitejs/plugin-react": "^3.1.0",
+    "typescript": "^4.9.4",
+    "vite": "^4.1.0"
+  }
+}
