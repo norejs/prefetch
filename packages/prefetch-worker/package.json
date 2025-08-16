@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "prefetch-worker": "./bin/install.js"
+  },
   "scripts": {
     "dev": "rsbuild dev",
     "start": "node dist/server/index.js",
