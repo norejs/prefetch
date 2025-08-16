@@ -1,0 +1,28 @@
+{
+  "name": "prefetch-demo-api-server",
+  "version": "1.0.0",
+  "description": "Prefetch Demo API Server - 为预请求演示项目提供模拟 API 数据",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "prefetch",
+    "demo",
+    "api",
+    "express",
+    "mock"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

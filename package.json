@@ -7,18 +7,28 @@
         "test": "",
         "start": "turbo start",
         "build": "turbo build",
-        "publish": "turbo publish"
+        "publish": "turbo publish",
+        "demo:api": "cd demos/api-server && npm start",
+        "demo:vite": "cd demos/vite-prefetch-demo && npm run dev",
+        "demo:nextjs": "cd demos/nextjs-prefetch-demo && npm run dev",
+        "demo:start:vite": "concurrently \"npm run demo:api\" \"npm run demo:vite\"",
+        "demo:start:nextjs": "concurrently \"npm run demo:api\" \"npm run demo:nextjs\"",
+        "demo:start:all": "concurrently \"npm run demo:api\" \"npm run demo:vite\" \"npm run demo:nextjs\"",
+        "demo:install": "cd demos/api-server && npm install && cd ../vite-prefetch-demo && pnpm install && cd ../nextjs-prefetch-demo && pnpm install",
+        "demo:copy-sw": "cd demos/vite-prefetch-demo && npm run copy-sw && cd ../nextjs-prefetch-demo && npm run copy-sw",
+        "demo:build": "cd demos/vite-prefetch-demo && npm run build && cd ../nextjs-prefetch-demo && npm run build"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "turbo": "^1.11.1"
+        "turbo": "^1.11.1",
+        "concurrently": "^8.2.2"
     },
     "nx": {
         "targets": {}
     },
     "volta": {
-        "node": "16.20.2"
+        "node": "18.20.8"
     }
 }

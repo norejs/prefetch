@@ -1,0 +1,11 @@
+.next
+node_modules
+.turbo
+dist
+dist-*/
+.next/
+.next/types/
+.next/cache/
+.next/static/
+.next/static/chunks/
+.next/static/chunks/pages/
