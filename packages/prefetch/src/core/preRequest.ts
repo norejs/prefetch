@@ -3,16 +3,16 @@ import {
     headValue,
     expireTimeHeadName,
     defaultExpireTime,
-} from "../constants";
+} from '../constants';
 
-import logger from "../utils/logger";
+import logger from '../utils/logger';
 
 type IPreFetchOptions = {
     // 预取请求的有效时间
     expireTime?: number;
 };
 
-export default function prefetch() {
+export function createPreRequest() {
     // 利用fetch 封装一个预取请求
     return async function preFetch(
         url: string,

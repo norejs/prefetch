@@ -5,10 +5,9 @@
 ## 功能特性
 
 - 🚀 **独立运行**: 可被多个 demo 项目共享使用
-- 🔄 **预请求支持**: 识别和处理预请求头
 - 📊 **统计监控**: 实时请求统计和性能监控
 - 🌐 **CORS 支持**: 支持跨域请求
-- ⚡ **智能延迟**: 模拟真实网络延迟
+- ⚡ **统一延迟**: 模拟真实网络延迟（3-4秒）
 - 🔍 **详细日志**: 彩色日志和请求追踪
 - 🏥 **健康检查**: 系统状态监控端点
 
@@ -54,36 +53,29 @@ pnpm start
 | `GET /health` | 健康检查 | 监控服务器状态 |
 | `GET /api/stats` | 统计信息 | 请求统计和性能数据 |
 
-## 预请求支持
+## 网络延迟模拟
 
-### 请求头
+### 统一处理
 
-发送预请求时，请添加以下请求头：
+API 服务器对所有请求采用统一的处理策略：
 
-```http
-X-Prefetch-Request-Type: prefetch
-X-Prefetch-Expire-Time: 30000
-```
+- **统一延迟**: 3000-4000ms（模拟慢网络环境）
+- **无特殊处理**: 不区分预请求和普通请求
+- **响应头**: 包含实际响应时间信息
 
-### 响应行为
+### 设计理念
 
-- **预请求延迟**: 50-150ms（模拟缓存命中）
-- **正常请求延迟**: 200-800ms（模拟网络请求）
-- **响应头**: 预请求会添加特殊的响应头
+这种设计确保了：
+- 真实反映网络请求的时间成本
+- 预请求的性能优势完全来自于浏览器缓存
+- 更好地展示预请求技术的实际价值
 
 ### 示例
 
 ```javascript
-// 预请求
-const response = await fetch('http://localhost:3001/api/products/1', {
-  headers: {
-    'X-Prefetch-Request-Type': 'prefetch',
-    'X-Prefetch-Expire-Time': '30000'
-  }
-});
-
-// 正常请求
-const response = await fetch('http://localhost:3001/api/products/1');
+// 所有请求都有相同的延迟
+const response = await fetch('http://localhost:3001/api/products');
+console.log('响应时间:', response.headers.get('X-Response-Time'));
 ```
 
 ## 数据结构
@@ -173,15 +165,15 @@ const response = await fetch('http://localhost:3001/api/products/1');
 ### 日志格式
 
 ```
-🔄 [PREFETCH] /api/products/1 - 85ms 🌐 Chrome
-📡 [REQUEST] /api/cart - 350ms 🦊 Firefox
+📡 [REQUEST] /api/products - 3245ms 🌐 Chrome
+📡 [REQUEST] /api/products - 3678ms 🦊 Firefox
 ```
 
-- `🔄` : 预请求
-- `📡` : 正常请求  
+- `📡` : 所有请求统一标识
 - `🌐` : Chrome 浏览器
-- `🦊` : Firefox 浏览器
+- `🦊` : Firefox 浏览器  
 - `🧭` : Safari 浏览器
+- 时间显示为响应延迟（毫秒）
 
 ## 在 Demo 项目中使用
 

@@ -2,9 +2,12 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { Loading, LoadingSpinner } from '@/components/Loading'
+import { PerformanceTracker } from '@/components/PerformanceTracker'
 
 export default function Home() {
   const [isServiceWorkerReady, setIsServiceWorkerReady] = useState(false)
+  const [prefetchingUrls, setPrefetchingUrls] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     // 注册 Service Worker
@@ -21,32 +24,28 @@ export default function Home() {
     }
   }, [])
 
-  const demoLinks = [
-    {
-      href: '/products/1',
-      title: '产品详情页',
-      description: '查看产品详细信息，演示预请求商品数据',
-      prefetchUrl: 'http://localhost:3001/api/products/1'
-    },
-    {
-      href: '/cart',
-      title: '购物车页面',
-      description: '查看购物车内容，演示预请求购物车数据',
-      prefetchUrl: 'http://localhost:3001/api/cart'
-    },
-    {
-      href: '/profile',
-      title: '用户资料页',
-      description: '查看用户个人信息，演示预请求用户数据',
-      prefetchUrl: 'http://localhost:3001/api/user/profile'
-    },
-    {
-      href: '/categories',
-      title: '分类页面',
-      description: '浏览商品分类，演示预请求分类数据',
-      prefetchUrl: 'http://localhost:3001/api/categories'
-    }
-  ]
+  const comparisonDemo = {
+    title: '性能对比演示',
+    description: '直观感受预请求与普通请求的性能差异',
+    links: [
+      {
+        href: '/products?prefetch=true',
+        title: '预请求模式',
+        description: '数据已预取，页面加载更快',
+        color: 'green',
+        icon: '⚡',
+        prefetchUrl: '/api/products'
+      },
+      {
+        href: '/products?prefetch=false',
+        title: '普通模式',
+        description: '实时获取数据，感受原始加载速度',
+        color: 'orange',
+        icon: '🐌',
+        prefetchUrl: null
+      }
+    ]
+  }
 
   const handlePrefetch = async (url: string) => {
     if (!isServiceWorkerReady) {
@@ -54,21 +53,37 @@ export default function Home() {
       return
     }
 
+    // 如果已经在预请求中，则跳过
+    if (prefetchingUrls.has(url)) {
+      return
+    }
+
     try {
-      const response = await fetch(url, {
-        headers: {
-          'X-Prefetch-Request-Type': 'prefetch',
-          'X-Prefetch-Expire-Time': '30000'
-        }
-      })
+      // 添加到预请求列表
+      setPrefetchingUrls(prev => new Set(prev).add(url))
+      
+      const startTime = Date.now()
+      // 将相对URL转换为绝对URL
+      const absoluteUrl = url.startsWith('/') ? `${window.location.origin}${url}` : url
+      
+      const response = await fetch(absoluteUrl)
+      
+      const duration = Date.now() - startTime
       
       if (response.ok) {
-        console.log(`✅ 预请求成功: ${url}`)
+        console.log(`✅ 预请求成功: ${url} (${duration}ms)`)
       } else {
         console.error(`❌ 预请求失败: ${url}`)
       }
     } catch (error) {
       console.error(`❌ 预请求错误: ${url}`, error)
+    } finally {
+      // 从预请求列表中移除
+      setPrefetchingUrls(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(url)
+        return newSet
+      })
     }
   }
 
@@ -102,31 +117,85 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 演示链接 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {demoLinks.map((link, index) => (
-          <div key={index} className="card">
-            <h3 className="text-lg font-medium mb-2">{link.title}</h3>
-            <p className="text-gray-600 mb-4">{link.description}</p>
-            <div className="flex flex-col space-y-2">
-              <Link 
-                href={link.href}
-                className="prefetch-link"
-                onMouseEnter={() => handlePrefetch(link.prefetchUrl)}
-              >
-                访问 {link.title} →
-              </Link>
-              <button
-                onClick={() => handlePrefetch(link.prefetchUrl)}
-                className="btn-secondary text-sm"
-                disabled={!isServiceWorkerReady}
-              >
-                手动预请求
-              </button>
-            </div>
-          </div>
-        ))}
+      {/* 性能对比演示 */}
+      <div className="card bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200">
+        <h2 className="text-xl font-semibold mb-4 text-center">{comparisonDemo.title}</h2>
+        <p className="text-gray-600 mb-6 text-center">{comparisonDemo.description}</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {comparisonDemo.links.map((link, index) => {
+            const isPrefetching = link.prefetchUrl && prefetchingUrls.has(link.prefetchUrl)
+            
+            return (
+              <div key={index} className={`relative overflow-hidden rounded-lg border-2 ${
+                link.color === 'green' 
+                  ? 'border-green-300 bg-green-50' 
+                  : 'border-orange-300 bg-orange-50'
+              } transition-all duration-200`}>
+                <Link href={link.href} className={`block p-6 ${
+                  link.color === 'green' ? 'hover:bg-green-100' : 'hover:bg-orange-100'
+                } transition-colors`}>
+                  <div className="flex items-center justify-center mb-4">
+                    <span className="text-4xl">{link.icon}</span>
+                  </div>
+                  <h3 className={`text-lg font-semibold text-center mb-2 ${
+                    link.color === 'green' ? 'text-green-800' : 'text-orange-800'
+                  }`}>
+                    {link.title}
+                  </h3>
+                  <p className={`text-center text-sm ${
+                    link.color === 'green' ? 'text-green-700' : 'text-orange-700'
+                  }`}>
+                    {link.description}
+                  </p>
+                  <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-medium rounded-bl-lg ${
+                    link.color === 'green' 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-orange-500 text-white'
+                  }`}>
+                    {link.color === 'green' ? '推荐' : '对比'}
+                  </div>
+                </Link>
+                
+                {/* 预请求按钮 */}
+                {link.prefetchUrl && (
+                  <div className="px-6 pb-4">
+                    <button
+                      onClick={() => handlePrefetch(link.prefetchUrl!)}
+                      className={`w-full text-sm py-2 px-4 rounded flex items-center justify-center space-x-2 ${
+                        link.color === 'green'
+                          ? 'bg-green-600 hover:bg-green-700 text-white'
+                          : 'bg-orange-600 hover:bg-orange-700 text-white'
+                      } transition-colors`}
+                      disabled={!isServiceWorkerReady || !!isPrefetching}
+                    >
+                      {isPrefetching ? (
+                        <>
+                          <LoadingSpinner size="sm" />
+                          <span>预请求中...</span>
+                        </>
+                      ) : (
+                        <span>手动预请求数据</span>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+        
+        <div className="mt-6 p-4 bg-blue-100 rounded-lg">
+          <p className="text-blue-800 text-sm text-center">
+            💡 提示：先手动预请求数据，然后点击预请求模式体验差异。API 延迟统一为 3-4 秒，预请求的数据会从缓存中快速加载！
+          </p>
+        </div>
       </div>
+
+
+
+      {/* 性能追踪 */}
+      <PerformanceTracker />
 
       {/* 控制台提示 */}
       <div className="card bg-blue-50 border border-blue-200">
