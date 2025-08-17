@@ -776,6 +776,7 @@ function main() {
     console.log("main");
     try {
         (0, _setup__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.ZP)({
+            // TODO: 需要支持配置
             apiMatcher: /\/api\//
         });
     } catch (e) {
@@ -806,13 +807,21 @@ const ExpireTimeHeadName = "X-Prefetch-Expire-Time";
 // 用于标记是否已经初始化
 const setupSymbol = Symbol("setuped");
 function setupWorker(props) {
-    console.log("setupWorker", self._setuped);
+    console.log("prefetch setupWorker");
     if (self._setuped === setupSymbol) return;
     self._setuped = setupSymbol;
     const preRequestCache = new Map();
     let cachedNums = 0;
     const { apiMatcher, requestToKey = _utils_requestToKey__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.Z, defaultExpireTime = 0, autoSkipWaiting = true, maxCacheSize = 100, debug = false } = props;
+    if (debug) self.debug = debug;
     const logger = (0, utils_log__WEBPACK_IMPORTED_MODULE_1__/* .createLogger */.h)(debug);
+    logger.info("prefetch: setupWorker", {
+        apiMatcher,
+        requestToKey,
+        defaultExpireTime,
+        autoSkipWaiting,
+        maxCacheSize
+    });
     self.addEventListener("install", (event)=>{
         if (autoSkipWaiting) {
             var _self_clients_claim, _self_clients;
@@ -822,62 +831,120 @@ function setupWorker(props) {
     });
     self.addEventListener("fetch", function(_event) {
         try {
-            console.log("fetch", _event.request.url);
+            var _request_method_toLowerCase, _request_method;
             const event = _event;
             const request = event.request;
             // Skip cross-origin requests, like those for Google Analytics.
             if (request.mode === "navigate") return;
             // Opening the DevTools triggers the "only-if-cached" request
             // that cannot be handled by the worker. Bypass such requests.
-            console.log("fetch", request.url);
             if (request.cache === "only-if-cached" && request.mode !== "same-origin") return;
             const url = request === null || request === void 0 ? void 0 : request.url;
-            const isApi = url === null || url === void 0 ? void 0 : url.match(apiMatcher);
-            logger.info("prefetch: fetch", url, {
-                isApi
-            });
+            const method = request === null || request === void 0 ? void 0 : (_request_method = request.method) === null || _request_method === void 0 ? void 0 : (_request_method_toLowerCase = _request_method.toLowerCase) === null || _request_method_toLowerCase === void 0 ? void 0 : _request_method_toLowerCase.call(_request_method);
+            const isApiMetod = [
+                "get",
+                "post",
+                "patch"
+            ].includes(method);
+            const isApi = (url === null || url === void 0 ? void 0 : url.match(apiMatcher)) || isApiMetod;
             if (!url || !isApi) return;
             event.respondWith(handleFetchEvent(event));
         } catch (error) {
-            console.error(error);
+            logger.error("fetch error", error);
         }
     });
     async function handleFetchEvent(event) {
         try {
+            var _request_method_toLowerCase, _request_method;
             const request = event.request.clone();
             const headers = request.headers;
+            const method = (_request_method = request.method) === null || _request_method === void 0 ? void 0 : (_request_method_toLowerCase = _request_method.toLowerCase) === null || _request_method_toLowerCase === void 0 ? void 0 : _request_method_toLowerCase.call(_request_method);
             const isPreRequest = headers.get(HeadName) === HeadValue;
             const expireTime = Number(headers.get(ExpireTimeHeadName)) || defaultExpireTime;
+            // DELETE 方法不进行缓存，直接透传
+            if (method === "delete") {
+                logger.info("prefetch: DELETE method, bypass cache", request.url);
+                return fetch(event.request);
+            }
             const cacheKey = await requestToKey(request.clone());
+            logger.info("prefetch: cacheKey", request.url, cacheKey);
+            if (!cacheKey) return fetch(event.request);
             const cache = preRequestCache.get(cacheKey);
-            if (cache && !isPreRequest) {
-                if (cache.expire && cache.expire > Date.now()) return cache.response.clone();
-                else {
-                    preRequestCache.delete(cacheKey);
-                    cachedNums--;
+            // 检查是否有有效的缓存（不管是预请求还是普通请求）
+            if (cache && cache.expire > Date.now()) {
+                // 如果有完成的响应，直接返回
+                if (cache.response) {
+                    logger.info("prefetch: cache hit (response)", request.url);
+                    return cache.response.clone();
+                }
+                // 如果有正在进行的请求，等待并复用
+                if (cache.requestPromise) {
+                    logger.info("prefetch: cache hit (promise)", request.url);
+                    try {
+                        const response = await cache.requestPromise;
+                        return response.clone();
+                    } catch (error) {
+                        // 如果正在进行的请求失败，清除缓存并重新发起请求
+                        preRequestCache.delete(cacheKey);
+                        cachedNums--;
+                        logger.error("prefetch: cached promise failed", error);
+                        return fetch(event.request.clone());
+                    }
+                }
+            } else if (cache && cache.expire <= Date.now()) {
+                // 缓存过期，清除
+                preRequestCache.delete(cacheKey);
+                cachedNums--;
+            }
+            // 创建新的请求
+            const fetchPromise = fetch(request.clone());
+            // 如果缓存中没有这个请求或请求已过期，创建新的缓存项
+            if (!cache || cache.expire <= Date.now()) {
+                const newExpireTime = isPreRequest && expireTime ? expireTime : defaultExpireTime;
+                if (newExpireTime > 0) {
+                    logger.info("prefetch: creating new cache entry", request.url);
+                    clearCacheWhenOversize();
+                    // 创建带有 requestPromise 的缓存项，以便其他并发请求可以复用
+                    preRequestCache.set(cacheKey, {
+                        expire: Date.now() + newExpireTime,
+                        requestPromise: fetchPromise.then((response)=>{
+                            // 请求成功后，更新缓存为 response
+                            if (response.status === 200) {
+                                const existingCache = preRequestCache.get(cacheKey);
+                                if (existingCache && existingCache.expire > Date.now()) preRequestCache.set(cacheKey, {
+                                    expire: existingCache.expire,
+                                    response: response.clone()
+                                });
+                            }
+                            return response;
+                        }).catch((error)=>{
+                            // 请求失败，清除缓存
+                            preRequestCache.delete(cacheKey);
+                            cachedNums--;
+                            throw error;
+                        })
+                    });
+                    cachedNums++;
                 }
             }
-            const response = await fetch(request);
-            logger.info("prefetch: response", response);
-            if (isPreRequest && response.status === 200 && cacheKey && expireTime) {
-                logger.info("prefetch: cacheKey", cacheKey);
-                clearCacheWhenOversize();
-                preRequestCache.set(cacheKey, {
-                    expire: Date.now() + expireTime,
-                    response: response.clone()
-                });
-                cachedNums++;
+            // 等待请求完成并返回响应
+            try {
+                const response = await fetchPromise;
+                logger.info("prefetch: response received", response.status, request.url);
+                return response;
+            } catch (error) {
+                logger.error("prefetch: fetch failed", error);
+                throw error;
             }
-            return response;
         } catch (error) {
+            logger.error("prefetch: error", error);
             return fetch(event.request);
         }
     }
     function clearCacheWhenOversize() {
-        if (cachedNums > maxCacheSize) return;
+        if (cachedNums <= maxCacheSize) return;
         logger.info("clearCache");
-        Object.keys(preRequestCache).forEach((key)=>{
-            const cache = preRequestCache.get(key);
+        preRequestCache.forEach((cache, key)=>{
             if (cache && cache.expire < Date.now()) {
                 preRequestCache.delete(key);
                 cachedNums--;
