@@ -777,12 +777,31 @@ let isInitialized = false;
 const defaultConfig = {
     apiMatcher: "/api"
 };
+// 动态处理函数变量
+let handleFetchEventImpl = null;
+// 在初始化阶段就注册 fetch 事件监听器
+self.addEventListener("fetch", function(event) {
+    // 如果没有初始化或没有处理函数，直接返回（不拦截）
+    if (!isInitialized || !handleFetchEventImpl) return;
+    const response = handleFetchEventImpl(event);
+    if (response) return event.respondWith(response);
+    return;
+});
 // 监听来自主线程的消息
 self.addEventListener("message", (event)=>{
     console.log("prefetch-worker: received message", event.data);
     if (event.data && event.data.type === "PREFETCH_INIT") try {
         if (isInitialized) {
-            console.log("prefetch-worker: already initialized, skipping");
+            console.log("prefetch-worker: already initialized, sending success response");
+            // 发送已初始化成功的消息回主线程
+            if (event.source) event.source.postMessage({
+                type: "PREFETCH_INIT_SUCCESS",
+                config: {
+                    ...defaultConfig,
+                    ...event.data.config
+                },
+                message: "Already initialized"
+            });
             return;
         }
         const config = {
@@ -792,7 +811,8 @@ self.addEventListener("message", (event)=>{
         console.log("prefetch-worker: initializing with config", config);
         // 将字符串转换为正则表达式
         const apiMatcher = typeof config.apiMatcher === "string" ? new RegExp(config.apiMatcher) : config.apiMatcher;
-        (0, _setup__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.ZP)({
+        // 调用 setupWorker 并获取处理函数
+        handleFetchEventImpl = (0, _setup__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.ZP)({
             apiMatcher,
             ...config
         });
@@ -822,7 +842,7 @@ self.addEventListener("install", ()=>{
             console.log("prefetch-worker: auto-initializing with default config");
             try {
                 const apiMatcher = new RegExp(defaultConfig.apiMatcher);
-                (0, _setup__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.ZP)({
+                handleFetchEventImpl = (0, _setup__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.ZP)({
                     apiMatcher
                 });
                 isInitialized = true;
@@ -855,35 +875,40 @@ const ExpireTimeHeadName = "X-Prefetch-Expire-Time";
 // 是否允许跨域, 默认为false
 // 是否自动跳过等待，默认为true
 // 最大缓存数量, 默认为 100
+self.addEventListener("install", (event)=>{
+    console.log("prefetch: install");
+    self.skipWaiting();
+});
+self.addEventListener("activate", (event)=>{
+    // 激活阶段：清除旧缓存，并立即控制客户端
+    console.log("prefetch: activate");
+    event.waitUntil(self.clients.claim().then(()=>{
+        console.log("Service Worker activated and now controls the clients.");
+    }));
+});
 // 用于标记是否已经初始化
 const setupSymbol = Symbol("setuped");
 function setupWorker(props) {
     console.log("prefetch setupWorker");
-    if (self._setuped === setupSymbol) return;
+    if (self._setuped === setupSymbol) // 如果已经设置过，返回现有的处理函数
+    throw new Error("Worker already setup");
     self._setuped = setupSymbol;
     const preRequestCache = new Map();
     let cachedNums = 0;
-    const { apiMatcher, requestToKey = _utils_requestToKey__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.Z, defaultExpireTime = 0, autoSkipWaiting = true, maxCacheSize = 100, debug = false } = props;
+    const { apiMatcher, requestToKey = _utils_requestToKey__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.Z, defaultExpireTime = 0, maxCacheSize = 100, debug = false } = props;
     if (debug) self.debug = debug;
     const logger = (0, utils_log__WEBPACK_IMPORTED_MODULE_1__/* .createLogger */.h)(debug);
     logger.info("prefetch: setupWorker", {
         apiMatcher,
         requestToKey,
         defaultExpireTime,
-        autoSkipWaiting,
         maxCacheSize
     });
-    self.addEventListener("install", (event)=>{
-        if (autoSkipWaiting) {
-            var _self_clients_claim, _self_clients;
-            self.skipWaiting();
-            self === null || self === void 0 || (_self_clients = self.clients) === null || _self_clients === void 0 || (_self_clients_claim = _self_clients.claim) === null || _self_clients_claim === void 0 || _self_clients_claim.call(_self_clients);
-        }
-    });
-    self.addEventListener("fetch", function(_event) {
+    console.log("prefetch: setupWorker complete");
+    // 创建处理函数
+    const fetchHandler = (event)=>{
         try {
             var _request_method_toLowerCase, _request_method;
-            const event = _event;
             const request = event.request;
             // Skip cross-origin requests, like those for Google Analytics.
             if (request.mode === "navigate") return;
@@ -899,11 +924,12 @@ function setupWorker(props) {
             ].includes(method);
             const isApi = (url === null || url === void 0 ? void 0 : url.match(apiMatcher)) || isApiMetod;
             if (!url || !isApi) return;
-            event.respondWith(handleFetchEvent(event));
+            return handleFetchEvent(event);
         } catch (error) {
             logger.error("fetch error", error);
+            return;
         }
-    });
+    };
     async function handleFetchEvent(event) {
         try {
             var _request_method_toLowerCase, _request_method;
@@ -933,6 +959,8 @@ function setupWorker(props) {
                     logger.info("prefetch: cache hit (promise)", request.url);
                     try {
                         const response = await cache.requestPromise;
+                        logger.info("prefetch: cache hit (promise) success", request.url);
+                        cache.requestPromise = undefined;
                         return response.clone();
                     } catch (error) {
                         // 如果正在进行的请求失败，清除缓存并重新发起请求
@@ -1002,6 +1030,8 @@ function setupWorker(props) {
             }
         });
     }
+    // 返回处理函数
+    return fetchHandler;
 }
 }),
 "88": (function (__unused_webpack_module, __webpack_exports__, __webpack_require__) {

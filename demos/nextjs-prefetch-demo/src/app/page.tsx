@@ -16,13 +16,14 @@ export default function Home() {
 
   useEffect(() => {
     const initializePrefetch = async () => {
+      console.log('initializePrefetch')
       if ('serviceWorker' in navigator) {
         try {
           // 使用 @norejs/prefetch 的 setup 方法初始化
           const registration = await setup({
             serviceWorkerUrl: '/service-worker.js',
             scope: '/',
-            apiMatcher: '/api',  // 配置 API 匹配规则
+            apiMatcher: '\/api\/*',  // 配置 API 匹配规则
             defaultExpireTime: 30000,  // 默认过期时间 30 秒
             maxCacheSize: 50,  // 最大缓存数量
             debug: true  // 开启调试模式

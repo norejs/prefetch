@@ -8,6 +8,7 @@
 - 📦 **智能缓存**: 支持预请求和普通请求的统一缓存机制
 - ⚡ **性能优化**: Promise 级别的请求复用
 - 🎛️ **灵活配置**: 支持消息初始化和默认配置
+- 🔧 **动态劫持**: fetch 事件监听器在脚本初始化时注册，通过函数变量实现动态处理
 - 🐛 **调试友好**: 详细的日志输出
 
 ## 安装
@@ -177,12 +178,47 @@ prefetch: cache hit (promise) /api/users
 }
 ```
 
+## 技术实现
+
+### 动态劫持机制
+
+Service Worker 采用动态劫持的方式来解决 `fetch` 事件监听器必须在脚本初始评估阶段注册的限制：
+
+```javascript
+// 在脚本加载时就注册 fetch 事件监听器
+self.addEventListener('fetch', function (event) {
+    // 如果没有初始化或没有处理函数，直接返回（不拦截）
+    if (!isInitialized || !handleFetchEventImpl) {
+        return;
+    }
+    
+    // 调用动态处理函数
+    event.respondWith(handleFetchEventImpl(event));
+});
+
+// 初始化时设置处理函数
+handleFetchEventImpl = setupWorker(config);
+```
+
+### 处理流程
+
+1. **脚本加载**: 注册 `fetch` 事件监听器，但不执行任何处理逻辑
+2. **收到初始化消息**: 调用 `setupWorker` 获取处理函数
+3. **设置处理函数**: 将返回的函数赋值给 `handleFetchEventImpl`
+4. **开始拦截**: 后续请求通过动态函数进行处理
+
+这种设计确保了：
+- 符合 Service Worker 规范要求
+- 支持动态配置和初始化
+- 避免了"Event handler must be added on initial evaluation"错误
+
 ## 注意事项
 
 1. **首次加载**: Service Worker 首次安装时可能需要刷新页面才能拦截请求
 2. **HTTPS**: Service Worker 只能在 HTTPS 或 localhost 下运行
 3. **作用域**: Service Worker 只能拦截其作用域内的请求
 4. **缓存策略**: DELETE 请求永远不会被缓存，确保数据一致性
+5. **动态劫持**: fetch 监听器在脚本评估时注册，但处理逻辑通过函数变量动态设置
 
 ## 兼容性
 

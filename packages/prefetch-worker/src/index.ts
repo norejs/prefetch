@@ -10,6 +10,22 @@ const defaultConfig = {
     apiMatcher: '/api'
 };
 
+// 动态处理函数变量
+let handleFetchEventImpl: ((event: FetchEvent) => Promise<Response> | undefined) | null = null;
+
+// 在初始化阶段就注册 fetch 事件监听器
+self.addEventListener('fetch', function (event) {
+    // 如果没有初始化或没有处理函数，直接返回（不拦截）
+    if (!isInitialized || !handleFetchEventImpl) {
+        return;
+    }
+    const response = handleFetchEventImpl(event);
+    if (response) { 
+        return event.respondWith(response);
+    }
+    return;
+});
+
 // 监听来自主线程的消息
 self.addEventListener('message', (event) => {
     console.log('prefetch-worker: received message', event.data);
@@ -17,7 +33,16 @@ self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'PREFETCH_INIT') {
         try {
             if (isInitialized) {
-                console.log('prefetch-worker: already initialized, skipping');
+                console.log('prefetch-worker: already initialized, sending success response');
+                
+                // 发送已初始化成功的消息回主线程
+                if (event.source) {
+                    event.source.postMessage({
+                        type: 'PREFETCH_INIT_SUCCESS',
+                        config: { ...defaultConfig, ...event.data.config },
+                        message: 'Already initialized'
+                    });
+                }
                 return;
             }
             
@@ -29,10 +54,14 @@ self.addEventListener('message', (event) => {
                 ? new RegExp(config.apiMatcher) 
                 : config.apiMatcher;
             
-            setupWorker({
+            // 调用 setupWorker 并获取处理函数
+            const handleFetchEvent = setupWorker({
                 apiMatcher,
                 ...config
             });
+            if (handleFetchEvent) {
+                handleFetchEventImpl = handleFetchEvent;
+            }
             
             isInitialized = true;
             console.log('prefetch-worker: initialization completed');
@@ -70,7 +99,7 @@ self.addEventListener('install', () => {
             console.log('prefetch-worker: auto-initializing with default config');
             try {
                 const apiMatcher = new RegExp(defaultConfig.apiMatcher);
-                setupWorker({
+                handleFetchEventImpl = setupWorker({
                     apiMatcher
                 });
                 isInitialized = true;
