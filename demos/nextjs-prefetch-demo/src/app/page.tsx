@@ -93,7 +93,7 @@ export default function Home() {
     if (source === 'hover') {
       const lastTime = lastPrefetchTime.get(url)
       const now = Date.now()
-      const PREFETCH_INTERVAL = 20 * 1000 // 20秒间隔
+      const PREFETCH_INTERVAL = 3 * 1000 // 20秒间隔
       
       if (lastTime && (now - lastTime) < PREFETCH_INTERVAL) {
         const remainingTime = Math.ceil((PREFETCH_INTERVAL - (now - lastTime)) / 1000)
@@ -112,7 +112,7 @@ export default function Home() {
       
       // 使用 createPreRequest 创建的预请求函数
       await preRequest(absoluteUrl, {
-        expireTime: 30000  // 30秒过期时间
+        expireTime: 3000  // 3秒过期时间
       })
       
       const duration = Date.now() - startTime
@@ -294,7 +294,7 @@ export default function Home() {
         
         <div className="mt-6 p-4 bg-blue-100 rounded-lg">
           <p className="text-blue-800 text-sm text-center">
-            💡 提示：悬停卡片自动预请求(20秒间隔)，或手动点击预请求按钮。API 延迟统一为 3-4 秒，预请求的数据会从缓存中快速加载！
+            💡 提示：悬停卡片自动预请求(20秒间隔)，或手动点击预请求按钮。API 延迟固定为 3 秒，预请求的数据会从缓存中快速加载！
           </p>
         </div>
       </div>

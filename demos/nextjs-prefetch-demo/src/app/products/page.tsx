@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useState } from 'react'
 import { Loading, LoadingSpinner } from '@/components/Loading'
 import { recordPerformance } from '@/components/PerformanceTracker'
+import { flightSingle } from '@/lib/flightSingle'
 
 interface Product {
   id: number
@@ -23,58 +23,51 @@ interface ProductsResponse {
 }
 
 export default function ProductsPage() {
-  const searchParams = useSearchParams()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [loadTime, setLoadTime] = useState<number | null>(null)
-  
-  // 检查是否启用预请求（现在只是标识，不影响服务器响应）
-  const enablePrefetch = searchParams.get('prefetch') !== 'false'
-  const mode = enablePrefetch ? '预请求模式（数据已预取）' : '普通模式（实时获取）'
+  const fetchProducts = useMemo(() => flightSingle(async () => {
+    const response = await fetch('/api/products')
+    if (response.ok) {
+      const data: ProductsResponse = await response.json()
+      setProducts(data.products)
+    } else {
+      throw new Error('Failed to fetch products')
+    }
+  }), [])
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const startTime = Date.now()
-      setLoading(true)
-      
-      try {
-        const response = await fetch('/api/products')
-        
-        if (response.ok) {
-          const data: ProductsResponse = await response.json()
-          setProducts(data.products)
-          
-          const endTime = Date.now()
-          const duration = endTime - startTime
-          setLoadTime(duration)
-          
-          console.log(`📋 产品列表加载完成 (${mode}): ${duration}ms`)
-          
-          // 记录性能数据
-          recordPerformance(
-            '/products',
-            enablePrefetch ? 'prefetch' : 'normal',
-            duration
-          )
-        }
-      } catch (error) {
-        console.error('获取产品列表失败:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
+    const startTime = Date.now()
+    setLoading(true)
+    
     fetchProducts()
-  }, [enablePrefetch, mode])
+      .then(() => {
+        const endTime = Date.now()
+        const duration = endTime - startTime
+        setLoadTime(duration)
+        
+        console.log(`📋 产品列表加载完成: ${duration}ms`)
+        
+        // 记录性能数据
+        recordPerformance(
+          '/products',
+          'normal',
+          duration
+        )
+      })
+      .catch((error) => {
+        console.error('获取产品列表失败:', error)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [])
 
   if (loading) {
     return (
       <div className="space-y-8">
         {/* 返回链接骨架 */}
         <div className="h-6 bg-gray-300 rounded w-20 animate-pulse"></div>
-        
-        {/* 模式指示器骨架 */}
-        <div className="h-16 bg-gray-200 rounded animate-pulse"></div>
         
         {/* 产品列表骨架 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -98,34 +91,17 @@ export default function ProductsPage() {
         ← 返回首页
       </Link>
 
-      {/* 模式指示器 */}
-      <div className={`card ${enablePrefetch ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className={`w-3 h-3 rounded-full ${enablePrefetch ? 'bg-green-500' : 'bg-orange-500'}`}></div>
-            <span className="font-medium">{mode}</span>
-            {loadTime && (
-              <span className={`text-sm px-2 py-1 rounded ${enablePrefetch ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}`}>
-                加载时间: {loadTime}ms
-              </span>
-            )}
-          </div>
-          <div className="flex space-x-2">
-            <Link 
-              href="/products?prefetch=true"
-              className={`text-sm px-3 py-1 rounded ${enablePrefetch ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-            >
-              预请求模式
-            </Link>
-            <Link 
-              href="/products?prefetch=false"
-              className={`text-sm px-3 py-1 rounded ${!enablePrefetch ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-            >
-              普通模式
-            </Link>
+      {/* 加载时间显示 */}
+      {loadTime && (
+        <div className="card bg-blue-50 border-blue-200">
+          <div className="flex items-center justify-center space-x-3">
+            <span className="font-medium">页面加载时间:</span>
+            <span className="text-sm px-2 py-1 rounded bg-blue-100 text-blue-800">
+              {loadTime}ms
+            </span>
           </div>
         </div>
-      </div>
+      )}
 
       {/* 页面标题 */}
       <div className="text-center">

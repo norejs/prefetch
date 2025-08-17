@@ -38,6 +38,7 @@ export default function setupWorker(props: ISetupWorker) {
     }
     self._setuped = setupSymbol;
     const preRequestCache: Map<string, ICacheItem> = new Map();
+    const preRequestPromiseMap: Map<string, Promise<Response>> = new Map();
     let cachedNums = 0;
     const {
         apiMatcher,
@@ -97,7 +98,9 @@ export default function setupWorker(props: ISetupWorker) {
             const expireTime =
                 Number(headers.get(ExpireTimeHeadName)) || defaultExpireTime;
             const cacheKey = await requestToKey(request.clone());
-
+            if (preRequestPromiseMap.has(cacheKey)) {
+                return preRequestPromiseMap.get(cacheKey)!;
+            }
             const cache = preRequestCache.get(cacheKey);
             if (cache && !isPreRequest) {
                 if (cache.expire && cache.expire > Date.now()) {

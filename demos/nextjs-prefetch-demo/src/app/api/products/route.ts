@@ -57,12 +57,12 @@ function delay(ms: number) {
 }
 
 export async function GET(request: NextRequest) {
-  // 统一的网络延迟模拟 (3-4秒)
-  const delayTime = Math.random() * 1000 + 3000
+  // 统一的网络延迟模拟 (固定3秒)
+  const delayTime = 3000
 
   await delay(delayTime)
 
-  console.log(`📡 [REQUEST] /api/products - ${Math.round(delayTime)}ms`)
+  console.log(`📡 [REQUEST] /api/products - ${delayTime}ms`)
 
   const response = NextResponse.json({
     products,
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
     limit: 20
   })
 
-  response.headers.set('X-Response-Time', Math.round(delayTime).toString())
+  response.headers.set('X-Response-Time', delayTime.toString())
   
   return response
 }
