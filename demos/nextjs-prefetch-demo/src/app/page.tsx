@@ -118,6 +118,12 @@ export default function Home() {
               Service Worker: {isServiceWorkerReady ? '已就绪' : '未就绪'}
             </span>
           </div>
+          <div className="flex items-center">
+            <div className={`w-3 h-3 rounded-full mr-2 ${preRequest ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+            <span className="text-sm">
+              PreRequest: {preRequest ? '已初始化' : '初始化中'}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -125,13 +131,15 @@ export default function Home() {
       <div className="card">
         <h2 className="text-xl font-semibold mb-4">Next.js 预请求演示</h2>
         <p className="text-gray-600 mb-4">
-          这个演示展示了如何在 Next.js 应用中集成预请求功能。当你悬停在链接上或点击预请求按钮时，
-          系统会提前请求页面所需的数据，从而提升用户体验。
+          这个演示展示了如何在 Next.js 应用中使用 <code className="bg-gray-100 px-1 rounded">@norejs/prefetch</code> 包。
+          使用 <code className="bg-gray-100 px-1 rounded">createPreRequest</code> 方法来实现预请求功能，
+          通过 Service Worker 缓存管理提升用户体验。
         </p>
         <div className="space-y-2 text-sm text-gray-500">
-          <p>• 悬停链接触发预请求</p>
-          <p>• Service Worker 缓存管理</p>
-          <p>• 智能缓存过期控制</p>
+          <p>• 使用 @norejs/prefetch 包</p>
+          <p>• createPreRequest 方法预请求</p>
+          <p>• Service Worker 缓存管理 (30秒过期)</p>
+          <p>• 匹配 /api/ 路径的请求</p>
           <p>• 实时状态监控</p>
         </div>
       </div>
