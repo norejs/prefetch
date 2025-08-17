@@ -2,6 +2,7 @@ import { createLogger } from 'utils/log';
 import { default as defaultRequestToKey } from './utils/requestToKey';
 declare var self: ServiceWorkerGlobalScope & {
     _setuped: symbol;
+    debug: boolean;
 };
 
 export const HeadName = 'X-Prefetch-Request-Type';
@@ -10,7 +11,8 @@ export const ExpireTimeHeadName = 'X-Prefetch-Expire-Time';
 
 export type ICacheItem = {
     expire: number;
-    response: Response;
+    response?: Response;
+    requestPromise?: Promise<Response>;
 };
 
 export type ISetupWorker = {
@@ -32,13 +34,13 @@ export type ISetupWorker = {
 // 用于标记是否已经初始化
 const setupSymbol = Symbol('setuped');
 export default function setupWorker(props: ISetupWorker) {
-    console.log('setupWorker', self._setuped);
+    console.log('prefetch setupWorker');
     if (self._setuped === setupSymbol) {
         return;
     }
+
     self._setuped = setupSymbol;
     const preRequestCache: Map<string, ICacheItem> = new Map();
-    const preRequestPromiseMap: Map<string, Promise<Response>> = new Map();
     let cachedNums = 0;
     const {
         apiMatcher,
@@ -48,8 +50,17 @@ export default function setupWorker(props: ISetupWorker) {
         maxCacheSize = 100,
         debug = false,
     } = props;
-
+    if(debug){
+      self.debug = debug;
+    }
     const logger = createLogger(debug);
+    logger.info('prefetch: setupWorker', {
+        apiMatcher,
+        requestToKey,
+        defaultExpireTime,
+        autoSkipWaiting,
+        maxCacheSize,
+    });
 
     self.addEventListener('install', (event) => {
         if (autoSkipWaiting) {
@@ -58,10 +69,8 @@ export default function setupWorker(props: ISetupWorker) {
         }
     });
 
-    self.addEventListener('fetch', function(_event) {
-      
+    self.addEventListener('fetch', function (_event) {
         try {
-            console.log('fetch', _event.request.url);
             const event = _event;
             const request = event.request;
             // Skip cross-origin requests, like those for Google Analytics.
@@ -71,7 +80,6 @@ export default function setupWorker(props: ISetupWorker) {
 
             // Opening the DevTools triggers the "only-if-cached" request
             // that cannot be handled by the worker. Bypass such requests.
-            console.log('fetch', request.url);
             if (
                 request.cache === 'only-if-cached' &&
                 request.mode !== 'same-origin'
@@ -79,14 +87,15 @@ export default function setupWorker(props: ISetupWorker) {
                 return;
             }
             const url = request?.url;
-            const isApi = url?.match(apiMatcher);
-            logger.info('prefetch: fetch', url, { isApi });
+            const method = request?.method?.toLowerCase?.();
+            const isApiMetod = ['get', 'post', 'patch'].includes(method);
+            const isApi = url?.match(apiMatcher) || isApiMetod;
             if (!url || !isApi) {
                 return;
             }
             event.respondWith(handleFetchEvent(event));
         } catch (error) {
-          console.error(error);
+            logger.error('fetch error', error);
         }
     });
 
@@ -94,51 +103,110 @@ export default function setupWorker(props: ISetupWorker) {
         try {
             const request = event.request.clone();
             const headers = request.headers;
+            const method = request.method?.toLowerCase?.();
             const isPreRequest = headers.get(HeadName) === HeadValue;
             const expireTime =
                 Number(headers.get(ExpireTimeHeadName)) || defaultExpireTime;
-            const cacheKey = await requestToKey(request.clone());
-            if (preRequestPromiseMap.has(cacheKey)) {
-                return preRequestPromiseMap.get(cacheKey)!;
+            
+            // DELETE 方法不进行缓存，直接透传
+            if (method === 'delete') {
+                logger.info('prefetch: DELETE method, bypass cache', request.url);
+                return fetch(event.request);
             }
+            
+            const cacheKey = await requestToKey(request.clone());
+            logger.info('prefetch: cacheKey', request.url, cacheKey);
+            if (!cacheKey) {
+                return fetch(event.request);
+            }
+
             const cache = preRequestCache.get(cacheKey);
-            if (cache && !isPreRequest) {
-                if (cache.expire && cache.expire > Date.now()) {
+            
+            // 检查是否有有效的缓存（不管是预请求还是普通请求）
+            if (cache && cache.expire > Date.now()) {
+                // 如果有完成的响应，直接返回
+                if (cache.response) {
+                    logger.info('prefetch: cache hit (response)', request.url);
                     return cache.response.clone();
-                } else {
-                    preRequestCache.delete(cacheKey);
-                    cachedNums--;
+                }
+                
+                // 如果有正在进行的请求，等待并复用
+                if (cache.requestPromise) {
+                    logger.info('prefetch: cache hit (promise)', request.url);
+                    try {
+                        const response = await cache.requestPromise;
+                        return response.clone();
+                    } catch (error) {
+                        // 如果正在进行的请求失败，清除缓存并重新发起请求
+                        preRequestCache.delete(cacheKey);
+                        cachedNums--;
+                        logger.error('prefetch: cached promise failed', error);
+                        return fetch(event.request.clone());
+                    }
+                }
+            } else if (cache && cache.expire <= Date.now()) {
+                // 缓存过期，清除
+                preRequestCache.delete(cacheKey);
+                cachedNums--;
+            }
+
+            // 创建新的请求
+            const fetchPromise = fetch(request.clone());
+            
+            // 如果缓存中没有这个请求或请求已过期，创建新的缓存项
+            if (!cache || cache.expire <= Date.now()) {
+                const newExpireTime = isPreRequest && expireTime ? expireTime : defaultExpireTime;
+                if (newExpireTime > 0) {
+                    logger.info('prefetch: creating new cache entry', request.url);
+                    clearCacheWhenOversize();
+                    
+                    // 创建带有 requestPromise 的缓存项，以便其他并发请求可以复用
+                    preRequestCache.set(cacheKey, {
+                        expire: Date.now() + newExpireTime,
+                        requestPromise: fetchPromise.then(response => {
+                            // 请求成功后，更新缓存为 response
+                            if (response.status === 200) {
+                                const existingCache = preRequestCache.get(cacheKey);
+                                if (existingCache && existingCache.expire > Date.now()) {
+                                    preRequestCache.set(cacheKey, {
+                                        expire: existingCache.expire,
+                                        response: response.clone(),
+                                    });
+                                }
+                            }
+                            return response;
+                        }).catch(error => {
+                            // 请求失败，清除缓存
+                            preRequestCache.delete(cacheKey);
+                            cachedNums--;
+                            throw error;
+                        })
+                    });
+                    cachedNums++;
                 }
             }
-            const response = await fetch(request);
-            logger.info('prefetch: response', response);
-            if (
-                isPreRequest &&
-                response.status === 200 &&
-                cacheKey &&
-                expireTime
-            ) {
-                logger.info('prefetch: cacheKey', cacheKey);
-                clearCacheWhenOversize();
-                preRequestCache.set(cacheKey, {
-                    expire: Date.now() + expireTime,
-                    response: response.clone(),
-                });
-                cachedNums++;
+
+            // 等待请求完成并返回响应
+            try {
+                const response = await fetchPromise;
+                logger.info('prefetch: response received', response.status, request.url);
+                return response;
+            } catch (error) {
+                logger.error('prefetch: fetch failed', error);
+                throw error;
             }
-            return response;
         } catch (error) {
+            logger.error('prefetch: error', error);
             return fetch(event.request);
         }
     }
 
     function clearCacheWhenOversize() {
-        if (cachedNums > maxCacheSize) {
+        if (cachedNums <= maxCacheSize) {
             return;
         }
         logger.info('clearCache');
-        Object.keys(preRequestCache).forEach((key) => {
-            const cache = preRequestCache.get(key);
+        preRequestCache.forEach((cache, key) => {
             if (cache && cache.expire < Date.now()) {
                 preRequestCache.delete(key);
                 cachedNums--;
