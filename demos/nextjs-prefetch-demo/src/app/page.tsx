@@ -4,24 +4,45 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Loading, LoadingSpinner } from '@/components/Loading'
 import { PerformanceTracker } from '@/components/PerformanceTracker'
+import { createPreRequest, setup } from '@norejs/prefetch'
 
 export default function Home() {
   const [isServiceWorkerReady, setIsServiceWorkerReady] = useState(false)
   const [prefetchingUrls, setPrefetchingUrls] = useState<Set<string>>(new Set())
+  const [preRequest, setPreRequest] = useState<((url: string, options?: any) => Promise<void>) | null>(null)
 
   useEffect(() => {
-    // 注册 Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/service-worker.js')
-        .then((registration) => {
-          console.log('Service Worker 注册成功:', registration.scope)
-          setIsServiceWorkerReady(true)
-        })
-        .catch((error) => {
-          console.error('Service Worker 注册失败:', error)
-        })
+    const initializePrefetch = async () => {
+      if ('serviceWorker' in navigator) {
+        try {
+          // 使用 @norejs/prefetch 的 setup 方法初始化
+          const registration = await setup({
+            serviceWorkerUrl: '/service-worker.js',
+            scope: '/'
+          })
+          
+          if (registration) {
+            console.log('✅ Service Worker 注册成功:', registration)
+            
+            // 等待 Service Worker 激活
+            await navigator.serviceWorker.ready
+            
+            // 创建预请求函数
+            const preRequestFn = createPreRequest()
+            setPreRequest(() => preRequestFn)
+            setIsServiceWorkerReady(true)
+            
+            console.log('✅ Prefetch 初始化完成')
+          } else {
+            console.error('❌ Service Worker 注册失败')
+          }
+        } catch (error) {
+          console.error('❌ Service Worker 或 Prefetch 初始化失败:', error)
+        }
+      }
     }
+
+    initializePrefetch()
   }, [])
 
   const comparisonDemo = {
@@ -48,8 +69,8 @@ export default function Home() {
   }
 
   const handlePrefetch = async (url: string) => {
-    if (!isServiceWorkerReady) {
-      console.warn('Service Worker 尚未就绪')
+    if (!isServiceWorkerReady || !preRequest) {
+      console.warn('⚠️ Service Worker 或 PreRequest 尚未就绪')
       return
     }
 
@@ -66,15 +87,13 @@ export default function Home() {
       // 将相对URL转换为绝对URL
       const absoluteUrl = url.startsWith('/') ? `${window.location.origin}${url}` : url
       
-      const response = await fetch(absoluteUrl)
+      // 使用 createPreRequest 创建的预请求函数
+      await preRequest(absoluteUrl, {
+        expireTime: 30000  // 30秒过期时间
+      })
       
       const duration = Date.now() - startTime
-      
-      if (response.ok) {
-        console.log(`✅ 预请求成功: ${url} (${duration}ms)`)
-      } else {
-        console.error(`❌ 预请求失败: ${url}`)
-      }
+      console.log(`✅ 预请求成功: ${url} (${duration}ms)`)
     } catch (error) {
       console.error(`❌ 预请求错误: ${url}`, error)
     } finally {
