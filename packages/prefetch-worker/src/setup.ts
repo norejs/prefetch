@@ -32,7 +32,8 @@ export type ISetupWorker = {
 // 用于标记是否已经初始化
 const setupSymbol = Symbol('setuped');
 export default function setupWorker(props: ISetupWorker) {
-    if ((self._setuped = setupSymbol)) {
+    console.log('setupWorker', self._setuped);
+    if (self._setuped === setupSymbol) {
         return;
     }
     self._setuped = setupSymbol;
@@ -57,7 +58,9 @@ export default function setupWorker(props: ISetupWorker) {
     });
 
     self.addEventListener('fetch', function(_event) {
+      
         try {
+            console.log('fetch', _event.request.url);
             const event = _event;
             const request = event.request;
             // Skip cross-origin requests, like those for Google Analytics.
@@ -67,6 +70,7 @@ export default function setupWorker(props: ISetupWorker) {
 
             // Opening the DevTools triggers the "only-if-cached" request
             // that cannot be handled by the worker. Bypass such requests.
+            console.log('fetch', request.url);
             if (
                 request.cache === 'only-if-cached' &&
                 request.mode !== 'same-origin'
@@ -80,7 +84,9 @@ export default function setupWorker(props: ISetupWorker) {
                 return;
             }
             event.respondWith(handleFetchEvent(event));
-        } catch (error) {}
+        } catch (error) {
+          console.error(error);
+        }
     });
 
     async function handleFetchEvent(event: FetchEvent) {
