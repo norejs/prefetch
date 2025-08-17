@@ -4,6 +4,9 @@
   "types": "./dist/types/index.d.ts",
   "main": "./dist/lib/index.js",
   "module": "./dist/es/index.js",
+  "bin": {
+    "prefetch": "./bin/prefetch.js"
+  },
   "scripts": {
     "custom:install": "npx pnpm@7.32.2 install",
     "dev": "npm run build:watch",
@@ -15,7 +18,8 @@
     "test": "modern test"
   },
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "devDependencies": {
     "@modern-js/eslint-config": "2.48.1",

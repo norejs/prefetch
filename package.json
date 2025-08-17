@@ -15,7 +15,7 @@
         "demo:start:nextjs": "concurrently \"npm run demo:api\" \"npm run demo:nextjs\"",
         "demo:start:all": "concurrently \"npm run demo:api\" \"npm run demo:vite\" \"npm run demo:nextjs\"",
         "demo:install": "cd demos/api-server && npm install && cd ../vite-prefetch-demo && pnpm install && cd ../nextjs-prefetch-demo && pnpm install",
-        "demo:copy-sw": "cd demos/vite-prefetch-demo && npm run copy-sw && cd ../nextjs-prefetch-demo && npm run copy-sw",
+        "demo:copy-sw": "cd demos/nextjs-prefetch-demo && npm run copy-sw",
         "demo:build": "cd demos/vite-prefetch-demo && npm run build && cd ../nextjs-prefetch-demo && npm run build"
     },
     "keywords": [],

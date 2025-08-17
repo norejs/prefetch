@@ -29,41 +29,33 @@ Prefetch is an intelligent data prefetching system that leverages Service Worker
 
 ### 📦 Architecture
 
-The system consists of two main packages:
+Prefetch is a unified solution that includes:
 
-#### `@norejs/prefetch` (Client Library)
-- Service Worker registration and management
-- Prefetch API creation (`createPreRequest`)
-- React component (`PrefetchLink`)
-- Configuration and initialization
-
-#### `@norejs/prefetch-worker` (Service Worker Implementation)
-- Fetch event interception and handling
-- Cache management and storage
-- Request deduplication logic
-- Message-based configuration
+- **Service Worker Management**: Automatic registration and lifecycle handling
+- **Prefetch API**: Simple `createPreRequest()` function for data prefetching
+- **React Integration**: Built-in `PrefetchLink` component
+- **Intelligent Caching**: Automatic request deduplication and cache management
+- **Configuration**: Flexible setup with sensible defaults
 
 ```mermaid
 graph TB
     A[Web Application] -->|Uses| B["@norejs/prefetch"]
     B -->|Registers| C[Service Worker]
-    C -->|Uses| D["@norejs/prefetch-worker"]
-    B -->|Creates| E[PreRequest Function]
-    E -->|Sends| F[Prefetch Headers]
-    C -->|Intercepts| G[Fetch Requests]
-    D -->|Manages| H[Cache Storage]
+    B -->|Creates| D[PreRequest Function]
+    D -->|Sends| E[Prefetch Headers]
+    C -->|Intercepts| F[Fetch Requests]
+    C -->|Manages| G[Cache Storage]
     
     subgraph "Client Side"
         A
         B
-        E
+        D
     end
     
     subgraph "Service Worker"
         C
-        D
+        F
         G
-        H
     end
 ```
 
@@ -72,18 +64,15 @@ graph TB
 #### Installation
 
 ```bash
-# Install the client library
+# Install Prefetch (includes everything you need)
 npm install @norejs/prefetch
-
-# Install the service worker (for standalone use)
-npm install @norejs/prefetch-worker
 ```
 
 #### Setup Service Worker
 
 ```bash
 # Copy service worker file to your public directory
-npx prefetch-worker install --dir public
+npx prefetch install --dir public
 ```
 
 #### Basic Usage
@@ -230,7 +219,7 @@ We provide complete demo projects to showcase the prefetch system:
 # Install dependencies for all demos
 npm run demo:install
 
-# Copy service worker files
+# Copy service worker files (uses the new unified CLI)
 npm run demo:copy-sw
 
 # Run API server
@@ -245,6 +234,8 @@ npm run demo:vite
 # Run all demos simultaneously
 npm run demo:start:all
 ```
+
+**Note**: The demo projects use the new unified `prefetch` CLI command, demonstrating the simplified installation process.
 
 Visit:
 - **API Server**: http://localhost:3001
@@ -287,37 +278,28 @@ Prefetch 是一个智能的数据预请求系统，利用 Service Worker 技术�
 
 ### 📦 系统架构
 
-系统由两个主要包组成：
+Prefetch 是一个统一的解决方案，包含：
 
-#### `@norejs/prefetch` (客户端库)
-- Service Worker 注册和管理
-- 预请求 API 创建 (`createPreRequest`)
-- React 组件 (`PrefetchLink`)
-- 配置和初始化
-
-#### `@norejs/prefetch-worker` (Service Worker 实现)
-- Fetch 事件拦截和处理
-- 缓存管理和存储
-- 请求去重逻辑
-- 基于消息的配置
+- **Service Worker 管理**: 自动注册和生命周期处理
+- **预请求 API**: 简单的 `createPreRequest()` 函数用于数据预取
+- **React 集成**: 内置 `PrefetchLink` 组件
+- **智能缓存**: 自动请求去重和缓存管理
+- **配置**: 灵活的设置和合理的默认值
 
 ### 🚀 快速开始
 
 #### 安装
 
 ```bash
-# 安装客户端库
+# 安装 Prefetch（包含所有必需的功能）
 npm install @norejs/prefetch
-
-# 安装 Service Worker（独立使用时）
-npm install @norejs/prefetch-worker
 ```
 
 #### 设置 Service Worker
 
 ```bash
 # 复制 service worker 文件到 public 目录
-npx prefetch-worker install --dir public
+npx prefetch install --dir public
 ```
 
 #### 基本用法
@@ -464,7 +446,7 @@ navigator.serviceWorker.controller.postMessage({
 # 安装所有演示项目的依赖
 npm run demo:install
 
-# 复制 Service Worker 文件
+# 复制 Service Worker 文件（使用新的统一 CLI）
 npm run demo:copy-sw
 
 # 运行 API 服务器
@@ -479,6 +461,8 @@ npm run demo:vite
 # 同时运行所有演示
 npm run demo:start:all
 ```
+
+**注意**: 演示项目使用新的统一 `prefetch` CLI 命令，展示了简化的安装流程。
 
 访问地址：
 - **API 服务器**: http://localhost:3001

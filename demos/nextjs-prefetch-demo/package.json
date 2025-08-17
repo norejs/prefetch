@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "copy-sw": "node ../../packages/prefetch-worker/bin/install.js install --dir public",
+    "copy-sw": "npx @norejs/prefetch install --dir public",
     "start-api": "cd ../api-server && npm start",
     "start-all": "concurrently \"npm run start-api\" \"npm run dev\""
   },
