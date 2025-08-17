@@ -812,10 +812,11 @@ self.addEventListener("message", (event)=>{
         // 将字符串转换为正则表达式
         const apiMatcher = typeof config.apiMatcher === "string" ? new RegExp(config.apiMatcher) : config.apiMatcher;
         // 调用 setupWorker 并获取处理函数
-        handleFetchEventImpl = (0, _setup__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.ZP)({
+        const handleFetchEvent = (0, _setup__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */.ZP)({
             apiMatcher,
             ...config
         });
+        if (handleFetchEvent) handleFetchEventImpl = handleFetchEvent;
         isInitialized = true;
         console.log("prefetch-worker: initialization completed");
         // 发送初始化完成的消息回主线程
@@ -891,7 +892,7 @@ const setupSymbol = Symbol("setuped");
 function setupWorker(props) {
     console.log("prefetch setupWorker");
     if (self._setuped === setupSymbol) // 如果已经设置过，返回现有的处理函数
-    throw new Error("Worker already setup");
+    return;
     self._setuped = setupSymbol;
     const preRequestCache = new Map();
     let cachedNums = 0;
@@ -959,8 +960,6 @@ function setupWorker(props) {
                     logger.info("prefetch: cache hit (promise)", request.url);
                     try {
                         const response = await cache.requestPromise;
-                        logger.info("prefetch: cache hit (promise) success", request.url);
-                        cache.requestPromise = undefined;
                         return response.clone();
                     } catch (error) {
                         // 如果正在进行的请求失败，清除缓存并重新发起请求
@@ -987,6 +986,7 @@ function setupWorker(props) {
                     preRequestCache.set(cacheKey, {
                         expire: Date.now() + newExpireTime,
                         requestPromise: fetchPromise.then((response)=>{
+                            const returnResponse = response.clone();
                             // 请求成功后，更新缓存为 response
                             if (response.status === 200) {
                                 const existingCache = preRequestCache.get(cacheKey);
@@ -995,7 +995,7 @@ function setupWorker(props) {
                                     response: response.clone()
                                 });
                             }
-                            return response;
+                            return returnResponse;
                         }).catch((error)=>{
                             // 请求失败，清除缓存
                             preRequestCache.delete(cacheKey);
