@@ -348,8 +348,8 @@ Object.keys(apiData).forEach(endpoint => {
     requestStats.byEndpoint[endpoint].total++;
     requestStats.byEndpoint[endpoint].normal++;
     
-    // 统一的网络延迟模拟 (3-4秒)
-    const delay = Math.random() * 1000 + 3000;
+    // 统一的网络延迟模拟 (固定3秒)
+    const delay = 3000;
     
     await addDelay(delay);
     
@@ -358,10 +358,10 @@ Object.keys(apiData).forEach(endpoint => {
                       userAgent.includes('Firefox') ? '🦊 Firefox' : 
                       userAgent.includes('Safari') ? '🧭 Safari' : '❓ Unknown';
     
-    console.log(`📡 [REQUEST] ${endpoint} - ${Math.round(delay)}ms ${clientInfo}`);
+    console.log(`📡 [REQUEST] ${endpoint} - ${delay}ms ${clientInfo}`);
     
     // 添加通用响应头
-    res.set('X-Response-Time', Math.round(delay));
+    res.set('X-Response-Time', delay);
     res.set('X-Request-ID', Math.random().toString(36).substr(2, 9));
     
     res.json(apiData[endpoint]);

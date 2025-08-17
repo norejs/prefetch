@@ -24,18 +24,49 @@ await setup({
 // 创建预请求函数
 const preRequest = createPreRequest()
 
-// 使用预请求
+// 手动预请求
 await preRequest('/api/products', {
   expireTime: 30000  // 30秒过期时间
 })
 ```
 
-### 3. **请求头识别**
+### 3. **Hover 自动预请求**
+支持悬停时自动触发预请求，带有智能间隔控制：
+
+```typescript
+const [lastPrefetchTime, setLastPrefetchTime] = useState(new Map())
+const [hoverTimeouts, setHoverTimeouts] = useState(new Map())
+
+const handleHoverPrefetch = (url: string) => {
+  // 300ms 延迟，避免快速滑过时触发
+  const timeoutId = setTimeout(() => {
+    // 20秒间隔限制
+    const lastTime = lastPrefetchTime.get(url)
+    const now = Date.now()
+    if (lastTime && (now - lastTime) < 20000) return
+    
+    handlePrefetch(url, 'hover')
+  }, 300)
+  
+  setHoverTimeouts(prev => new Map(prev).set(url, timeoutId))
+}
+
+// 在 JSX 中使用
+<Link 
+  href="/products"
+  onMouseEnter={() => handleHoverPrefetch('/api/products')}
+  onMouseLeave={() => handleHoverLeave('/api/products')}
+>
+  产品页面
+</Link>
+```
+
+### 4. **请求头识别**
 预请求会自动添加以下请求头：
 - `X-Prefetch-Request-Type: prefetch`
 - `X-Prefetch-Expire-Time: 30000`
 
-### 4. **缓存机制**
+### 5. **缓存机制**
 - 只有预请求会创建缓存
 - 正式请求优先从缓存获取数据
 - 30秒自动过期清理
@@ -114,6 +145,12 @@ Service Worker 会自动：
 - **预请求**: 发起网络请求并缓存响应
 - **正式请求**: 优先使用缓存，无缓存则发起网络请求
 - **过期清理**: 基于时间戳自动清理过期缓存
+
+### Hover 预请求机制
+- **延迟触发**: 300ms 延迟，避免快速滑过触发
+- **间隔控制**: 同一URL 20秒内只预请求一次
+- **自动清理**: 组件卸载时清理所有定时器
+- **状态跟踪**: 实时显示预请求次数和状态
 
 ### URL匹配
 当前配置匹配 `/api/` 开头的请求路径，可以通过修改 Service Worker 的 `apiMatcher` 正则来调整。

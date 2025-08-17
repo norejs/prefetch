@@ -10,6 +10,9 @@ export default function Home() {
   const [isServiceWorkerReady, setIsServiceWorkerReady] = useState(false)
   const [prefetchingUrls, setPrefetchingUrls] = useState<Set<string>>(new Set())
   const [preRequest, setPreRequest] = useState<((url: string, options?: any) => Promise<void>) | null>(null)
+  const [lastPrefetchTime, setLastPrefetchTime] = useState<Map<string, number>>(new Map())
+  const [hoverTimeouts, setHoverTimeouts] = useState<Map<string, NodeJS.Timeout>>(new Map())
+  const [hoverPrefetchCount, setHoverPrefetchCount] = useState(0)
 
   useEffect(() => {
     const initializePrefetch = async () => {
@@ -45,6 +48,13 @@ export default function Home() {
     initializePrefetch()
   }, [])
 
+  // 清理超时器的副作用
+  useEffect(() => {
+    return () => {
+      hoverTimeouts.forEach(timeout => clearTimeout(timeout))
+    }
+  }, [hoverTimeouts])
+
   const comparisonDemo = {
     title: '性能对比演示',
     description: '直观感受预请求与普通请求的性能差异',
@@ -68,7 +78,7 @@ export default function Home() {
     ]
   }
 
-  const handlePrefetch = async (url: string) => {
+  const handlePrefetch = async (url: string, source: 'manual' | 'hover' = 'manual') => {
     if (!isServiceWorkerReady || !preRequest) {
       console.warn('⚠️ Service Worker 或 PreRequest 尚未就绪')
       return
@@ -77,6 +87,19 @@ export default function Home() {
     // 如果已经在预请求中，则跳过
     if (prefetchingUrls.has(url)) {
       return
+    }
+
+    // 检查间隔限制（只对hover触发的预请求生效）
+    if (source === 'hover') {
+      const lastTime = lastPrefetchTime.get(url)
+      const now = Date.now()
+      const PREFETCH_INTERVAL = 20 * 1000 // 20秒间隔
+      
+      if (lastTime && (now - lastTime) < PREFETCH_INTERVAL) {
+        const remainingTime = Math.ceil((PREFETCH_INTERVAL - (now - lastTime)) / 1000)
+        console.log(`⏱️ 预请求间隔限制: ${url} (还需等待 ${remainingTime}s)`)
+        return
+      }
     }
 
     try {
@@ -93,15 +116,57 @@ export default function Home() {
       })
       
       const duration = Date.now() - startTime
-      console.log(`✅ 预请求成功: ${url} (${duration}ms)`)
+      console.log(`✅ 预请求成功 (${source}): ${url} (${duration}ms)`)
+      
+      // 更新最后预请求时间和计数
+      if (source === 'hover') {
+        setLastPrefetchTime(prev => new Map(prev).set(url, Date.now()))
+        setHoverPrefetchCount(prev => prev + 1)
+      }
     } catch (error) {
-      console.error(`❌ 预请求错误: ${url}`, error)
+      console.error(`❌ 预请求错误 (${source}): ${url}`, error)
     } finally {
       // 从预请求列表中移除
       setPrefetchingUrls(prev => {
         const newSet = new Set(prev)
         newSet.delete(url)
         return newSet
+      })
+    }
+  }
+
+  // hover 预请求处理函数
+  const handleHoverPrefetch = (url: string) => {
+    if (!url) return
+
+    // 清除已存在的定时器
+    const existingTimeout = hoverTimeouts.get(url)
+    if (existingTimeout) {
+      clearTimeout(existingTimeout)
+    }
+
+    // 设置新的延迟预请求
+    const timeoutId = setTimeout(() => {
+      handlePrefetch(url, 'hover')
+      setHoverTimeouts(prev => {
+        const newMap = new Map(prev)
+        newMap.delete(url)
+        return newMap
+      })
+    }, 300) // 300ms 延迟，避免快速滑过时触发
+
+    setHoverTimeouts(prev => new Map(prev).set(url, timeoutId))
+  }
+
+  // 取消 hover 预请求
+  const handleHoverLeave = (url: string) => {
+    const timeoutId = hoverTimeouts.get(url)
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      setHoverTimeouts(prev => {
+        const newMap = new Map(prev)
+        newMap.delete(url)
+        return newMap
       })
     }
   }
@@ -124,6 +189,15 @@ export default function Home() {
               PreRequest: {preRequest ? '已初始化' : '初始化中'}
             </span>
           </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 rounded-full mr-2 bg-blue-500"></div>
+            <span className="text-sm">
+              Hover预请求: {hoverPrefetchCount} 次
+            </span>
+          </div>
+        </div>
+        <div className="mt-3 text-xs text-gray-500">
+          <p>💡 悬停链接时自动预请求，间隔限制20秒</p>
         </div>
       </div>
 
@@ -138,6 +212,7 @@ export default function Home() {
         <div className="space-y-2 text-sm text-gray-500">
           <p>• 使用 @norejs/prefetch 包</p>
           <p>• createPreRequest 方法预请求</p>
+          <p>• 🎯 hover自动预请求 (20秒间隔限制)</p>
           <p>• Service Worker 缓存管理 (30秒过期)</p>
           <p>• 匹配 /api/ 路径的请求</p>
           <p>• 实时状态监控</p>
@@ -159,9 +234,14 @@ export default function Home() {
                   ? 'border-green-300 bg-green-50' 
                   : 'border-orange-300 bg-orange-50'
               } transition-all duration-200`}>
-                <Link href={link.href} className={`block p-6 ${
-                  link.color === 'green' ? 'hover:bg-green-100' : 'hover:bg-orange-100'
-                } transition-colors`}>
+                <Link 
+                  href={link.href} 
+                  className={`block p-6 ${
+                    link.color === 'green' ? 'hover:bg-green-100' : 'hover:bg-orange-100'
+                  } transition-colors`}
+                  onMouseEnter={() => link.prefetchUrl && handleHoverPrefetch(link.prefetchUrl)}
+                  onMouseLeave={() => link.prefetchUrl && handleHoverLeave(link.prefetchUrl)}
+                >
                   <div className="flex items-center justify-center mb-4">
                     <span className="text-4xl">{link.icon}</span>
                   </div>
@@ -214,7 +294,7 @@ export default function Home() {
         
         <div className="mt-6 p-4 bg-blue-100 rounded-lg">
           <p className="text-blue-800 text-sm text-center">
-            💡 提示：先手动预请求数据，然后点击预请求模式体验差异。API 延迟统一为 3-4 秒，预请求的数据会从缓存中快速加载！
+            💡 提示：悬停卡片自动预请求(20秒间隔)，或手动点击预请求按钮。API 延迟统一为 3-4 秒，预请求的数据会从缓存中快速加载！
           </p>
         </div>
       </div>
