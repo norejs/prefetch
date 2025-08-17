@@ -8,7 +8,7 @@
 
 ## 📖 Documentation | 文档
 
-- **[English Documentation](README.md)** - Complete guide in English
+- **[English Documentation](README-EN.md)** - Complete guide in English
 - **[中文文档](README.zh-CN.md)** - 完整的中文指南
 
 ## 🚀 Quick Start | 快速开始
@@ -37,4 +37,4 @@ import { setup, createPreRequest } from '@norejs/prefetch'
 
 ---
 
-**Choose your language | 选择语言：** [English](README.md) | [中文](README.zh-CN.md)
+**Choose your language | 选择语言：** [English](README-EN.md) | [中文](README.zh-CN.md)
