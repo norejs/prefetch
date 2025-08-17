@@ -45,9 +45,9 @@ The system consists of two main packages:
 
 ```mermaid
 graph TB
-    A[Web Application] -->|Uses| B[@norejs/prefetch]
+    A[Web Application] -->|Uses| B["@norejs/prefetch"]
     B -->|Registers| C[Service Worker]
-    C -->|Uses| D[@norejs/prefetch-worker]
+    C -->|Uses| D["@norejs/prefetch-worker"]
     B -->|Creates| E[PreRequest Function]
     E -->|Sends| F[Prefetch Headers]
     C -->|Intercepts| G[Fetch Requests]
