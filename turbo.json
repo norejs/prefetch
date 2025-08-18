@@ -17,6 +17,26 @@
             // being completed. It also has no filesystem outputs.
             "dependsOn": ["build", "test", "lint"]
         },
+        "changeset": {
+            "cache": false
+        },
+        "changeset:version": {
+            "cache": false
+        },
+        "changeset:publish": {
+            "dependsOn": ["build"],
+            "cache": false
+        },
+        "changeset:status": {
+            "cache": false
+        },
+        "version-packages": {
+            "cache": false
+        },
+        "release": {
+            "dependsOn": ["build"],
+            "cache": false
+        },
         "test": {
             // A package's `test` script depends on that package's
             // own `build` script being completed first.

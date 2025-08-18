@@ -8,6 +8,12 @@
         "start": "turbo start",
         "build": "turbo build",
         "publish": "turbo publish",
+        "changeset": "changeset",
+        "changeset:version": "changeset version",
+        "changeset:publish": "changeset publish",
+        "changeset:status": "changeset status",
+        "version-packages": "changeset version && pnpm install --lockfile-only",
+        "release": "pnpm build && changeset publish",
         "demo:api": "cd demos/api-server && npm start",
         "demo:vite": "cd demos/vite-prefetch-demo && npm run dev",
         "demo:nextjs": "cd demos/nextjs-prefetch-demo && npm run dev",
@@ -22,8 +28,10 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "turbo": "^1.11.1",
-        "concurrently": "^8.2.2"
+        "@changesets/changelog-github": "^0.5.1",
+        "@changesets/cli": "^2.29.6",
+        "concurrently": "^8.2.2",
+        "turbo": "^1.11.1"
     },
     "nx": {
         "targets": {}
