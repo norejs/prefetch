@@ -23,58 +23,52 @@ Prefetch is an intelligent data prefetching solution that leverages Service Work
 - 🌐 **Cross-Application**: Support for multi-application scenarios
 - ⚛️ **React Integration**: Built-in React components and hooks
 
-## 📊 Comparison with Other Solutions
+## 📊 Comparison with React Query/SWR
 
-| Feature | **Our Solution** | React Query/SWR | Workbox | quicklink | instant.page | Browser Prefetch |
-|---------|------------------|------------------|---------|-----------|--------------|------------------|
-| **Primary Focus** | API data prefetching | Data fetching & caching | SW toolkit | Link prefetching | Page prefetching | Resource prefetching |
-| **Implementation** | Service Worker + unified API | Client-side hooks | Manual SW setup | DOM observation | Hover/viewport detection | HTML `<link>` tags |
-| **Caching Strategy** | Multi-level intelligent cache | Memory + optional persist | Manual cache strategies | Browser cache only | Browser cache only | Browser cache only |
-| **Request Deduplication** | ✅ Automatic | ✅ Built-in | ❌ Manual | ❌ None | ❌ None | ❌ None |
-| **Cross-Origin Support** | ✅ With configuration | ✅ Built-in | ✅ Manual setup | ✅ Limited | ✅ Limited | ✅ Basic |
-| **Framework Agnostic** | ✅ Any framework | ❌ React/Vue specific | ✅ Any framework | ✅ Any framework | ✅ Any framework | ✅ Any framework |
-| **TypeScript Support** | ✅ Full support | ✅ Full support | ✅ Full support | ❌ Limited | ❌ Basic | ❌ None |
-| **Bundle Size** | 🟡 ~15KB (with SW) | 🟡 ~13KB | 🔴 ~25KB+ | 🟢 ~2KB | 🟢 ~1KB | 🟢 0KB |
-| **Setup Complexity** | 🟢 Simple CLI + API | 🟡 Wrapper setup | 🔴 Complex SW config | 🟢 Drop-in script | 🟢 Drop-in script | 🟢 HTML tags |
-| **Data vs Resources** | ✅ API data focused | ✅ Data focused | 🟡 Both (manual) | ❌ Resources only | ❌ Pages only | ❌ Resources only |
-| **Cache Persistence** | ✅ Service Worker cache | 🟡 Memory/localStorage | ✅ SW cache | ❌ Browser cache | ❌ Browser cache | ❌ Browser cache |
-| **Offline Support** | ✅ Built-in | ❌ Additional setup | ✅ Built-in | ❌ None | ❌ None | ❌ None |
-| **Debug Tools** | ✅ Built-in logging | ✅ DevTools | 🟡 Manual setup | ❌ Limited | ❌ Limited | ❌ None |
-| **Cross-App Sharing** | ✅ Built-in | ❌ App-specific | 🟡 Manual setup | ❌ None | ❌ None | ❌ None |
-| **Promise Sharing** | ✅ Automatic | ✅ Per-hook | ❌ Manual | ❌ None | ❌ None | ❌ None |
+| Feature | **Our Solution** | React Query/SWR |
+|---------|------------------|------------------|
+| **Primary Focus** | API data prefetching | Data fetching & caching |
+| **Implementation** | Service Worker + unified API | Client-side hooks |
+| **Caching Strategy** | Multi-level intelligent cache | Memory + optional persist |
+| **Request Deduplication** | ✅ Automatic | ✅ Built-in |
+| **Cross-Origin Support** | ✅ With configuration | ✅ Built-in |
+| **Framework Agnostic** | ✅ Any framework | ❌ React/Vue specific |
+| **Data vs Resources** | ✅ API data focused | ✅ Data focused |
+| **Cache Persistence** | ✅ Service Worker cache | 🟡 Memory/localStorage |
+| **Offline Support** | ✅ Built-in | ❌ Additional setup |
+| **Cross-App Sharing** | ✅ Built-in | ❌ App-specific |
+| **Promise Sharing** | ✅ Automatic | ✅ Per-hook |
 
 ### 🏆 Key Advantages
 
 1. **🎯 Purpose-Built for APIs**: Unlike general-purpose solutions, specifically designed for API data prefetching
-2. **🔄 Smart Deduplication**: Automatically prevents duplicate requests and shares promises across the application
-3. **⚡ Zero Configuration**: Works out of the box with sensible defaults, no complex setup required
-4. **🌐 Cross-Application**: Share cached data between different applications on the same domain
-5. **🛠️ Developer Experience**: Simple CLI installation, TypeScript-first API, and excellent debugging tools
-6. **📦 All-in-One Solution**: No need to combine multiple libraries - everything you need in one package
-7. **🔧 Service Worker Power**: Leverages SW capabilities for true network-level caching and offline support
+2. **🌐 Cross-Application Data Sharing**: Share cached data between different applications on the same domain - a unique capability that React Query/SWR cannot provide
+3. **🔄 Smart Deduplication**: Automatically prevents duplicate requests and shares promises across the application
+4. **⚡ Zero Configuration**: Works out of the box with sensible defaults, no complex setup required
+5. **📦 All-in-One Solution**: No need to combine multiple libraries - everything you need in one package
+6. **🔧 Service Worker Power**: Leverages SW capabilities for true network-level caching and offline support
 
 ### 🤔 When to Choose Our Solution
 
 **Choose Prefetch when you need:**
-- API data prefetching (not just page/resource prefetching)
-- Cross-application data sharing
+- Cross-application data sharing (multiple apps on the same domain)
+- Framework-agnostic solution (not limited to React/Vue)
+- True offline support with Service Worker caching
+- Network-level request deduplication
 - Minimal setup complexity
-- Framework-agnostic solution
-- Built-in offline support
-- Advanced request deduplication
 
-**Consider alternatives when:**
-- You only need page/resource prefetching (use quicklink/instant.page)
-- You're building a React-only app with complex data needs (React Query might be sufficient)
-- You need a full PWA toolkit (Workbox provides more comprehensive SW features)
-- Bundle size is critical and you only need basic prefetching
+**Consider React Query/SWR when:**
+- Building React-only applications
+- Need complex state management features
+- Prefer client-side only solutions
+- Require extensive ecosystem of plugins
 
 ## 📦 Architecture
 
 Prefetch is a unified solution that includes:
 
 - **Service Worker Management**: Automatic registration and lifecycle handling
-- **Prefetch API**: Simple `createPreRequest()` function for data prefetching
+- **Prefetch API**: Simple `preFetch()` function for data prefetching
 - **React Integration**: Built-in `PrefetchLink` component
 - **Intelligent Caching**: Automatic request deduplication and cache management
 - **Configuration**: Flexible setup with sensible defaults
@@ -120,7 +114,7 @@ npx prefetch install --dir public
 ### Basic Usage
 
 ```typescript
-import { setup, createPreRequest } from '@norejs/prefetch'
+import { setup, preFetch } from '@norejs/prefetch'
 
 // Initialize the prefetch solution
 await setup({
@@ -132,11 +126,8 @@ await setup({
   debug: true                   // Enable debug mode
 })
 
-// Create prefetch function
-const preRequest = createPreRequest()
-
-// Prefetch data
-await preRequest('/api/products', {
+// Prefetch data directly
+await preFetch('/api/products', {
   expireTime: 30000  // Custom expiration time
 })
 

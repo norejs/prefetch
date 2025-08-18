@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Loading, LoadingSpinner } from '@/components/Loading'
 import { PerformanceTracker } from '@/components/PerformanceTracker'
-import { createPreRequest, setup } from '@norejs/prefetch'
+import { preFetch, setup } from '@norejs/prefetch'
 
 export default function Home() {
   const [isServiceWorkerReady, setIsServiceWorkerReady] = useState(false)
   const [prefetchingUrls, setPrefetchingUrls] = useState<Set<string>>(new Set())
-  const [preRequest, setPreRequest] = useState<((url: string, options?: any) => Promise<void>) | null>(null)
+  const [isPreFetchReady, setIsPreFetchReady] = useState(false)
   const [lastPrefetchTime, setLastPrefetchTime] = useState<Map<string, number>>(new Map())
   const [hoverTimeouts, setHoverTimeouts] = useState<Map<string, NodeJS.Timeout>>(new Map())
   const [hoverPrefetchCount, setHoverPrefetchCount] = useState(0)
@@ -35,9 +35,8 @@ export default function Home() {
             // 等待 Service Worker 激活
             await navigator.serviceWorker.ready
             
-            // 创建预请求函数
-            const preRequestFn = createPreRequest()
-            setPreRequest(() => preRequestFn)
+            // preFetch 可以直接使用
+            setIsPreFetchReady(true)
             setIsServiceWorkerReady(true)
             
             console.log('✅ Prefetch 初始化完成')
@@ -84,8 +83,8 @@ export default function Home() {
   }
 
   const handlePrefetch = async (url: string, source: 'manual' | 'hover' = 'manual') => {
-    if (!isServiceWorkerReady || !preRequest) {
-      console.warn('⚠️ Service Worker 或 PreRequest 尚未就绪')
+    if (!isServiceWorkerReady || !isPreFetchReady) {
+      console.warn('⚠️ Service Worker 或 preFetch 尚未就绪')
       return
     }
 
@@ -115,8 +114,8 @@ export default function Home() {
       // 将相对URL转换为绝对URL
       const absoluteUrl = url.startsWith('/') ? `${window.location.origin}${url}` : url
       
-      // 使用 createPreRequest 创建的预请求函数
-      await preRequest(absoluteUrl, {
+      // 直接使用 preFetch 函数
+      await preFetch(absoluteUrl, {
         expireTime: 3000  // 3秒过期时间
       })
       
@@ -189,9 +188,9 @@ export default function Home() {
             </span>
           </div>
           <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full mr-2 ${preRequest ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+            <div className={`w-3 h-3 rounded-full mr-2 ${isPreFetchReady ? 'bg-green-500' : 'bg-orange-500'}`}></div>
             <span className="text-sm">
-              PreRequest: {preRequest ? '已初始化' : '初始化中'}
+              preFetch: {isPreFetchReady ? '已就绪' : '初始化中'}
             </span>
           </div>
           <div className="flex items-center">
@@ -211,12 +210,12 @@ export default function Home() {
         <h2 className="text-xl font-semibold mb-4">Next.js 预请求演示</h2>
         <p className="text-gray-600 mb-4">
           这个演示展示了如何在 Next.js 应用中使用 <code className="bg-gray-100 px-1 rounded">@norejs/prefetch</code> 包。
-          使用 <code className="bg-gray-100 px-1 rounded">createPreRequest</code> 方法来实现预请求功能，
+          使用 <code className="bg-gray-100 px-1 rounded">preFetch</code> 方法来实现预请求功能，
           通过 Service Worker 缓存管理提升用户体验。
         </p>
         <div className="space-y-2 text-sm text-gray-500">
           <p>• 使用 @norejs/prefetch 包</p>
-          <p>• createPreRequest 方法预请求</p>
+          <p>• preFetch 方法预请求</p>
           <p>• 🎯 hover自动预请求 (20秒间隔限制)</p>
           <p>• Service Worker 缓存管理 (30秒过期)</p>
           <p>• 匹配 /api/ 路径的请求</p>
@@ -279,7 +278,7 @@ export default function Home() {
                           ? 'bg-green-600 hover:bg-green-700 text-white'
                           : 'bg-orange-600 hover:bg-orange-700 text-white'
                       } transition-colors`}
-                      disabled={!isServiceWorkerReady || !!isPrefetching}
+                      disabled={!isServiceWorkerReady || !isPreFetchReady || !!isPrefetching}
                     >
                       {isPrefetching ? (
                         <>

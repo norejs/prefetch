@@ -10,10 +10,10 @@
 - 状态实时监控
 
 ### 2. **预请求方法**
-使用 `createPreRequest` 方法创建预请求函数：
+直接使用 `preFetch` 方法：
 
 ```typescript
-import { createPreRequest, setup } from '@norejs/prefetch'
+import { preFetch, setup } from '@norejs/prefetch'
 
 // 初始化
 await setup({
@@ -21,11 +21,8 @@ await setup({
   scope: '/'
 })
 
-// 创建预请求函数
-const preRequest = createPreRequest()
-
-// 手动预请求
-await preRequest('/api/products', {
+// 直接预请求
+await preFetch('/api/products', {
   expireTime: 30000  // 30秒过期时间
 })
 ```
@@ -88,11 +85,11 @@ npm run copy-sw
 ```typescript
 'use client'
 
-import { createPreRequest, setup } from '@norejs/prefetch'
+import { preFetch, setup } from '@norejs/prefetch'
 import { useEffect, useState } from 'react'
 
 export default function App() {
-  const [preRequest, setPreRequest] = useState(null)
+  const [isPrefetchReady, setIsPrefetchReady] = useState(false)
   
   useEffect(() => {
     const initializePrefetch = async () => {
@@ -102,17 +99,16 @@ export default function App() {
         scope: '/'
       })
       
-      // 创建预请求函数
-      const preRequestFn = createPreRequest()
-      setPreRequest(() => preRequestFn)
+      // preFetch 可以直接使用
+      setIsPrefetchReady(true)
     }
     
     initializePrefetch()
   }, [])
   
   const handlePrefetch = async (url) => {
-    if (preRequest) {
-      await preRequest(url, { expireTime: 30000 })
+    if (isPrefetchReady) {
+      await preFetch(url, { expireTime: 30000 })
     }
   }
   

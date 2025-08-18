@@ -199,7 +199,7 @@ fix(cli): handle dependency hoisting correctly
 
 # Documentation
 docs: update installation guide
-docs(api): add examples for createPreRequest
+docs(api): add examples for preFetch
 
 # Refactoring
 refactor: simplify cache management logic
@@ -469,7 +469,7 @@ fix(cli): 正确处理依赖提升
 
 # 文档
 docs: 更新安装指南
-docs(api): 为 createPreRequest 添加示例
+docs(api): 为 preFetch 添加示例
 
 # 重构
 refactor: 简化缓存管理逻辑

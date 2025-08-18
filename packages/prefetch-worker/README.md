@@ -109,12 +109,10 @@ Promise.all([
 配合 `@norejs/prefetch` 使用预请求功能：
 
 ```javascript
-import { createPreRequest } from '@norejs/prefetch'
+import { preFetch } from '@norejs/prefetch'
 
-const preRequest = createPreRequest()
-
-// 预请求数据
-await preRequest('/api/products', {
+// 直接预请求数据
+await preFetch('/api/products', {
   expireTime: 30000  // 30 秒过期时间
 })
 

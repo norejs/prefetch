@@ -62,7 +62,7 @@ await setup({
 
 **After v0.1.x:**
 ```typescript
-import { setup, createPreRequest } from '@norejs/prefetch'
+import { setup, preFetch } from '@norejs/prefetch'
 
 // Simple unified setup
 await setup({
@@ -74,8 +74,8 @@ await setup({
   debug: true
 })
 
-// Easy prefetch creation
-const preRequest = createPreRequest()
+// Direct prefetch usage
+await preFetch('/api/products', { expireTime: 30000 })
 ```
 
 #### 3. **Enhanced Configuration**
@@ -148,7 +148,7 @@ await setup({
 
 **New setup:**
 ```typescript
-import { setup, createPreRequest } from '@norejs/prefetch'
+import { setup, preFetch } from '@norejs/prefetch'
 
 await setup({
   serviceWorkerUrl: '/service-worker.js',
@@ -159,7 +159,8 @@ await setup({
   debug: process.env.NODE_ENV === 'development'
 })
 
-const preRequest = createPreRequest()
+// Use preFetch directly
+await preFetch('/api/products', { expireTime: 30000 })
 ```
 
 #### Step 4: Update Prefetch Usage
@@ -174,10 +175,9 @@ navigator.serviceWorker.controller?.postMessage({
 
 **New way:**
 ```typescript
-import { createPreRequest } from '@norejs/prefetch'
+import { preFetch } from '@norejs/prefetch'
 
-const preRequest = createPreRequest()
-await preRequest('/api/products', {
+await preFetch('/api/products', {
   expireTime: 30000
 })
 ```
@@ -233,7 +233,7 @@ async function fetchWithCache(url: string) {
 
 **After:**
 ```typescript
-import { setup, createPreRequest } from '@norejs/prefetch'
+import { setup, preFetch } from '@norejs/prefetch'
 
 await setup({
   serviceWorkerUrl: '/service-worker.js',
@@ -241,10 +241,8 @@ await setup({
   defaultExpireTime: 30000
 })
 
-const preRequest = createPreRequest()
-
-// Prefetch data
-await preRequest('/api/data')
+// Prefetch data directly
+await preFetch('/api/data', { expireTime: 30000 })
 
 // Regular fetch will use cache
 const response = await fetch('/api/data')
@@ -268,14 +266,12 @@ function Profile() {
 **After (Prefetch + SWR):**
 ```typescript
 import useSWR from 'swr'
-import { createPreRequest } from '@norejs/prefetch'
-
-const preRequest = createPreRequest()
+import { preFetch } from '@norejs/prefetch'
 
 function Profile() {
   // Prefetch on component mount or user interaction
   useEffect(() => {
-    preRequest('/api/user')
+    preFetch('/api/user', { expireTime: 30000 })
   }, [])
   
   const { data, error } = useSWR('/api/user', fetcher)
@@ -320,7 +316,7 @@ function Navigation() {
 #### API Changes
 - **BREAKING**: `setup()` now requires `serviceWorkerUrl` parameter
 - **ADDED**: New configuration options (`defaultExpireTime`, `maxCacheSize`, `debug`)
-- **ADDED**: `createPreRequest()` function for easier prefetch usage
+- **ADDED**: `preFetch()` function for easier prefetch usage
 
 #### Service Worker
 - **BREAKING**: Service Worker file location may change based on build setup
@@ -394,7 +390,7 @@ await setup({
 
 **v0.1.x 之后：**
 ```typescript
-import { setup, createPreRequest } from '@norejs/prefetch'
+import { setup, preFetch } from '@norejs/prefetch'
 
 // 简单统一的设置
 await setup({
@@ -406,8 +402,8 @@ await setup({
   debug: true
 })
 
-// 简单的预请求创建
-const preRequest = createPreRequest()
+// 直接使用预请求
+await preFetch('/api/products', { expireTime: 30000 })
 ```
 
 #### 3. **增强的配置**
@@ -480,7 +476,7 @@ await setup({
 
 **新设置：**
 ```typescript
-import { setup, createPreRequest } from '@norejs/prefetch'
+import { setup, preFetch } from '@norejs/prefetch'
 
 await setup({
   serviceWorkerUrl: '/service-worker.js',
@@ -491,7 +487,8 @@ await setup({
   debug: process.env.NODE_ENV === 'development'
 })
 
-const preRequest = createPreRequest()
+// 直接使用 preFetch
+await preFetch('/api/products', { expireTime: 30000 })
 ```
 
 #### 步骤 4：更新预请求使用
@@ -506,10 +503,9 @@ navigator.serviceWorker.controller?.postMessage({
 
 **新方式：**
 ```typescript
-import { createPreRequest } from '@norejs/prefetch'
+import { preFetch } from '@norejs/prefetch'
 
-const preRequest = createPreRequest()
-await preRequest('/api/products', {
+await preFetch('/api/products', {
   expireTime: 30000
 })
 ```
@@ -565,7 +561,7 @@ async function fetchWithCache(url: string) {
 
 **之后：**
 ```typescript
-import { setup, createPreRequest } from '@norejs/prefetch'
+import { setup, preFetch } from '@norejs/prefetch'
 
 await setup({
   serviceWorkerUrl: '/service-worker.js',
@@ -573,10 +569,8 @@ await setup({
   defaultExpireTime: 30000
 })
 
-const preRequest = createPreRequest()
-
-// 预请求数据
-await preRequest('/api/data')
+// 直接预请求数据
+await preFetch('/api/data', { expireTime: 30000 })
 
 // 常规 fetch 会使用缓存
 const response = await fetch('/api/data')
@@ -600,14 +594,12 @@ function Profile() {
 **之后（Prefetch + SWR）：**
 ```typescript
 import useSWR from 'swr'
-import { createPreRequest } from '@norejs/prefetch'
-
-const preRequest = createPreRequest()
+import { preFetch } from '@norejs/prefetch'
 
 function Profile() {
   // 在组件挂载或用户交互时预请求
   useEffect(() => {
-    preRequest('/api/user')
+    preFetch('/api/user', { expireTime: 30000 })
   }, [])
   
   const { data, error } = useSWR('/api/user', fetcher)
@@ -631,7 +623,7 @@ function Profile() {
 #### API 变更
 - **破坏性**：`setup()` 现在需要 `serviceWorkerUrl` 参数
 - **新增**：新的配置选项（`defaultExpireTime`、`maxCacheSize`、`debug`）
-- **新增**：用于更简单预请求使用的 `createPreRequest()` 函数
+- **新增**：用于更简单预请求使用的 `preFetch()` 函数
 
 #### Service Worker
 - **破坏性**：Service Worker 文件位置可能根据构建设置而改变

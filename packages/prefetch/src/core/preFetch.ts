@@ -12,7 +12,7 @@ type IPreFetchOptions = {
     expireTime?: number;
 };
 
-export function createPreRequest() {
+function createPreFetch() {
     // 利用fetch 封装一个预取请求
     return async function preFetch(
         url: string,
@@ -39,3 +39,5 @@ export function createPreRequest() {
         }
     };
 }
+
+export default createPreFetch();
