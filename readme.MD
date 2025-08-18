@@ -137,6 +137,8 @@ const response = await fetch('/api/products')
 
 ### React Integration
 
+The `PrefetchLink` component automatically preloads application resources by parsing the target application's HTML and extracting static assets (JavaScript, CSS, etc.) in a sandboxed iframe environment.
+
 ```jsx
 import { PrefetchLink } from '@norejs/prefetch'
 
@@ -148,6 +150,20 @@ function App() {
   )
 }
 ```
+
+**Key Features:**
+- **Smart Resource Discovery**: Automatically parses HTML to extract scripts, stylesheets, and prefetch links
+- **Sandboxed Preloading**: Uses hidden iframe to safely preload resources without affecting the main application  
+- **Intelligent Caching**: Avoids duplicate parsing with built-in manifest cache
+- **Lifecycle Management**: Automatically cleans up iframe after configurable lifespan (default: 10s)
+
+**Use Cases:**
+- Micro-frontend applications
+- SPA application launchers  
+- Navigation menu optimization
+- Heavy dashboard preloading
+
+For detailed documentation, see [PrefetchLink API Reference](docs/PREFETCHLINK.md).
 
 ## ⚙️ Configuration Options
 

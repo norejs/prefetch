@@ -137,6 +137,8 @@ const response = await fetch('/api/products')
 
 ### React 集成
 
+`PrefetchLink` 组件通过解析目标应用的 HTML 页面，自动提取静态资源（JavaScript、CSS 等），并在沙箱 iframe 环境中预加载这些应用资源。
+
 ```jsx
 import { PrefetchLink } from '@norejs/prefetch'
 
@@ -148,6 +150,20 @@ function App() {
   )
 }
 ```
+
+**核心特性:**
+- **智能资源发现**: 自动解析 HTML 提取脚本、样式表和预取链接
+- **沙箱预加载**: 使用隐藏 iframe 安全预加载资源，不影响主应用
+- **智能缓存**: 内置清单缓存，避免重复解析
+- **生命周期管理**: 自动清理 iframe，默认生命周期 10 秒
+
+**使用场景:**
+- 微前端应用
+- SPA 应用启动器
+- 导航菜单优化  
+- 重型仪表板预加载
+
+详细文档请参考 [PrefetchLink API 参考](docs/PREFETCHLINK.md)。
 
 ## ⚙️ 配置选项
 
