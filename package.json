@@ -4,6 +4,7 @@
     "description": "",
     "main": "index.js",
     "packageManager": "pnpm@7.33.7",
+    "npmRegistry": "https://registry.npmjs.org",
     "scripts": {
         "test": "",
         "start": "turbo start",
