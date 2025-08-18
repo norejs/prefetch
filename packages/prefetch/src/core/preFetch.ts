@@ -13,7 +13,7 @@ type IPreFetchOptions = RequestInit & {
 };
 
 // 利用fetch 封装一个预取请求
-export async function preFetch(
+async function preFetch(
   url: string,
   options: IPreFetchOptions = {}
 ): Promise<void> {
@@ -39,3 +39,6 @@ export async function preFetch(
     logger.error(`prefetch ${url} failed`, e);
   }
 }
+
+export default preFetch;
+export { preFetch };
