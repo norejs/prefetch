@@ -120,7 +120,7 @@ import { setup, preFetch } from '@norejs/prefetch'
 await setup({
   serviceWorkerUrl: '/service-worker.js',
   scope: '/',
-  apiMatcher: '/api',           // API matching pattern
+  apiMatcher: '\/api\/*',           // API matching pattern
   defaultExpireTime: 30000,     // Default cache expiration (30s)
   maxCacheSize: 100,            // Maximum cache entries
   debug: true                   // Enable debug mode

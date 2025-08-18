@@ -7,7 +7,7 @@ let isInitialized = false;
 
 // 默认配置
 const defaultConfig = {
-    apiMatcher: '/api'
+    apiMatcher: '\/api\/*'
 };
 
 // 动态处理函数变量

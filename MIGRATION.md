@@ -56,7 +56,7 @@ const registration = await setupPrefetchWorker({
 
 await setup({
   registration,
-  apiMatcher: '/api'
+  apiMatcher: '\/api\/*'
 })
 ```
 
@@ -68,7 +68,7 @@ import { setup, preFetch } from '@norejs/prefetch'
 await setup({
   serviceWorkerUrl: '/service-worker.js',
   scope: '/',
-  apiMatcher: '/api',
+  apiMatcher: '\/api\/*',
   defaultExpireTime: 30000,
   maxCacheSize: 100,
   debug: true
@@ -84,7 +84,7 @@ await preFetch('/api/products', { expireTime: 30000 })
 ```typescript
 // Limited configuration options
 await setup({
-  apiMatcher: '/api'
+  apiMatcher: '\/api\/*'
 })
 ```
 
@@ -94,7 +94,7 @@ await setup({
 await setup({
   serviceWorkerUrl: '/service-worker.js',
   scope: '/',
-  apiMatcher: '/api',           // string or RegExp
+  apiMatcher: '\/api\/*',           // string or RegExp
   defaultExpireTime: 30000,     // Default cache expiration
   maxCacheSize: 100,            // Maximum cache entries
   debug: true                   // Debug logging
@@ -142,7 +142,7 @@ Replace your service worker installation command:
 import { setup } from '@norejs/prefetch'
 
 await setup({
-  apiMatcher: '/api'
+  apiMatcher: '\/api\/*'
 })
 ```
 
@@ -153,7 +153,7 @@ import { setup, preFetch } from '@norejs/prefetch'
 await setup({
   serviceWorkerUrl: '/service-worker.js',
   scope: '/',
-  apiMatcher: '/api',
+  apiMatcher: '\/api\/*',
   defaultExpireTime: 30000,
   maxCacheSize: 100,
   debug: process.env.NODE_ENV === 'development'
@@ -237,7 +237,7 @@ import { setup, preFetch } from '@norejs/prefetch'
 
 await setup({
   serviceWorkerUrl: '/service-worker.js',
-  apiMatcher: '/api',
+  apiMatcher: '\/api\/*',
   defaultExpireTime: 30000
 })
 
@@ -384,7 +384,7 @@ const registration = await setupPrefetchWorker({
 
 await setup({
   registration,
-  apiMatcher: '/api'
+  apiMatcher: '\/api\/*'
 })
 ```
 
@@ -396,7 +396,7 @@ import { setup, preFetch } from '@norejs/prefetch'
 await setup({
   serviceWorkerUrl: '/service-worker.js',
   scope: '/',
-  apiMatcher: '/api',
+  apiMatcher: '\/api\/*',
   defaultExpireTime: 30000,
   maxCacheSize: 100,
   debug: true
@@ -412,7 +412,7 @@ await preFetch('/api/products', { expireTime: 30000 })
 ```typescript
 // 有限的配置选项
 await setup({
-  apiMatcher: '/api'
+  apiMatcher: '\/api\/*'
 })
 ```
 
@@ -422,7 +422,7 @@ await setup({
 await setup({
   serviceWorkerUrl: '/service-worker.js',
   scope: '/',
-  apiMatcher: '/api',           // 字符串或正则表达式
+  apiMatcher: '\/api\/*',           // 字符串或正则表达式
   defaultExpireTime: 30000,     // 默认缓存过期时间
   maxCacheSize: 100,            // 最大缓存条目
   debug: true                   // 调试日志
@@ -470,7 +470,7 @@ npm install @norejs/prefetch@latest
 import { setup } from '@norejs/prefetch'
 
 await setup({
-  apiMatcher: '/api'
+  apiMatcher: '\/api\/*'
 })
 ```
 
@@ -481,7 +481,7 @@ import { setup, preFetch } from '@norejs/prefetch'
 await setup({
   serviceWorkerUrl: '/service-worker.js',
   scope: '/',
-  apiMatcher: '/api',
+  apiMatcher: '\/api\/*',
   defaultExpireTime: 30000,
   maxCacheSize: 100,
   debug: process.env.NODE_ENV === 'development'
@@ -565,7 +565,7 @@ import { setup, preFetch } from '@norejs/prefetch'
 
 await setup({
   serviceWorkerUrl: '/service-worker.js',
-  apiMatcher: '/api',
+  apiMatcher: '\/api\/*',
   defaultExpireTime: 30000
 })
 

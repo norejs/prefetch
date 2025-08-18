@@ -120,7 +120,7 @@ import { setup, preFetch } from '@norejs/prefetch'
 await setup({
   serviceWorkerUrl: '/service-worker.js',
   scope: '/',
-  apiMatcher: '/api',           // API 匹配规则
+  apiMatcher: '\/api\/*',           // API 匹配规则
   defaultExpireTime: 30000,     // 默认过期时间 30 秒
   maxCacheSize: 100,            // 最大缓存数量
   debug: true                   // 开启调试模式

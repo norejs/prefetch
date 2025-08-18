@@ -38,7 +38,7 @@ import { setup } from '@norejs/prefetch'
 await setup({
   serviceWorkerUrl: '/service-worker.js',
   scope: '/',
-  apiMatcher: '/api',           // API 匹配规则，默认 '/api'
+  apiMatcher: '\/api\/*',           // API 匹配规则，默认 '/api'
   defaultExpireTime: 30000,     // 默认过期时间 30 秒
   maxCacheSize: 100,            // 最大缓存数量
   debug: true                   // 开启调试模式
@@ -139,7 +139,7 @@ prefetch: cache hit (promise) /api/users
 ```javascript
 // 默认配置
 {
-  apiMatcher: '/api'
+  apiMatcher: '\/api\/*'
 }
 ```
 
@@ -152,7 +152,7 @@ prefetch: cache hit (promise) /api/users
 {
   type: 'PREFETCH_INIT',
   config: {
-    apiMatcher: '/api',
+    apiMatcher: '\/api\/*',
     defaultExpireTime: 30000,
     maxCacheSize: 100,
     debug: true
