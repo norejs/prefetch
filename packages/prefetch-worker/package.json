@@ -23,9 +23,11 @@
   },
   "scripts": {
     "dev": "rsbuild dev",
+    "dev:server": "node dev-server.js",
     "start": "node dist/server/index.js",
     "build": "rsbuild build",
     "build:umd": "rsbuild build --target web",
+    "build:dev": "npm run build:umd && npm run dev:server",
     "test": "",
     "prepublishOnly": "npm run build",
     "publish": "npm publish"

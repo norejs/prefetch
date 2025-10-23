@@ -13,8 +13,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "integrate-prefetch": "prefetch integrate --input public/service-worker.js --output public/service-worker-integrated.js",
-    "create-sw": "prefetch integrate --create --output public/service-worker.js"
+    "integrate-prefetch": "prefetch-integrate --input public/service-worker.js --output public/service-worker-integrated.js",
+    "create-sw": "prefetch-integrate --create --output public/service-worker.js",
+    "create-sw:debug": "DEBUG=true prefetch-integrate --create --output public/service-worker.js",
+    "integrate-prefetch:debug": "DEBUG=true prefetch-integrate --input public/service-worker.js --output public/service-worker-integrated.js"
   },
   "eslintConfig": {
     "extends": [

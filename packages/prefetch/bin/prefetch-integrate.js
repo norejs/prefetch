@@ -148,12 +148,17 @@ class PrefetchIntegrator {
     const {
       version = VERSION,
       config = {},
-      useLatest = false
+      useLatest = false,
+      debug = false,
+      debugPort = 3100
     } = options;
 
-    const cdnUrl = useLatest 
-      ? `${ESM_SH_BASE}/${PACKAGE_NAME}@latest/dist/prefetch-worker.umd.js`
-      : `${ESM_SH_BASE}/${PACKAGE_NAME}@${version}/dist/prefetch-worker.umd.js`;
+    // 根据 debug 模式选择 CDN URL
+    const cdnUrl = debug
+      ? `http://localhost:${debugPort}/prefetch-worker.umd.js`
+      : useLatest 
+        ? `${ESM_SH_BASE}/${PACKAGE_NAME}@latest/dist/prefetch-worker.umd.js`
+        : `${ESM_SH_BASE}/${PACKAGE_NAME}@${version}/dist/prefetch-worker.umd.js`;
 
     const configJson = JSON.stringify(config, null, 2).split('\n').map((line, i) => 
       i === 0 ? line : '      ' + line
@@ -163,6 +168,7 @@ class PrefetchIntegrator {
 // ============================================
 // Prefetch Worker Integration
 // Version: ${version}
+// Mode: ${debug ? 'DEBUG (Local Dev Server)' : 'PRODUCTION (CDN)'}
 // Generated: ${new Date().toISOString()}
 // ============================================
 
@@ -170,7 +176,7 @@ class PrefetchIntegrator {
   'use strict';
   
   const PREFETCH_CONFIG = {
-    // CDN URL - 使用 esm.sh 提供的 UMD 格式
+    // CDN URL${debug ? ' - Local Dev Server' : ' - esm.sh CDN'}
     cdnUrl: '${cdnUrl}',
     
     // 本地降级文件（可选）
@@ -366,7 +372,9 @@ class PrefetchIntegrator {
   async createServiceWorker(options = {}) {
     let {
       output,
-      config = {}
+      config = {},
+      debug = false,
+      debugPort = 3100
     } = options;
 
     // 检测框架并推荐路径
@@ -409,7 +417,11 @@ self.addEventListener('fetch', (event) => {
 console.log('Service Worker: Base setup complete');
 `;
 
-    const integrationCode = this.generateIntegrationCode({ config });
+    const integrationCode = this.generateIntegrationCode({ 
+      config, 
+      debug, 
+      debugPort 
+    });
     const fullContent = baseServiceWorker + '\n' + integrationCode;
 
     // 写入文件
@@ -424,7 +436,16 @@ console.log('Service Worker: Base setup complete');
 
     console.log('\n✅ Service Worker created successfully!');
     console.log(`📁 Output: ${outputPath}`);
-    console.log(`🌐 CDN: esm.sh/${PACKAGE_NAME}@${VERSION}`);
+    
+    if (debug) {
+      console.log(`🔧 Mode: DEBUG`);
+      console.log(`🌐 Local Dev Server: http://localhost:${debugPort}/prefetch-worker.umd.js`);
+      console.log(`\n⚠️  Make sure to start the dev server:`);
+      console.log(`   cd packages/prefetch-worker && npm run dev:server`);
+    } else {
+      console.log(`🌐 CDN: esm.sh/${PACKAGE_NAME}@${VERSION}`);
+    }
+    
     console.log(this.showFrameworkTips(frameworkInfo.framework));
     
     return outputPath;
@@ -437,7 +458,9 @@ console.log('Service Worker: Base setup complete');
     const {
       input,
       output,
-      config = {}
+      config = {},
+      debug = false,
+      debugPort = 3100
     } = options;
 
     // 读取现有文件
@@ -464,13 +487,21 @@ console.log('Service Worker: Base setup complete');
         ''
       );
 
-      const integrationCode = this.generateIntegrationCode({ config });
+      const integrationCode = this.generateIntegrationCode({ 
+        config, 
+        debug, 
+        debugPort 
+      });
       const fullContent = cleanContent + '\n' + integrationCode;
 
       fs.writeFileSync(path.resolve(process.cwd(), output), fullContent);
     } else {
       // 添加集成代码
-      const integrationCode = this.generateIntegrationCode({ config });
+      const integrationCode = this.generateIntegrationCode({ 
+        config, 
+        debug, 
+        debugPort 
+      });
       const fullContent = existingContent + '\n' + integrationCode;
 
       fs.writeFileSync(path.resolve(process.cwd(), output), fullContent);
@@ -479,7 +510,13 @@ console.log('Service Worker: Base setup complete');
     console.log('\n✅ Integration complete!');
     console.log(`📁 Input: ${inputPath}`);
     console.log(`📁 Output: ${path.resolve(process.cwd(), output)}`);
-    console.log(`🌐 CDN: esm.sh/${PACKAGE_NAME}@${VERSION}`);
+    
+    if (debug) {
+      console.log(`🔧 Mode: DEBUG`);
+      console.log(`🌐 Local Dev Server: http://localhost:${debugPort}/prefetch-worker.umd.js`);
+    } else {
+      console.log(`🌐 CDN: esm.sh/${PACKAGE_NAME}@${VERSION}`);
+    }
 
     return output;
   }
@@ -613,7 +650,7 @@ function showHelp() {
 @norejs/prefetch Integration Tool v${VERSION}
 
 Usage:
-  prefetch integrate [options]
+  prefetch-integrate [options]
 
 Options:
   --create                Create a new Service Worker
@@ -623,23 +660,31 @@ Options:
   --verify <file>         Verify existing integration
   --config <json>         Prefetch configuration (JSON string)
   --version <version>     Specify package version (default: ${VERSION})
+  --debug                 Enable debug mode (use local dev server)
+  --debug-port <port>     Local dev server port (default: 3100)
   --help, -h              Show this help
 
 Examples:
   # Create new Service Worker
-  prefetch integrate --create --output public/service-worker.js
+  prefetch-integrate --create --output public/service-worker.js
+
+  # Create with debug mode (local dev server)
+  prefetch-integrate --create --output public/service-worker.js --debug
 
   # Integrate into existing Service Worker
-  prefetch integrate --input public/sw.js --output public/sw-integrated.js
+  prefetch-integrate --input public/sw.js --output public/sw-integrated.js
 
   # Interactive mode
-  prefetch integrate --interactive
+  prefetch-integrate --interactive
 
   # Verify integration
-  prefetch integrate --verify public/service-worker.js
+  prefetch-integrate --verify public/service-worker.js
 
   # With custom config
-  prefetch integrate --create --output public/sw.js --config '{"apiMatcher":"/api/*","debug":true}'
+  prefetch-integrate --create --output public/sw.js --config '{"maxAge":7200}'
+
+  # Debug mode with custom port
+  prefetch-integrate --create --output public/sw.js --debug --debug-port 3200
 `);
 }
 
@@ -656,6 +701,15 @@ async function main() {
   try {
     // 解析参数
     const options = {};
+    
+    // 检查环境变量
+    if (process.env.DEBUG === 'true' || process.env.DEBUG === '1') {
+      options.debug = true;
+    }
+    if (process.env.PREFETCH_DEV_PORT) {
+      options.debugPort = parseInt(process.env.PREFETCH_DEV_PORT, 10);
+    }
+    
     for (let i = 0; i < args.length; i++) {
       const arg = args[i];
       
@@ -673,6 +727,10 @@ async function main() {
         options.config = JSON.parse(args[++i]);
       } else if (arg === '--version') {
         options.version = args[++i];
+      } else if (arg === '--debug') {
+        options.debug = true;
+      } else if (arg === '--debug-port') {
+        options.debugPort = parseInt(args[++i], 10);
       }
     }
 
