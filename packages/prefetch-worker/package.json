@@ -1,21 +1,50 @@
 {
   "name": "@norejs/prefetch-worker",
   "version": "1.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "Service Worker based API prefetching and caching solution",
+  "main": "dist/worker/service-worker.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
   "bin": {
     "prefetch-worker": "bin/install.js"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/worker/service-worker.js"
+    },
+    "./umd": "./dist/prefetch-worker.umd.js",
+    "./service-worker": "./dist/worker/service-worker.js"
   },
   "scripts": {
     "dev": "rsbuild dev",
     "start": "node dist/server/index.js",
     "build": "rsbuild build",
+    "build:umd": "rsbuild build --target web",
     "test": "",
+    "prepublishOnly": "npm run build",
     "publish": "npm publish"
   },
-  "keywords": [],
+  "keywords": [
+    "service-worker",
+    "prefetch",
+    "cache",
+    "api",
+    "performance",
+    "pwa"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/prefetch.git",
+    "directory": "packages/prefetch-worker"
+  },
   "devDependencies": {
     "@rsbuild/core": "^0.6.1",
     "@types/crypto-js": "^4.2.2",

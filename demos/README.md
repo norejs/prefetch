@@ -1,228 +1,301 @@
-# Prefetch Demos
+# Prefetch Worker 演示项目
 
-这里包含了预请求功能的完整演示项目，展示如何在不同的前端框架中集成和使用预请求功能。
+本目录包含多个使用主流框架的 Prefetch Worker 集成示例。
 
-## 项目结构
+## 📦 项目列表
 
-```
-demos/
-├── api-server/           # 独立的 API 服务器
-├── vite-prefetch-demo/   # Vite + TypeScript 演示
-├── nextjs-prefetch-demo/ # Next.js + TypeScript 演示
-└── package.json          # 统一管理脚本
-```
+### React 项目
 
-## 快速开始
-
-### 一键安装所有依赖
+#### 1. Create React App (CRA)
+- **目录**: `react-cra-demo/`
+- **框架**: React 18 + Create React App
+- **端口**: 3000
+- **特点**: 展示在 CRA 项目中集成 Prefetch Worker
 
 ```bash
-npm run install:all
+cd react-cra-demo
+npm install
+npm run create-sw      # 创建 Service Worker
+npm start              # 启动开发服务器
 ```
 
-### 复制 Service Worker 文件
+#### 2. React + Vite
+- **目录**: `react-vite-demo/`
+- **框架**: React 18 + Vite
+- **端口**: 5173
+- **特点**: 展示在 Vite 项目中集成 Prefetch Worker
 
 ```bash
-npm run copy-sw:all
+cd react-vite-demo
+npm install
+npm run create-sw      # 创建 Service Worker
+npm run dev            # 启动开发服务器
 ```
 
-### 启动演示项目
+#### 3. Next.js (已有)
+- **目录**: `nextjs-prefetch-demo/`
+- **框架**: Next.js 14
+- **端口**: 3000
+- **特点**: Next.js App Router 集成示例
 
 ```bash
-# 启动 Vite 演示 (API + Vite)
-npm run start:vite
-
-# 启动 Next.js 演示 (API + Next.js)  
-npm run start:nextjs
-
-# 同时启动所有演示 (API + Vite + Next.js)
-npm run start:all
+cd nextjs-prefetch-demo
+pnpm install
+npm run copy-sw        # 复制 Service Worker
+pnpm dev               # 启动开发服务器
 ```
 
-## 访问地址
+### Vue 项目
 
-启动后可以通过以下地址访问：
-
-- **API 服务器**: http://localhost:3001
-- **Vite 演示**: http://localhost:5173
-- **Next.js 演示**: http://localhost:3000
-
-## 演示项目
-
-### 🚀 API Server
-
-独立的模拟 API 服务器，为所有演示项目提供数据。
-
-**特性**:
-- 预请求头识别和处理
-- 智能延迟模拟
-- 实时统计监控
-- 详细的彩色日志
-- CORS 跨域支持
-
-**端点**:
-- `/api/products/1` - 产品信息
-- `/api/products/2` - 产品评论
-- `/api/cart` - 购物车数据
-- `/api/user/profile` - 用户资料
-- `/api/categories` - 商品分类
-- `/health` - 健康检查
-- `/api/stats` - 统计信息
-
-### ⚡ Vite Demo
-
-基于 Vite + TypeScript 的预请求演示。
-
-**特性**:
-- 现代化的开发体验
-- 快速热重载
-- TypeScript 支持
-- 悬停预请求演示
-- Service Worker 集成
-
-**启动**:
-```bash
-npm run start:vite
-```
-
-### 🔥 Next.js Demo
-
-基于 Next.js 14 + App Router 的预请求演示。
-
-**特性**:
-- Next.js App Router
-- 服务端渲染支持
-- Tailwind CSS 样式
-- 响应式设计
-- 多页面预请求演示
-
-**启动**:
-```bash
-npm run start:nextjs
-```
-
-## 开发工作流
-
-### 1. 首次设置
+#### 4. Vue 3 + Vite
+- **目录**: `vue3-vite-demo/`
+- **框架**: Vue 3 + Vite
+- **端口**: 5174
+- **特点**: Vue 3 Composition API 集成示例
 
 ```bash
-# 克隆仓库后运行
-npm run install:all
-npm run copy-sw:all
+cd vue3-vite-demo
+npm install
+npm run create-sw      # 创建 Service Worker
+npm run dev            # 启动开发服务器
 ```
 
-### 2. 开发调试
+### 其他
+
+#### 5. API Server
+- **目录**: `api-server/`
+- **类型**: Express.js 后端服务
+- **端口**: 3001
+- **用途**: 为所有演示项目提供 API 接口
 
 ```bash
-# 启动指定演示
-npm run start:vite     # 或 start:nextjs
-
-# 查看 API 统计
-curl http://localhost:3001/api/stats
-
-# 查看系统状态
-curl http://localhost:3001/health
+cd api-server
+npm install
+npm start              # 启动 API 服务器
 ```
 
-### 3. 构建项目
+#### 6. 手动集成示例
+- **目录**: `manual-integration/`
+- **类型**: 原生 HTML/JS
+- **特点**: 展示手动集成 Prefetch Worker 的完整流程
+
+## 🚀 快速开始
+
+### 方式一：运行单个项目
 
 ```bash
-# 构建所有演示项目
-npm run build:all
+# 1. 启动 API 服务器（必需）
+cd api-server
+npm install
+npm start
 
-# 构建指定项目
-npm run build:vite
-npm run build:nextjs
+# 2. 在新终端中启动任意演示项目
+cd react-cra-demo
+npm install
+npm run create-sw
+npm start
 ```
 
-## 预请求演示功能
-
-### 🎯 核心功能
-
-1. **悬停预请求**: 鼠标悬停在链接上自动触发预请求
-2. **手动预请求**: 点击按钮手动触发预请求
-3. **状态监控**: 实时显示 Service Worker 状态
-4. **性能对比**: 预请求 vs 正常请求的性能差异
-5. **网络监控**: 在开发者工具中观察网络活动
-
-### 🔍 测试场景
-
-1. **产品详情页**: 预请求商品信息和评论数据
-2. **购物车页面**: 预请求购物车内容
-3. **用户资料页**: 预请求用户个人信息
-4. **分类浏览**: 预请求分类和推荐数据
-
-### 📊 性能监控
-
-- **API 统计**: 访问 http://localhost:3001/api/stats
-- **浏览器工具**: 打开开发者工具查看网络和控制台
-- **实时日志**: API 服务器提供彩色日志输出
-
-## 故障排除
-
-### 端口冲突
-
-如果遇到端口冲突，可以修改以下文件：
-
-- API 服务器: `api-server/index.js` 中的 `port` 变量
-- Vite: `vite-prefetch-demo/vite.config.ts` 
-- Next.js: `next.config.js` 中的端口配置
-
-### Service Worker 问题
+### 方式二：同时运行多个项目
 
 ```bash
-# 重新复制 Service Worker 文件
-npm run copy-sw:all
-
-# 或单独复制
-npm run copy-sw:vite
-npm run copy-sw:nextjs
+# 在项目根目录运行
+npm run demo:install      # 安装所有依赖
+npm run demo:start:all    # 同时启动所有项目
 ```
 
-### 依赖问题
+## 📝 使用流程
+
+### 1. 创建 Service Worker
+
+每个项目都提供了 CLI 工具来创建 Service Worker：
 
 ```bash
-# 重新安装所有依赖
-npm run install:all
+# 自动创建（推荐）
+npm run create-sw
 
-# 或单独安装
-npm run install:api
-npm run install:vite  
-npm run install:nextjs
+# 或使用交互式模式
+npx @norejs/prefetch integrate --interactive
+
+# 或手动指定路径
+npx @norejs/prefetch integrate --create --output public/service-worker.js
 ```
 
-## 开发者提示
+### 2. 启动项目
 
-### 修改 API 数据
+```bash
+npm start        # CRA 项目
+npm run dev      # Vite 项目
+pnpm dev         # Next.js 项目
+```
 
-编辑 `api-server/index.js` 中的 `apiData` 对象来修改模拟数据。
+### 3. 测试功能
 
-### 调整延迟设置
+1. 打开浏览器访问对应端口
+2. 等待 Service Worker 注册和激活
+3. 点击"初始化 Prefetch"按钮
+4. 使用"预请求数据"和"获取数据"按钮测试功能
+5. 观察缓存命中率和响应时间
 
-在 `api-server/index.js` 中修改延迟逻辑：
+## 🔧 CLI 工具使用
+
+### 框架自动检测
+
+CLI 工具会自动检测项目使用的框架：
+
+```bash
+npx @norejs/prefetch integrate --create --output public/service-worker.js
+```
+
+输出示例：
+```
+🔍 检测到框架: react-vite
+📁 推荐路径: public/service-worker.js
+✅ Service Worker created successfully!
+
+📝 React + Vite 项目提示:
+  - Service Worker 文件已创建在 public/ 目录
+  - 在 src/main.jsx 中注册 Service Worker
+  - Vite 会自动复制 public 目录到构建输出
+```
+
+### 支持的框架
+
+- ✅ Next.js
+- ✅ Create React App (CRA)
+- ✅ React + Vite
+- ✅ Vue CLI
+- ✅ Vue 3 + Vite
+- ✅ Nuxt.js
+- ✅ 原生 Vite
+
+### 集成现有 Service Worker
+
+如果项目已有 Service Worker：
+
+```bash
+npx @norejs/prefetch integrate \
+  --input public/service-worker.js \
+  --output public/service-worker-integrated.js
+```
+
+## 📊 功能演示
+
+所有演示项目都包含以下功能：
+
+### 状态监控
+- Service Worker 注册状态
+- Prefetch Worker 初始化状态
+- 实时状态更新
+
+### 操作控制
+- 预请求数据按钮
+- 获取数据按钮
+- 重新初始化按钮
+
+### 统计信息
+- 预请求次数
+- 总请求次数
+- 缓存命中次数
+- 缓存命中率
+
+### 数据展示
+- 动态加载产品数据
+- 响应时间对比
+- 缓存效果可视化
+
+## 🎯 测试场景
+
+### 场景 1：首次预请求
+
+1. 点击"预请求数据"
+2. 观察网络请求（开发者工具 Network 面板）
+3. 数据被缓存
+
+### 场景 2：缓存命中
+
+1. 完成预请求后
+2. 点击"获取数据"
+3. 观察响应时间（< 50ms）
+4. 数据从缓存返回
+
+### 场景 3：缓存过期
+
+1. 等待 30 秒（默认过期时间）
+2. 再次点击"获取数据"
+3. 观察新的网络请求
+
+## 🐛 调试技巧
+
+### 查看 Service Worker 状态
+
+1. 打开开发者工具
+2. 进入 Application 面板
+3. 选择 Service Workers
+4. 查看注册状态和日志
+
+### 查看网络请求
+
+1. 打开 Network 面板
+2. 筛选 XHR/Fetch 请求
+3. 观察请求头：
+   - `X-Prefetch-Request-Type: prefetch`
+   - `X-Prefetch-Expire-Time: 30000`
+
+### 查看控制台日志
+
+开启 debug 模式查看详细日志：
 
 ```javascript
-// 快速模式
-const delay = isPrefetch ? 10 : 50;
-
-// 慢速模式  
-const delay = isPrefetch ? 200 : 1000;
+navigator.serviceWorker.controller?.postMessage({
+  type: 'PREFETCH_INIT',
+  config: {
+    debug: true  // 开启调试
+  }
+});
 ```
 
-### 添加新的演示页面
+## 📚 相关文档
 
-1. 在对应的 demo 项目中添加新页面
-2. 在 API 服务器中添加对应的数据端点
-3. 更新相关的路由和链接
+- [集成指南](../docs/INTEGRATION_GUIDE.md)
+- [esm.sh 方案](../docs/ESMSH_INTEGRATION.md)
+- [实施总结](../docs/IMPLEMENTATION_SUMMARY.md)
+- [API 文档](../docs/API.md)
 
-## 贡献指南
+## ⚠️ 注意事项
 
-1. Fork 项目
-2. 创建功能分支
-3. 提交更改
-4. 推送到分支
-5. 创建 Pull Request
+### Service Worker 要求
 
-## 许可证
+- 需要 HTTPS 或 localhost 环境
+- 首次注册后需要刷新页面
+- 浏览器需要支持 Service Worker API
 
-ISC License
+### 开发环境
+
+- 建议使用 Chrome/Edge 最新版本
+- 开发时可能需要清除缓存
+- 注意浏览器的 Service Worker 更新策略
+
+### API 服务器
+
+- 所有演示项目依赖 API 服务器
+- 确保 API 服务器在 3001 端口运行
+- API 接口路径：`/api/products`
+
+## 🤝 贡献
+
+欢迎贡献更多框架的演示项目！
+
+### 添加新框架示例
+
+1. 在 `demos/` 目录创建新项目
+2. 添加 `package.json` 和必要文件
+3. 添加 `README.md` 说明
+4. 更新本文档的项目列表
+5. 提交 Pull Request
+
+## 📞 获取帮助
+
+- [GitHub Issues](https://github.com/yourusername/prefetch/issues)
+- [讨论区](https://github.com/yourusername/prefetch/discussions)
+- [文档](https://github.com/yourusername/prefetch/docs)
