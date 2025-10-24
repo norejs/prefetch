@@ -31,6 +31,12 @@ if (args.includes('--version') || args.includes('-v')) {
 // Parse options
 const options = parseOptions(args);
 
+// If no arguments provided, run default migration
+if (args.length === 0) {
+  console.log('🚀 Running default migration...\n');
+  options.yes = true; // Auto-confirm for default migration
+}
+
 // Run migration
 runMigration(options)
   .then(() => {
@@ -52,19 +58,19 @@ function parseOptions(args) {
     // Mode options
     rollback: false,
     dryRun: false,
-    
+
     // Development options
     dev: false,
     cdnPrefix: null,
     cdnUrl: null,
     debugPort: 3100,
-    
+
     // Configuration options
     config: {},
-    
+
     // Output options
     verbose: false,
-    
+
     // Other options
     force: false,
     yes: false,
@@ -72,32 +78,32 @@ function parseOptions(args) {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     switch (arg) {
       case '--rollback':
         options.rollback = true;
         break;
-      
+
       case '--dry-run':
         options.dryRun = true;
         break;
-      
+
       case '--dev':
         options.dev = true;
         break;
-      
+
       case '--cdn-prefix':
         options.cdnPrefix = args[++i];
         break;
-      
+
       case '--cdn-url':
         options.cdnUrl = args[++i];
         break;
-      
+
       case '--debug-port':
         options.debugPort = parseInt(args[++i], 10);
         break;
-      
+
       case '--config':
         try {
           options.config = JSON.parse(args[++i]);
@@ -106,22 +112,22 @@ function parseOptions(args) {
           process.exit(1);
         }
         break;
-      
+
       case '--verbose':
       case '-v':
         options.verbose = true;
         break;
-      
+
       case '--force':
       case '-f':
         options.force = true;
         break;
-      
+
       case '--yes':
       case '-y':
         options.yes = true;
         break;
-      
+
       default:
         if (arg.startsWith('-')) {
           console.error(`Unknown option: ${arg}`);
@@ -146,6 +152,8 @@ Automatically migrate your frontend project to support Prefetch API caching.
 Usage:
   prefetch-migrate [options]
 
+  Run without options to start default migration with auto-confirmation.
+
 Options:
   --rollback              Rollback to previous state
   --dry-run               Simulate migration without making changes
@@ -164,8 +172,11 @@ Options:
   --version, -v           Show version
 
 Examples:
-  # Basic migration
+  # Default migration (auto-confirm all prompts)
   prefetch-migrate
+  
+  # Interactive migration (with prompts)
+  prefetch-migrate --verbose
   
   # Development mode
   prefetch-migrate --dev
@@ -173,10 +184,10 @@ Examples:
   # Custom CDN
   prefetch-migrate --cdn-prefix http://localhost:3100
   
-  # Dry run
+  # Dry run (simulate without changes)
   prefetch-migrate --dry-run
   
-  # Rollback
+  # Rollback previous migration
   prefetch-migrate --rollback
 
 Documentation: https://github.com/norejs/prefetch
