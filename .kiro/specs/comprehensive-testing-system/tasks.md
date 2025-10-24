@@ -268,3 +268,49 @@
     - 添加 clean:test-apps 脚本
     - 添加 demo:* 系列脚本
     - _Requirements: 3.8_
+
+- [x] 13. Monorepo 集成和优化
+  - [x] 13.1 集成到 pnpm workspace
+    - 更新 pnpm-workspace.yaml 包含 test-system
+    - 更新 pnpm-workspace.yaml 包含 test-apps
+    - 更新 pnpm-workspace.yaml 包含 test-system/demos
+    - 添加 workspace 依赖到 test-system/package.json
+    - _Requirements: 所有需求_
+
+  - [x] 13.2 自动添加 workspace 依赖
+    - 实现 updatePackageJson 函数
+    - 复制模板时自动添加 @norejs/prefetch workspace 依赖
+    - 复制模板时自动添加 @norejs/prefetch-worker workspace 依赖
+    - 使用 pnpm 作为包管理器
+    - _Requirements: 1.5, 1.6_
+
+  - [x] 13.3 优化 API 服务器管理
+    - 移除 API 服务器复制功能
+    - API 服务器保留在原处 (test-system/api-server)
+    - 所有 demos 共享同一个 API 服务器
+    - 更新文档说明 API 服务器位置
+    - _Requirements: 2.1, 2.5_
+
+  - [x] 13.4 实现一键运行 Demo
+    - 创建 run-demo.js 脚本
+    - 实现交互式选择 demo
+    - 自动检查 API 服务器状态
+    - 自动启动 API 服务器（如果未运行）
+    - 自动安装依赖（如果需要）
+    - 自动启动 demo 项目
+    - _Requirements: 6.1_
+
+  - [x] 13.5 脚本重组
+    - 创建 test-system/scripts 目录
+    - 移动 copy-template.js 到 scripts
+    - 移动 run-demo.js 到 scripts
+    - 创建 scripts/README.md 文档
+    - 更新所有路径引用
+    - _Requirements: 6.1, 6.2_
+
+  - [x] 13.6 更新根目录脚本
+    - 添加 test:demo:copy 脚本
+    - 添加 test:demo:run 脚本
+    - 添加 test:demo:list 脚本
+    - 保持向后兼容的 demo:* 脚本
+    - _Requirements: 6.1_

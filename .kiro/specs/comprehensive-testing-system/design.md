@@ -27,8 +27,11 @@ test-system/
 │   ├── browser-tests.js    # 浏览器自动化测试
 │   ├── utils/
 │   └── reporters/
-├── demos/                  # 手动测试演示目录
+├── scripts/                # 实用脚本
 │   ├── copy-template.js    # 模板复制工具
+│   ├── run-demo.js         # Demo 运行工具
+│   └── README.md           # 脚本说明
+├── demos/                  # 手动测试演示目录
 │   ├── README.md           # 使用说明
 │   └── [copied-templates]/ # 复制的模板项目
 └── test-results/           # 测试结果输出
