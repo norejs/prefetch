@@ -1,4 +1,4 @@
-# Implementation Plan
+ # Implementation Plan
 
 - [x] 1. 设置测试系统项目结构和配置
   - 创建 test-system 目录结构
@@ -77,65 +77,65 @@
     - 定义框架类型、SW 状态、入口文件等信息
     - _Requirements: 1.1_
 
-- [ ] 5. 实现 CLI 测试运行器
-  - [ ] 5.1 创建 CLITestRunner 类基础结构
+- [x] 5. 实现 CLI 测试运行器
+  - [x] 5.1 创建 CLITestRunner 类基础结构
     - 创建 test-runner/cli-tests.js
     - 实现 runTests 主方法
     - 创建测试结果收集机制
     - _Requirements: 3.2_
 
-  - [ ] 5.2 实现框架检测测试
+  - [x] 5.2 实现框架检测测试
     - 实现 testFrameworkDetection 方法
     - 执行 CLI 工具并捕获输出
     - 验证检测到的框架类型是否正确
     - _Requirements: 3.3_
 
-  - [ ] 5.3 实现 Service Worker 检测测试
+  - [x] 5.3 实现 Service Worker 检测测试
     - 实现 testSWDetection 方法
     - 验证 CLI 工具是否正确检测现有 SW
     - 验证 Workbox 检测
     - _Requirements: 3.4_
 
-  - [ ] 5.4 实现文件生成测试
+  - [x] 5.4 实现文件生成测试
     - 实现 testFileGeneration 方法
     - 验证 Service Worker 文件是否正确生成或更新
     - 验证入口文件是否正确注入初始化代码
     - _Requirements: 3.5, 3.7_
 
-  - [ ] 5.5 实现依赖安装测试
+  - [x] 5.5 实现依赖安装测试
     - 实现 testDependencyInstallation 方法
     - 验证 package.json 是否正确更新
     - 验证依赖是否可以成功安装
     - _Requirements: 3.6_
 
-- [ ] 6. 实现浏览器测试运行器
-  - [ ] 6.1 创建 BrowserTestRunner 类基础结构
+- [x] 6. 实现浏览器测试运行器
+  - [x] 6.1 创建 BrowserTestRunner 类基础结构
     - 创建 test-runner/browser-tests.js
     - 初始化 Playwright 浏览器
     - 实现 runTests 主方法
     - 实现浏览器和页面的生命周期管理
     - _Requirements: 4.1, 4.2_
 
-  - [ ] 6.2 实现 Service Worker 注册测试
+  - [x] 6.2 实现 Service Worker 注册测试
     - 实现 testSWRegistration 方法
     - 验证 SW 是否成功注册
     - 验证 SW 是否进入 activated 状态
     - 添加超时和重试逻辑
     - _Requirements: 4.3, 4.4_
 
-  - [ ] 6.3 实现 Prefetch 功能测试
+  - [x] 6.3 实现 Prefetch 功能测试
     - 实现 testPrefetchFunctionality 方法
     - 验证 prefetch 请求是否正确发起
     - 检查网络请求中的 prefetch 标记
     - _Requirements: 4.5_
 
-  - [ ] 6.4 实现缓存功能测试
+  - [x] 6.4 实现缓存功能测试
     - 实现 testCacheFunctionality 方法
     - 验证资源是否被缓存到 SW cache
     - 验证后续请求是否使用缓存
     - _Requirements: 4.6, 4.7_
 
-  - [ ] 6.5 实现网络活动捕获和日志记录
+  - [x] 6.5 实现网络活动捕获和日志记录
     - 实现 captureNetworkActivity 方法
     - 捕获所有网络请求和响应
     - 记录控制台日志
