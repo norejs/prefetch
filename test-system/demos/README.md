@@ -107,11 +107,13 @@ pnpm demo:copy react-cra-no-sw
 
 ```bash
 cd api-server
-npm install
-npm start
+pnpm install  # API 服务器有自己的依赖
+pnpm start
 ```
 
 API 服务器将在 http://localhost:3001 运行
+
+**注意：** API 服务器是一个独立的 npm package (`@norejs/test-api-server`)，有自己的 `package.json` 和依赖。
 
 #### 3. 启动模板项目
 

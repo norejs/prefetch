@@ -33,8 +33,6 @@
   "dependencies": {
     "@norejs/prefetch": "workspace:*",
     "@norejs/prefetch-worker": "workspace:*",
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
     "playwright": "^1.40.0",
     "fs-extra": "^11.2.0",
     "chalk": "^4.1.2",

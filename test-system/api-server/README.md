@@ -1,266 +1,274 @@
-# API Server
+# Test API Server
 
-测试系统的后端 API 服务器，为测试项目提供 RESTful API 端点。
+测试系统使用的 API 服务器，为测试项目提供 RESTful API 端点。
 
-## 功能特性
+## 📦 独立包
 
-- ✅ RESTful API 端点（Products, Users）
-- ✅ CORS 支持
-- ✅ 请求日志记录
-- ✅ 可配置的响应延迟（模拟网络延迟）
-- ✅ 健康检查端点
-- ✅ 错误处理
+这是一个独立的 npm package (`@norejs/test-api-server`)，有自己的依赖管理。
 
-## 快速开始
+**特点：**
+- 独立的 `package.json`
+- 独立的 `node_modules`
+- 不依赖父级 test-system 的依赖
+- 可以独立安装和运行
+
+## 🚀 安装和运行
+
+### 安装依赖
+
+```bash
+cd test-system/api-server
+pnpm install
+```
 
 ### 启动服务器
 
 ```bash
-# 方式 1: 直接运行
-node api-server/index.js
-
-# 方式 2: 使用 npm script
-npm run api:start
+pnpm start
+# 或
+pnpm dev
 ```
 
-服务器将在 `http://localhost:3001` 启动。
+服务器将在 http://localhost:3001 运行
 
-### 测试 API
-
-```bash
-# 运行测试脚本
-node api-server/test-api.js
-```
-
-## API 端点
-
-### 健康检查
-
-```
-GET /api/health
-```
-
-返回服务器状态和运行时间。
-
-**响应示例:**
-```json
-{
-  "status": "ok",
-  "timestamp": "2025-10-24T13:04:54.666Z",
-  "uptime": 90.805482875
-}
-```
+## 📡 API 端点
 
 ### Products API
 
-#### 获取所有产品
-
-```
-GET /api/products
-```
-
-**查询参数:**
-- `category` - 按类别过滤
-- `inStock` - 按库存状态过滤 (true/false)
-- `search` - 搜索产品名称或描述
-
-**响应示例:**
-```json
-{
-  "total": 5,
-  "products": [
-    {
-      "id": 1,
-      "name": "Laptop",
-      "description": "High-performance laptop",
-      "price": 1299.99,
-      "category": "Electronics",
-      "inStock": true
-    }
-  ]
-}
-```
-
-#### 获取单个产品
-
-```
-GET /api/products/:id
-```
-
-#### 创建产品
-
-```
-POST /api/products
-Content-Type: application/json
-
-{
-  "name": "Product Name",
-  "description": "Product description",
-  "price": 99.99,
-  "category": "Category",
-  "inStock": true
-}
-```
-
-#### 更新产品
-
-```
-PUT /api/products/:id
-Content-Type: application/json
-
-{
-  "price": 149.99
-}
-```
-
-#### 删除产品
-
-```
-DELETE /api/products/:id
-```
+- `GET /api/products` - 获取所有产品
+- `GET /api/products/:id` - 获取单个产品
+- `POST /api/products` - 创建产品
+- `PUT /api/products/:id` - 更新产品
+- `DELETE /api/products/:id` - 删除产品
 
 ### Users API
 
-#### 获取所有用户
+- `GET /api/users` - 获取所有用户
+- `GET /api/users/:id` - 获取单个用户
+- `POST /api/users` - 创建用户
+- `PUT /api/users/:id` - 更新用户
+- `DELETE /api/users/:id` - 删除用户
 
-```
-GET /api/users
-```
+### Health Check
 
-**查询参数:**
-- `role` - 按角色过滤
-- `active` - 按活跃状态过滤 (true/false)
-- `search` - 搜索用户名、邮箱或姓名
+- `GET /api/health` - 健康检查
+- `GET /api/logs` - 获取请求日志
 
-**响应示例:**
-```json
-{
-  "total": 5,
-  "users": [
-    {
-      "id": 1,
-      "username": "john_doe",
-      "email": "john@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "role": "admin",
-      "active": true
-    }
-  ]
+## 🔧 配置
+
+服务器配置在 `test-system/test-config.js` 中：
+
+```javascript
+apiServer: {
+  port: 3001,
+  host: 'localhost',
+  responseDelay: 0  // 模拟网络延迟（毫秒）
 }
 ```
 
-#### 获取单个用户
+## 📦 依赖
 
-```
-GET /api/users/:id
-```
-
-### 请求日志
-
-```
-GET /api/logs
-```
-
-返回所有请求的日志记录（用于调试）。
-
-## 配置
-
-在 `test-config.js` 中配置服务器：
-
-```javascript
+```json
 {
-  apiServer: {
-    port: 3001,           // 服务器端口
-    host: 'localhost',    // 服务器主机
-    responseDelay: 0      // 响应延迟（毫秒）
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
   }
 }
 ```
 
-## 架构
+**最小依赖：**
+- `express` - Web 框架
+- `cors` - CORS 中间件
+
+## 🏗️ 架构
 
 ```
 api-server/
-├── index.js              # 主服务器文件
-├── routes/               # API 路由
-│   ├── products.js       # Products 路由
-│   └── users.js          # Users 路由
+├── index.js              # 主入口
+├── routes/               # 路由定义
+│   ├── products.js
+│   └── users.js
 ├── middleware/           # 中间件
-│   ├── logger.js         # 请求日志中间件
-│   └── delay.js          # 响应延迟中间件
-├── test-api.js           # API 测试脚本
-└── README.md             # 本文档
+│   ├── logger.js
+│   └── delay.js
+├── package.json          # 独立的包配置
+└── README.md
 ```
 
-## 使用示例
+## 🔌 中间件
+
+### Logger Middleware
+
+记录所有请求：
+- 请求方法和 URL
+- 请求头
+- 请求体
+- 响应状态码
+- 响应时间
+
+### Delay Middleware
+
+模拟网络延迟：
+```javascript
+// 在 test-config.js 中配置
+apiServer: {
+  responseDelay: 1000  // 1秒延迟
+}
+```
+
+## 🧪 测试使用
+
+### 自动化测试
+
+测试系统会自动启动和停止 API 服务器：
+
+```javascript
+// test-runner/index.js
+await apiServer.start(3001);
+// 运行测试...
+await apiServer.stop();
+```
+
+### 手动测试
+
+使用 `run-demo.js` 会自动检查并启动 API 服务器：
+
+```bash
+pnpm demo:run
+# 自动检查 API 服务器
+# 如果未运行，自动启动
+```
+
+### 独立运行
+
+也可以独立运行用于开发：
+
+```bash
+cd test-system/api-server
+pnpm install
+pnpm start
+```
+
+## 📊 请求日志
+
+API 服务器会记录所有请求，可以通过以下方式查看：
+
+### 1. 控制台输出
+
+启动时设置 verbose 模式：
+```javascript
+// test-config.js
+reporting: {
+  verbose: true
+}
+```
+
+### 2. API 端点
+
+```bash
+curl http://localhost:3001/api/logs
+```
+
+### 3. 程序访问
+
+```javascript
+const logs = apiServer.getRequestLogs();
+console.log(logs);
+```
+
+## 🔄 与测试系统集成
 
 ### 在测试中使用
 
 ```javascript
-const apiServer = require('./api-server/index.js');
+const APIServer = require('./api-server');
 
 // 启动服务器
-await apiServer.start();
+await APIServer.start(3001);
 
 // 运行测试...
 
 // 获取请求日志
-const logs = apiServer.getRequestLogs();
-console.log('Total requests:', logs.length);
-
-// 设置响应延迟
-apiServer.setResponseDelay(100); // 100ms 延迟
-
-// 清除日志
-apiServer.clearRequestLogs();
+const logs = APIServer.getRequestLogs();
 
 // 停止服务器
-await apiServer.stop();
+await APIServer.stop();
 ```
 
-### 编程方式使用
+### 在 demo 中使用
+
+```bash
+# 自动启动（推荐）
+pnpm demo:run
+
+# 手动启动
+cd test-system/api-server
+pnpm start
+```
+
+## 🛠️ 开发
+
+### 添加新的 API 端点
+
+1. 在 `routes/` 目录创建新的路由文件
+2. 在 `index.js` 中注册路由
 
 ```javascript
-const APIServer = require('./api-server/index.js');
+// routes/new-api.js
+const express = require('express');
+const router = express.Router();
 
-// 服务器已经是单例实例
-APIServer.start(3002) // 使用自定义端口
-  .then(() => console.log('Server started'))
-  .catch(err => console.error('Failed to start:', err));
+router.get('/', (req, res) => {
+  res.json({ message: 'New API' });
+});
+
+module.exports = router;
+
+// index.js
+const newApiRouter = require('./routes/new-api');
+app.use('/api/new-api', newApiRouter);
 ```
 
-## 中间件
+### 添加新的中间件
 
-### 日志中间件
-
-记录所有进入的 HTTP 请求，包括：
-- 时间戳
-- 请求方法和 URL
-- 请求头和请求体
-- 响应状态码和响应时间
-- 客户端 IP
-
-### 延迟中间件
-
-模拟网络延迟，可在运行时动态调整：
+1. 在 `middleware/` 目录创建中间件文件
+2. 在 `index.js` 中使用
 
 ```javascript
-apiServer.setResponseDelay(500); // 设置 500ms 延迟
+// middleware/auth.js
+module.exports = (req, res, next) => {
+  // 认证逻辑
+  next();
+};
+
+// index.js
+const authMiddleware = require('./middleware/auth');
+app.use(authMiddleware);
 ```
 
-## 错误处理
+## 📝 注意事项
 
-服务器包含完整的错误处理：
-- 404 错误（路由不存在）
-- 500 错误（服务器内部错误）
-- 400 错误（请求参数错误）
+1. **独立依赖管理**
+   - API 服务器有自己的 `package.json`
+   - 不依赖父级 test-system 的依赖
+   - 需要单独安装依赖
 
-所有错误都会返回 JSON 格式的错误信息。
+2. **端口占用**
+   - 默认使用端口 3001
+   - 如果端口被占用，修改 `test-config.js`
 
-## 开发提示
+3. **CORS 配置**
+   - 默认允许所有来源
+   - 生产环境需要配置具体的来源
 
-1. **端口占用**: 如果端口 3001 被占用，服务器会抛出错误
-2. **日志限制**: 请求日志最多保存 1000 条，超过会自动删除最旧的
-3. **CORS**: 服务器允许所有来源的跨域请求
-4. **优雅关闭**: 使用 Ctrl+C 可以优雅地关闭服务器
+4. **数据持久化**
+   - 当前使用内存存储
+   - 重启服务器会丢失数据
+   - 适合测试使用
+
+## 🔗 相关文档
+
+- [Test System README](../README.md)
+- [Test Config](../test-config.js)
+- [Demo Usage](../demos/README.md)

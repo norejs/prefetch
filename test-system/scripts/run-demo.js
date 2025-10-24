@@ -54,8 +54,9 @@ async function startAPIServer() {
   const nodeModulesPath = path.join(apiServerDir, 'node_modules');
   if (!await fs.pathExists(nodeModulesPath)) {
     console.log(chalk.yellow('   Installing API server dependencies...'));
+    console.log(chalk.gray('   Using pnpm to install dependencies...\n'));
     
-    const installProcess = spawn('npm', ['install'], {
+    const installProcess = spawn('pnpm', ['install'], {
       cwd: apiServerDir,
       stdio: 'inherit',
       shell: true
@@ -64,16 +65,17 @@ async function startAPIServer() {
     await new Promise((resolve, reject) => {
       installProcess.on('close', (code) => {
         if (code === 0) {
+          console.log(chalk.green('\n   ✓ Dependencies installed\n'));
           resolve();
         } else {
-          reject(new Error(`npm install failed with code ${code}`));
+          reject(new Error(`pnpm install failed with code ${code}`));
         }
       });
     });
   }
   
   // 启动服务器
-  const serverProcess = spawn('npm', ['start'], {
+  const serverProcess = spawn('pnpm', ['start'], {
     cwd: apiServerDir,
     stdio: 'pipe',
     shell: true,

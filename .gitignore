@@ -4,3 +4,4 @@ dist/
 dist-*/
 test-projects/
 test-apps/
+.next/

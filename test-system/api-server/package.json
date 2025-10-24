@@ -1,0 +1,24 @@
+{
+  "name": "@norejs/test-api-server",
+  "version": "1.0.0",
+  "description": "Test API server for prefetch testing system",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "api",
+    "server",
+    "testing",
+    "prefetch"
+  ],
+  "author": "paul",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}

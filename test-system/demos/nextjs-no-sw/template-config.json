@@ -1,0 +1,9 @@
+{
+  "name": "nextjs-no-sw",
+  "framework": "nextjs",
+  "hasServiceWorker": false,
+  "hasWorkbox": false,
+  "hasPrefetch": false,
+  "entryFile": "app/layout.js",
+  "publicDir": "public"
+}
