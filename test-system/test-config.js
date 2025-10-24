@@ -28,7 +28,8 @@ module.exports = {
     installTimeout: 120000,
     // 开发时可设为 true 跳过依赖安装
     skipInstall: false,
-    // CLI 工具路径（相对于项目根目录）
+    // CLI 工具路径（相对于 test-system 目录）
+    // 使用 workspace 中的 prefetch 包
     cliPath: '../packages/prefetch/bin/prefetch-migrate.js'
   },
 

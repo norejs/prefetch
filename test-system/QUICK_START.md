@@ -2,60 +2,84 @@
 
 ## 📋 前提条件
 
-确保你已经安装了依赖：
+test-system 现在已集成到 pnpm monorepo 中。
+
+### 安装依赖
+
+从项目根目录：
+
+```bash
+# 安装所有 workspace 依赖
+pnpm install
+
+# 安装 Playwright 浏览器
+cd test-system
+pnpm run install:playwright
+```
+
+或者只在 test-system 目录：
 
 ```bash
 cd test-system
-npm install
+pnpm install
+pnpm run install:playwright
 ```
 
 ## 🚀 运行测试的方式
 
-### 1. 查看帮助信息
+### 从根目录运行（推荐）
+
+使用 pnpm workspace 命令：
 
 ```bash
+# 快速测试（跳过安装和浏览器）
+pnpm test:quick
+
+# 测试单个模板
+pnpm test:single
+
+# 完整测试
+pnpm test
+```
+
+### 从 test-system 目录运行
+
+```bash
+cd test-system
+
+# 1. 查看帮助信息
+pnpm test -- --help
+
+# 2. 快速测试（推荐开始使用）
+pnpm test:quick
+
+# 3. 测试单个模板
+pnpm test:single
+
+# 4. 测试所有模板（仅 CLI 测试）
+pnpm test -- --skip-install --skip-browser
+
+# 5. 测试多个特定模板
+pnpm test -- react-cra-no-sw nextjs-no-sw --skip-install --skip-browser
+
+# 6. 完整测试（包括浏览器测试）
+# ⚠️ 注意：需要先实现开发服务器启动功能
+pnpm test -- react-cra-no-sw --skip-install
+```
+
+### 直接使用 node 命令
+
+```bash
+cd test-system
+
+# 查看帮助
 node test-runner/index.js --help
-```
 
-### 2. 快速测试（推荐开始使用）
-
-测试单个模板，跳过依赖安装和浏览器测试：
-
-```bash
+# 快速测试
 node test-runner/index.js react-cra-no-sw --skip-install --skip-browser
-```
 
-### 3. 测试所有模板（仅 CLI 测试）
-
-```bash
+# 测试所有模板
 node test-runner/index.js --skip-install --skip-browser
-```
-
-### 4. 测试多个特定模板
-
-```bash
-node test-runner/index.js react-cra-no-sw nextjs-no-sw --skip-install --skip-browser
-```
-
-### 5. 完整测试（包括浏览器测试）
-
-⚠️ 注意：需要先实现开发服务器启动功能
-
-```bash
-node test-runner/index.js react-cra-no-sw --skip-install
-```
-
-### 6. 使用 npm 脚本
-
-```bash
-# 运行所有测试
-npm test
-
-# 仅运行 CLI 测试
-npm run test:cli
-
-# 仅运行浏览器测试（需要手动启动开发服务器）
-npm run test:browser
 ```
 
 ## 📊 可用的测试模板

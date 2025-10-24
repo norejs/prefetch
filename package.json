@@ -6,7 +6,9 @@
     "packageManager": "pnpm@7.33.7",
     "npmRegistry": "https://registry.npmjs.org",
     "scripts": {
-        "test": "",
+        "test": "pnpm --filter @norejs/test-system test",
+        "test:quick": "pnpm --filter @norejs/test-system test:quick",
+        "test:single": "pnpm --filter @norejs/test-system test:single",
         "start": "turbo start",
         "build": "turbo build",
         "publish": "turbo publish",

@@ -1,14 +1,18 @@
 {
-  "name": "prefetch-test-system",
+  "name": "@norejs/test-system",
   "version": "1.0.0",
   "description": "Comprehensive automated testing system for prefetch CLI tool and Service Worker functionality",
   "main": "test-runner/index.js",
+  "private": true,
   "scripts": {
     "test": "node test-runner/index.js",
+    "test:quick": "node test-runner/index.js --skip-install --skip-browser",
     "test:cli": "node test-runner/cli-tests.js",
     "test:browser": "node test-runner/browser-tests.js",
+    "test:single": "node test-runner/index.js react-cra-no-sw --skip-install --skip-browser",
     "api:start": "node api-server/index.js",
-    "install:playwright": "npx playwright install"
+    "install:playwright": "npx playwright install",
+    "clean": "rm -rf test-results node_modules"
   },
   "keywords": [
     "testing",
@@ -20,6 +24,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@norejs/prefetch": "workspace:*",
+    "@norejs/prefetch-worker": "workspace:*",
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "playwright": "^1.40.0",
