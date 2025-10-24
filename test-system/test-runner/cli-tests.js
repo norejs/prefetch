@@ -220,7 +220,25 @@ class CLITestRunner {
       // 验证检测结果是否与模板配置匹配
       const expectedFramework = templateConfig.framework;
       
-      if (detectedFramework !== expectedFramework) {
+      // 支持框架名称别名（例如 'cra' 和 'react-cra' 都是有效的）
+      const frameworkAliases = {
+        'cra': ['cra', 'react-cra', 'create-react-app'],
+        'nextjs': ['nextjs', 'next', 'next.js'],
+        'react-vite': ['react-vite', 'vite-react'],
+        'vue-cli': ['vue-cli', 'vue'],
+        'vue-vite': ['vue-vite', 'vite-vue'],
+        'nuxt': ['nuxt', 'nuxt.js'],
+        'remix': ['remix'],
+        'astro': ['astro']
+      };
+      
+      // 检查是否匹配（考虑别名）
+      let isMatch = detectedFramework === expectedFramework;
+      if (!isMatch && frameworkAliases[detectedFramework]) {
+        isMatch = frameworkAliases[detectedFramework].includes(expectedFramework);
+      }
+      
+      if (!isMatch) {
         throw new Error(
           `Framework detection mismatch: expected "${expectedFramework}", detected "${detectedFramework}"`
         );
