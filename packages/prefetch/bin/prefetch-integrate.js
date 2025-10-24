@@ -661,7 +661,7 @@ Options:
   --config <json>         Prefetch configuration (JSON string)
   --version <version>     Specify package version (default: ${VERSION})
   --debug                 Enable debug mode (use local dev server)
-  --debug-port <port>     Local dev server port (default: 3100)
+  --debug-port <port>     Local dev server port (default: 18030)
   --help, -h              Show this help
 
 Examples:

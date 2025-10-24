@@ -12,7 +12,7 @@
         "test:demo:copy": "pnpm --filter @norejs/test-system demo:copy",
         "test:demo:run": "pnpm --filter @norejs/test-system demo:run",
         "test:demo:list": "pnpm --filter @norejs/test-system demo:list",
-        "start": "turbo start",
+        "dev": "turbo dev",
         "build": "turbo build",
         "publish": "turbo publish",
         "changeset": "changeset",

@@ -17,7 +17,7 @@ export default {
     writeToDisk: true,
   },
   server: {
-    port: 9004,
+    port: 18002,
     publicDir: {
       name: 'dist/worker/',
     },

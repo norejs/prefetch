@@ -2,7 +2,7 @@
 module.exports = {
   // API 服务器配置
   apiServer: {
-    port: 3001,
+    port: 18001,
     host: 'localhost',
     // 模拟网络延迟（毫秒）
     responseDelay: 0

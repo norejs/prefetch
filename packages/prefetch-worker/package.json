@@ -23,11 +23,8 @@
   },
   "scripts": {
     "dev": "rsbuild dev",
-    "dev:server": "node dev-server.js",
     "start": "node dist/server/index.js",
     "build": "rsbuild build",
-    "build:umd": "rsbuild build --target web",
-    "build:dev": "npm run build:umd && npm run dev:server",
     "test": "",
     "prepublishOnly": "npm run build",
     "publish": "npm publish"
@@ -49,11 +46,9 @@
   },
   "devDependencies": {
     "@rsbuild/core": "^0.6.1",
-    "@types/crypto-js": "^4.2.2",
-    "@types/express": "4.17.21"
+    "@types/crypto-js": "^4.2.2"
   },
   "dependencies": {
-    "crypto-js": "^4.2.0",
-    "express": "4"
+    "crypto-js": "^4.2.0"
   }
 }

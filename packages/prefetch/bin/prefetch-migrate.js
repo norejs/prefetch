@@ -63,7 +63,7 @@ function parseOptions(args) {
     dev: false,
     cdnPrefix: null,
     cdnUrl: null,
-    debugPort: 3100,
+    debugPort: 18030,
 
     // Configuration options
     config: {},
@@ -161,7 +161,7 @@ Options:
   --dev                   Enable development mode (use local dev server)
   --cdn-prefix <url>      Custom CDN URL prefix
   --cdn-url <url>         Complete CDN URL (overrides prefix)
-  --debug-port <port>     Debug server port (default: 3100)
+  --debug-port <port>     Debug server port (default: 18030)
   
   --config <json>         Prefetch configuration (JSON string)
   --verbose, -v           Show detailed logs
