@@ -1,0 +1,9 @@
+{
+  "name": "react-vite-no-sw",
+  "framework": "react-vite",
+  "hasServiceWorker": false,
+  "hasWorkbox": false,
+  "hasPrefetch": false,
+  "entryFile": "src/main.jsx",
+  "publicDir": "public"
+}

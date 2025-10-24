@@ -1,0 +1,9 @@
+{
+  "name": "vue3-vite-no-sw",
+  "framework": "vue-vite",
+  "hasServiceWorker": false,
+  "hasWorkbox": false,
+  "hasPrefetch": false,
+  "entryFile": "src/main.js",
+  "publicDir": "public"
+}

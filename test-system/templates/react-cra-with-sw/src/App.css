@@ -1,0 +1,77 @@
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  background-color: #282c34;
+  color: white;
+  padding: 1rem 2rem;
+}
+
+.nav h1 {
+  margin-bottom: 1rem;
+}
+
+.nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.nav a {
+  color: #61dafb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page h2 {
+  margin-bottom: 1rem;
+  color: #282c34;
+}
+
+.page p {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+}
+
+.product-card h3 {
+  margin-bottom: 0.5rem;
+  color: #282c34;
+}
+
+.product-card .price {
+  font-weight: bold;
+  color: #61dafb;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+}

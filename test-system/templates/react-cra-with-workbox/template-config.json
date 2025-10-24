@@ -1,0 +1,9 @@
+{
+  "name": "react-cra-with-workbox",
+  "framework": "react-cra",
+  "hasServiceWorker": true,
+  "hasWorkbox": true,
+  "hasPrefetch": false,
+  "entryFile": "src/index.js",
+  "publicDir": "public"
+}

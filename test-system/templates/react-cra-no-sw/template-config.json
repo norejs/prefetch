@@ -1,0 +1,9 @@
+{
+  "name": "react-cra-no-sw",
+  "framework": "react-cra",
+  "hasServiceWorker": false,
+  "hasWorkbox": false,
+  "hasPrefetch": false,
+  "entryFile": "src/index.js",
+  "publicDir": "public"
+}

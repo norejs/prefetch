@@ -1,0 +1,9 @@
+{
+  "name": "react-cra-with-prefetch",
+  "framework": "react-cra",
+  "hasServiceWorker": true,
+  "hasWorkbox": false,
+  "hasPrefetch": true,
+  "entryFile": "src/index.js",
+  "publicDir": "public"
+}

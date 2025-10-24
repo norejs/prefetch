@@ -1,0 +1,9 @@
+{
+  "name": "nextjs-with-sw",
+  "framework": "nextjs",
+  "hasServiceWorker": true,
+  "hasWorkbox": false,
+  "hasPrefetch": false,
+  "entryFile": "app/layout.js",
+  "publicDir": "public"
+}
