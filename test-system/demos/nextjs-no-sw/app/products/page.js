@@ -12,7 +12,8 @@ export default function Products() {
     fetch('http://localhost:3001/api/products')
       .then(response => response.json())
       .then(data => {
-        setProducts(data);
+        // API 返回的数据结构是 { total: number, products: array }
+        setProducts(data.products || []);
         setLoading(false);
       })
       .catch(err => {
