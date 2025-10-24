@@ -232,3 +232,39 @@
     - 展示测试报告示例
     - 说明如何添加新的测试模板
     - _Requirements: 6.1_
+
+- [x] 12. 测试项目管理和 Demos
+  - [x] 12.1 配置 test-apps 目录
+    - 更新 test-config.js 使用 test-apps 目录
+    - 更新 .gitignore 忽略 test-apps
+    - 修改测试运行器保留测试项目
+    - 测试开始时清理已存在的项目
+    - _Requirements: 3.8_
+
+  - [x] 12.2 创建 demos 目录和复制工具
+    - 创建 test-system/demos 目录
+    - 实现 copy-template.js 复制工具
+    - 支持复制单个模板
+    - 支持复制所有模板
+    - 自动复制 API 服务器
+    - _Requirements: 6.1_
+
+  - [x] 12.3 创建 demos 文档
+    - 创建 demos/README.md
+    - 说明使用方法和工作流程
+    - 提供使用场景示例
+    - 添加常见问题解答
+    - _Requirements: 6.1, 6.2_
+
+  - [x] 12.4 更新技术方案文档
+    - 更新 design.md 添加目录管理章节
+    - 添加 Monorepo 集成说明
+    - 更新架构图
+    - 说明目录对比和用途
+    - _Requirements: 6.2_
+
+  - [x] 12.5 添加清理脚本
+    - 添加 clean:demos 脚本
+    - 添加 clean:test-apps 脚本
+    - 添加 demo:* 系列脚本
+    - _Requirements: 3.8_

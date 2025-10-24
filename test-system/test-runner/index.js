@@ -309,17 +309,10 @@ class MainTestRunner {
       }
     }
 
-    // 2. 清理临时目录
+    // 2. 不再删除临时目录，保留用于调试
+    // 测试项目保存在 test-apps/ 目录中
     if (projectDir) {
-      try {
-        await this._withTimeout(
-          this.templateManager.cleanup(projectDir),
-          10000,
-          'Cleanup timed out'
-        );
-      } catch (error) {
-        cleanupErrors.push(`Failed to cleanup directory: ${error.message}`);
-      }
+      this.consoleReporter.info(`Test project preserved at: ${projectDir}`);
     }
 
     // 报告清理错误（但不抛出）

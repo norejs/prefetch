@@ -24,9 +24,10 @@ class TemplateManager {
    * 复制模板到临时目录
    * @param {string} templateName - 模板名称
    * @param {string} targetDir - 目标目录（可选，默认使用 tempDir/templateName）
+   * @param {boolean} cleanFirst - 是否先清理已存在的目录（默认 true）
    * @returns {Promise<string>} 临时目录路径
    */
-  async copyTemplate(templateName, targetDir = null) {
+  async copyTemplate(templateName, targetDir = null, cleanFirst = true) {
     const sourcePath = path.join(this.baseDir, templateName);
     
     // 验证模板是否存在
@@ -41,10 +42,15 @@ class TemplateManager {
       // 确保临时目录存在
       await fs.ensureDir(path.dirname(destPath));
       
-      // 如果目标目录已存在，先清理
+      // 如果目标目录已存在，先清理（如果 cleanFirst 为 true）
       if (await fs.pathExists(destPath)) {
-        console.log(chalk.yellow(`Cleaning existing directory: ${destPath}`));
-        await fs.remove(destPath);
+        if (cleanFirst) {
+          console.log(chalk.yellow(`Cleaning existing directory: ${destPath}`));
+          await fs.remove(destPath);
+        } else {
+          console.log(chalk.yellow(`Directory already exists, skipping: ${destPath}`));
+          return destPath;
+        }
       }
       
       // 复制模板

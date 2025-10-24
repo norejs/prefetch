@@ -37,8 +37,8 @@ module.exports = {
   templates: {
     // 模板基础目录
     baseDir: './templates',
-    // 临时测试目录
-    tempDir: './test-results/temp'
+    // 临时测试目录（运行完成后保留，用于调试）
+    tempDir: '../test-apps'
   },
 
   // 测试报告配置

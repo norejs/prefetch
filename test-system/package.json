@@ -12,7 +12,14 @@
     "test:single": "node test-runner/index.js react-cra-no-sw --skip-install --skip-browser",
     "api:start": "node api-server/index.js",
     "install:playwright": "npx playwright install",
-    "clean": "rm -rf test-results node_modules"
+    "demo:copy": "node scripts/copy-template.js",
+    "demo:list": "node scripts/copy-template.js list",
+    "demo:all": "node scripts/copy-template.js all",
+    "demo:run": "node scripts/run-demo.js",
+    "demo:setup": "node scripts/copy-template.js",
+    "clean": "rm -rf test-results node_modules",
+    "clean:demos": "find demos -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec rm -rf {} +",
+    "clean:test-apps": "rm -rf ../test-apps"
   },
   "keywords": [
     "testing",

@@ -22,14 +22,24 @@ test-system/
 │   ├── routes/
 │   └── middleware/
 ├── test-runner/            # 测试运行器
+│   ├── index.js            # 主测试入口
 │   ├── cli-tests.js        # CLI 工具测试
 │   ├── browser-tests.js    # 浏览器自动化测试
 │   ├── utils/
 │   └── reporters/
+├── demos/                  # 手动测试演示目录
+│   ├── copy-template.js    # 模板复制工具
+│   ├── README.md           # 使用说明
+│   └── [copied-templates]/ # 复制的模板项目
 └── test-results/           # 测试结果输出
     ├── logs/
     ├── screenshots/
     └── reports/
+
+test-apps/                  # 自动化测试生成的项目（在根目录）
+├── react-cra-no-sw/        # 测试完成后保留，用于调试
+├── nextjs-no-sw/
+└── ...
 ```
 
 ## Components and Interfaces
@@ -449,4 +459,127 @@ module.exports = {
     saveScreenshots: true
   }
 };
+```
+
+## Test Project Management
+
+### Test Apps Directory
+
+自动化测试生成的项目保存在 `test-apps/` 目录（项目根目录）：
+
+**特点**:
+- 测试运行开始时，如果目录已存在则先清理
+- 测试完成后保留项目，不删除
+- 开发者可以查看测试后的项目状态
+- 用于调试和验证测试结果
+
+**目录结构**:
+```
+test-apps/
+├── react-cra-no-sw/        # 测试后的 React CRA 项目
+├── nextjs-no-sw/           # 测试后的 Next.js 项目
+├── vue3-vite-no-sw/        # 测试后的 Vue 3 项目
+└── ...                     # 其他测试项目
+```
+
+**配置**:
+```javascript
+// test-config.js
+templates: {
+  baseDir: './templates',
+  tempDir: '../test-apps'  // 保存到根目录的 test-apps
+}
+```
+
+### Demos Directory
+
+手动测试演示目录 `test-system/demos/`：
+
+**用途**:
+- 工具开发者手动测试
+- 快速复制模板进行开发
+- 验证 CLI 工具功能
+- 测试浏览器功能
+
+**复制工具**:
+```bash
+# 复制单个模板
+node demos/copy-template.js react-cra-no-sw
+
+# 复制所有模板
+node demos/copy-template.js all
+
+# 查看可用模板
+node demos/copy-template.js list
+```
+
+**特点**:
+- 自动复制 API 服务器
+- 自动复制指定模板
+- 提供使用说明
+- 不被 git 跟踪
+
+**工作流程**:
+1. 复制模板到 demos 目录
+2. 启动 API 服务器（demos/api-server）
+3. 启动模板项目（demos/<template-name>）
+4. 手动测试和开发
+5. 使用 workspace 依赖自动获取最新代码
+
+### Directory Comparison
+
+| 目录 | 用途 | 生成方式 | 保留策略 | Git 跟踪 |
+|------|------|----------|----------|----------|
+| `templates/` | 标准测试模板 | 手动创建 | 永久保留 | ✅ 跟踪 |
+| `test-apps/` | 自动化测试项目 | 自动生成 | 测试后保留 | ❌ 忽略 |
+| `demos/` | 手动测试项目 | 手动复制 | 手动管理 | ❌ 忽略 |
+
+## Monorepo Integration
+
+### Workspace Configuration
+
+test-system 已集成到 pnpm monorepo：
+
+**pnpm-workspace.yaml**:
+```yaml
+packages:
+  - 'packages/*'
+  - 'demos/**'
+  - 'test-system'  # 新增
+```
+
+**package.json (test-system)**:
+```json
+{
+  "name": "@norejs/test-system",
+  "dependencies": {
+    "@norejs/prefetch": "workspace:*",
+    "@norejs/prefetch-worker": "workspace:*"
+  }
+}
+```
+
+### Benefits
+
+1. **使用最新代码**: 始终使用 workspace 中最新的 prefetch 包
+2. **无需发布**: 不需要发布到 npm 就能测试
+3. **快速迭代**: 修改代码后立即可以测试
+4. **统一管理**: 与其他包一起管理依赖
+
+### Scripts
+
+**根目录脚本**:
+```bash
+pnpm test              # 运行完整测试
+pnpm test:quick        # 快速测试
+pnpm test:single       # 测试单个模板
+```
+
+**test-system 脚本**:
+```bash
+pnpm demo:copy         # 复制模板到 demos
+pnpm demo:list         # 列出可用模板
+pnpm demo:all          # 复制所有模板
+pnpm clean:demos       # 清理 demos 目录
+pnpm clean:test-apps   # 清理 test-apps 目录
 ```
