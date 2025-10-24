@@ -64,15 +64,15 @@
     - 实现获取请求日志的方法
     - _Requirements: 2.3, 2.4_
 
-- [ ] 4. 实现模板管理器
-  - [ ] 4.1 创建 TemplateManager 类
+- [x] 4. 实现模板管理器
+  - [x] 4.1 创建 TemplateManager 类
     - 实现 copyTemplate 方法（复制模板到临时目录）
     - 实现 cleanup 方法（清理临时目录）
     - 实现 getAvailableTemplates 方法
     - 添加模板配置读取功能
     - _Requirements: 3.1, 3.8_
 
-  - [ ] 4.2 为每个模板创建配置文件
+  - [x] 4.2 为每个模板创建配置文件
     - 在每个模板目录创建 template-config.json
     - 定义框架类型、SW 状态、入口文件等信息
     - _Requirements: 1.1_
