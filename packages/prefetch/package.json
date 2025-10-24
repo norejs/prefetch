@@ -6,7 +6,8 @@
   "module": "./dist/es/index.js",
   "bin": {
     "prefetch": "./bin/prefetch.js",
-    "prefetch-integrate": "./bin/prefetch-integrate.js"
+    "prefetch-integrate": "./bin/prefetch-integrate.js",
+    "prefetch-migrate": "./bin/prefetch-migrate.js"
   },
   "scripts": {
     "custom:install": "npx pnpm@7.32.2 install",
