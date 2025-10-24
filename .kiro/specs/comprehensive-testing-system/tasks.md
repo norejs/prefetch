@@ -141,33 +141,33 @@
     - 记录控制台日志
     - _Requirements: 4.8_
 
-- [ ] 7. 实现测试报告器
-  - [ ] 7.1 创建 TestReporter 类
+- [x] 7. 实现测试报告器
+  - [x] 7.1 创建 TestReporter 类
     - 创建 test-runner/reporters/console-reporter.js
     - 实现实时控制台输出
     - 使用 chalk 美化输出
     - _Requirements: 6.1_
 
-  - [ ] 7.2 实现测试报告生成
+  - [x] 7.2 实现测试报告生成
     - 实现 generateReport 方法
     - 生成测试摘要（总数、通过、失败）
     - 生成详细的测试结果报告
     - _Requirements: 6.2_
 
-  - [ ] 7.3 实现日志和截图保存
+  - [x] 7.3 实现日志和截图保存
     - 实现 saveLogs 方法
     - 实现 saveScreenshot 方法
     - 在测试失败时自动保存截图
     - _Requirements: 6.3, 6.4, 6.5_
 
-  - [ ] 7.4 实现 JSON 报告生成
+  - [x] 7.4 实现 JSON 报告生成
     - 创建 test-runner/reporters/json-reporter.js
     - 实现 generateJSONReport 方法
     - 保存机器可读的测试结果
     - _Requirements: 6.6_
 
-- [ ] 8. 实现主测试入口和编排
-  - [ ] 8.1 创建主测试入口文件
+- [-] 8. 实现主测试入口和编排
+  - [-] 8.1 创建主测试入口文件
     - 创建 test-runner/index.js
     - 实现测试流程编排
     - 启动 API 服务器
