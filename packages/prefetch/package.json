@@ -13,7 +13,7 @@
     "dev": "npm run build:watch",
     "build": "modern build",
     "build:watch": "modern build -w",
-    "prepublishOnly": "npm run custom:install && npm run build",
+   
     "new": "modern new",
     "upgrade": "modern upgrade",
     "test": "modern test"

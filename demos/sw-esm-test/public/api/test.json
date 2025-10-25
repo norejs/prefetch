@@ -1,0 +1,8 @@
+{
+  "message": "这是一个测试 API 响应",
+  "timestamp": "2024-01-01T00:00:00Z",
+  "data": {
+    "prefetch": true,
+    "priority": "high"
+  }
+}

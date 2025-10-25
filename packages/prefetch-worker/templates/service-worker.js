@@ -17,7 +17,7 @@ const DEBUG_MODE = false;
 const CDN_BASE = 'https://cdn.jsdelivr.net/npm/@norejs/prefetch-worker@latest/dist';
 
 // 本地路径 - 可替换标识: {{LOCAL_BASE}}  
-const LOCAL_BASE = '/node_modules/@norejs/prefetch-worker/dist';
+const LOCAL_BASE = 'http://localhost:18003';
 
 // ==================== 路径选择 ====================
 // 根据调试模式选择路径：调试模式用本地，生产模式用 CDN

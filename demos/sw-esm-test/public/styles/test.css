@@ -1,0 +1,12 @@
+/* 测试 CSS 文件 */
+.test-style {
+  color: #646cff;
+  background: rgba(100, 108, 255, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.prefetch-test {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
