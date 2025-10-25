@@ -28,6 +28,7 @@ const commonPlugins = [
   replace({
     __VERSION__: JSON.stringify(pkg.version),
     __DEV__: JSON.stringify(isDev),
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
     preventAssignment: true
   })
 ];

@@ -94,6 +94,47 @@
   margin: 0;
 }
 
+.config-section {
+  margin: 1rem 0;
+}
+
+.config-section h4 {
+  margin: 0 0 0.5rem 0;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.config-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.config-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.config-grid input {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font-size: 0.85rem;
+}
+
+.config-grid input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.config-grid input[type="checkbox"] {
+  width: auto;
+}
+
 @media (prefers-color-scheme: light) {
   .demo-section {
     background: rgba(0, 0, 0, 0.02);

@@ -9,10 +9,10 @@ function ServiceWorkerManager({ onLog, onRegistration, swRegistration }) {
     if ('serviceWorker' in navigator) {
       setSWSupported(true)
       onLog('✅ 浏览器支持 Service Worker', 'success')
-      
+
       // 设置消息监听
       navigator.serviceWorker.addEventListener('message', handleSWMessage)
-      
+
       // 检查现有注册
       checkExistingRegistration()
     } else {
@@ -29,19 +29,11 @@ function ServiceWorkerManager({ onLog, onRegistration, swRegistration }) {
 
   const handleSWMessage = (event) => {
     const data = event.data
-    
-    if (data.type === 'SW_READY') {
-      onLog(`✅ Service Worker 就绪: ${data.swType}`, 'success')
-      onLog(`🔧 功能支持: ${JSON.stringify(data.features, null, 2)}`, 'info')
-    } else if (data.type === 'MESSAGE_REPLY') {
-      onLog(`💬 SW 回复: ${data.reply}`, 'success')
-      if (data.dynamicResult) {
-        onLog(`🔄 动态导入结果: ${data.dynamicResult}`, 'info')
-      }
-    } else if (data.type === 'STATS_REPLY') {
-      onLog(`📊 统计信息: ${JSON.stringify(data.stats, null, 2)}`, 'info')
-    } else if (data.type === 'MESSAGE_ERROR') {
-      onLog(`❌ SW 错误: ${data.error}`, 'error')
+
+    if (data.type === 'PREFETCH_INIT_SUCCESS') {
+      onLog(`✅ Prefetch 初始化成功`, 'success')
+    } else if (data.type === 'PREFETCH_INIT_ERROR') {
+      onLog(`❌ Prefetch 初始化失败: ${data.error}`, 'error')
     } else {
       onLog(`📨 收到SW消息: ${JSON.stringify(data)}`, 'info')
     }
@@ -66,15 +58,15 @@ function ServiceWorkerManager({ onLog, onRegistration, swRegistration }) {
   const registerSW = async () => {
     try {
       onLog('🔄 注册 Service Worker...', 'info')
-      
+
       const registration = await navigator.serviceWorker.register('/sw-module.js', {
         type: 'module'
       })
-      
+
       onRegistration(registration)
       setSWStatus('已注册')
       onLog('✅ Service Worker 注册成功', 'success')
-      
+
       // 监听状态变化
       if (registration.installing) {
         registration.installing.addEventListener('statechange', (e) => {
@@ -82,7 +74,7 @@ function ServiceWorkerManager({ onLog, onRegistration, swRegistration }) {
           onLog(`🔄 Service Worker 状态: ${e.target.state}`, 'info')
         })
       }
-      
+
     } catch (error) {
       onLog(`❌ Service Worker 注册失败: ${error.message}`, 'error')
     }
@@ -123,22 +115,7 @@ function ServiceWorkerManager({ onLog, onRegistration, swRegistration }) {
     }
   }
 
-  const sendTestMessage = async () => {
-    try {
-      if (swRegistration && swRegistration.active) {
-        swRegistration.active.postMessage({
-          type: 'TEST_MESSAGE',
-          timestamp: Date.now(),
-          data: 'Hello from React app!'
-        })
-        onLog('📤 测试消息已发送给 Service Worker', 'info')
-      } else {
-        onLog('⚠️ 没有活跃的 Service Worker', 'warning')
-      }
-    } catch (error) {
-      onLog(`❌ 发送消息失败: ${error.message}`, 'error')
-    }
-  }
+
 
   if (!swSupported) {
     return (
@@ -154,7 +131,7 @@ function ServiceWorkerManager({ onLog, onRegistration, swRegistration }) {
   return (
     <div className="demo-section">
       <h3>🔧 Service Worker 管理</h3>
-      
+
       <p className="status-text">
         状态: <strong>{swStatus}</strong>
       </p>
@@ -165,12 +142,6 @@ function ServiceWorkerManager({ onLog, onRegistration, swRegistration }) {
         </button>
         <button onClick={unregisterSW} disabled={!swRegistration}>
           注销 Service Worker
-        </button>
-        <button onClick={checkSWStatus}>
-          检查状态
-        </button>
-        <button onClick={sendTestMessage} disabled={!swRegistration}>
-          发送测试消息
         </button>
       </div>
     </div>

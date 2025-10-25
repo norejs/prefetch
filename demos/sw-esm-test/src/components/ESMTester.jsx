@@ -102,6 +102,85 @@ function ESMTester({ onLog, swRegistration }) {
     }
   }
 
+  const testPrefetchWorker = async () => {
+    if (!swRegistration) {
+      onLog('⚠️ 请先注册 Service Worker', 'warning')
+      return
+    }
+
+    try {
+      onLog('🚀 测试 Prefetch Worker 功能...', 'info')
+      
+      // 测试预取请求
+      const prefetchUrl = `/api/prefetch-test.json?timestamp=${Date.now()}`
+      const prefetchHeaders = {
+        'X-Prefetch-Request-Type': 'prefetch',
+        'X-Prefetch-Expire-Time': '300000' // 5分钟
+      }
+      
+      const prefetchResponse = await fetch(prefetchUrl, { headers: prefetchHeaders })
+      if (prefetchResponse.ok) {
+        const data = await prefetchResponse.json()
+        onLog(`✅ Prefetch 请求成功: ${data.message || 'OK'}`, 'success')
+      } else {
+        onLog(`⚠️ Prefetch 请求返回: ${prefetchResponse.status}`, 'warning')
+      }
+      
+      // 测试缓存命中
+      onLog('🔄 测试缓存命中...', 'info')
+      const cachedResponse = await fetch(prefetchUrl)
+      if (cachedResponse.ok) {
+        onLog(`✅ 缓存命中测试成功: ${cachedResponse.status}`, 'success')
+      }
+      
+      onLog('🎉 Prefetch Worker 测试完成', 'success')
+      
+    } catch (error) {
+      onLog(`❌ Prefetch Worker 测试失败: ${error.message}`, 'error')
+    }
+  }
+
+  const clearPrefetchCache = async () => {
+    try {
+      if (swRegistration && swRegistration.active) {
+        swRegistration.active.postMessage({
+          type: 'PREFETCH_CLEAR_CACHE',
+          timestamp: Date.now()
+        })
+        
+        onLog('🗑️ Prefetch 缓存清理请求已发送', 'info')
+      } else {
+        onLog('⚠️ 没有活跃的 Service Worker', 'warning')
+      }
+    } catch (error) {
+      onLog(`❌ 清理 Prefetch 缓存失败: ${error.message}`, 'error')
+    }
+  }
+
+  const updatePrefetchConfig = async () => {
+    try {
+      if (swRegistration && swRegistration.active) {
+        const newConfig = {
+          defaultExpireTime: 10 * 60 * 1000, // 10分钟
+          maxCacheSize: 100,
+          debug: true
+        }
+        
+        swRegistration.active.postMessage({
+          type: 'UPDATE_PREFETCH_CONFIG',
+          config: newConfig,
+          timestamp: Date.now()
+        })
+        
+        onLog('⚙️ Prefetch 配置更新请求已发送', 'info')
+      } else {
+        onLog('⚠️ 没有活跃的 Service Worker', 'warning')
+      }
+    } catch (error) {
+      onLog(`❌ 更新 Prefetch 配置失败: ${error.message}`, 'error')
+    }
+  }
+
   return (
     <div className="demo-section">
       <h3>🧪 ES Module 功能测试</h3>
@@ -133,6 +212,30 @@ function ESMTester({ onLog, swRegistration }) {
           disabled={!swRegistration}
         >
           获取统计信息
+        </button>
+      </div>
+
+      <div className="button-group">
+        <h4>🚀 Prefetch Worker 测试</h4>
+        <button 
+          onClick={testPrefetchWorker}
+          disabled={!swRegistration}
+        >
+          测试 Prefetch Worker
+        </button>
+        
+        <button 
+          onClick={clearPrefetchCache}
+          disabled={!swRegistration}
+        >
+          清理 Prefetch 缓存
+        </button>
+        
+        <button 
+          onClick={updatePrefetchConfig}
+          disabled={!swRegistration}
+        >
+          更新 Prefetch 配置
         </button>
       </div>
       

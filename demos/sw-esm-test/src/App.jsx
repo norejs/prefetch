@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import ServiceWorkerManager from './components/ServiceWorkerManager'
-import ESMTester from './components/ESMTester'
+import PrefetchManager from './components/PrefetchManager'
 import LogViewer from './components/LogViewer'
 import './App.css'
 
@@ -12,7 +12,7 @@ function App() {
   const addLog = (message, type = 'info') => {
     const timestamp = new Date().toLocaleTimeString()
     setLogs(prev => [...prev, { 
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, 
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`, 
       timestamp, 
       message, 
       type 
@@ -31,8 +31,8 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>🧪 Service Worker ESM 测试</h1>
-        <p>Vite + React + ES Modules Service Worker 演示</p>
+        <h1>🚀 Prefetch Worker ESM 演示</h1>
+        <p>使用 @norejs/prefetch-worker 的 ES Module 演示</p>
       </header>
 
       <main className="app-main">
@@ -43,7 +43,7 @@ function App() {
             swRegistration={swRegistration}
           />
           
-          <ESMTester 
+          <PrefetchManager 
             onLog={addLog}
             swRegistration={swRegistration}
           />
