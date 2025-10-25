@@ -7,6 +7,24 @@ export const HeadName = 'X-Prefetch-Request-Type';
 export const HeadValue = 'prefetch';
 export const ExpireTimeHeadName = 'X-Prefetch-Expire-Time';
 
+// 全局处理器接口
+export interface GlobalFetchHandler {
+  (event: FetchEvent): void;
+  configure(config: ServiceWorkerConfig): void;
+  isInitialized(): boolean;
+  clearCache(): void;
+  getCacheStats(): { size: number; entries: number };
+}
+
+// 处理器状态接口
+interface HandlerState {
+  mode: 'pass-through' | 'active' | 'error';
+  config: ServiceWorkerConfig | null;
+  initialized: boolean;
+  errorCount: number;
+  lastError?: Error;
+}
+
 /**
  * 创建 fetch 事件处理器
  * 直接返回可以作为 addEventListener('fetch', handler) 的函数
@@ -214,4 +232,124 @@ export function createFetchHandler(config: ServiceWorkerConfig): (event: FetchEv
   });
 
   return fetchEventHandler;
+}
+
+// ==================== 全局处理器实现 ====================
+
+// 全局状态
+let globalState: HandlerState & { activeHandler: any } = {
+  mode: 'pass-through',
+  config: null,
+  initialized: false,
+  errorCount: 0,
+  activeHandler: null
+};
+
+/**
+ * 主 fetch 事件处理器 - 支持状态切换
+ */
+function globalFetchHandler(event: FetchEvent): void {
+  try {
+    // pass-through 模式：直接放行
+    if (globalState.mode === 'pass-through') {
+      return;
+    }
+
+    // error 模式：记录错误并放行
+    if (globalState.mode === 'error') {
+      if (globalState.config?.debug) {
+        console.warn('prefetch-worker: in error mode, passing through request', {
+          url: event.request.url,
+          errorCount: globalState.errorCount,
+          lastError: globalState.lastError?.message
+        });
+      }
+      return;
+    }
+
+    // active 模式：使用配置的处理器
+    if (globalState.mode === 'active' && globalState.activeHandler) {
+      globalState.activeHandler(event);
+      return;
+    }
+
+    // 默认放行
+    return;
+  } catch (error) {
+    // 捕获全局错误，切换到错误模式
+    globalState.mode = 'error';
+    globalState.errorCount++;
+    globalState.lastError = error instanceof Error ? error : new Error(String(error));
+
+    if (globalState.config?.debug) {
+      console.error('prefetch-worker: global handler error', error);
+    }
+
+    // 错误时放行请求
+    return;
+  }
+}
+
+
+
+
+
+// 添加方法到全局处理器
+Object.assign(globalFetchHandler, {
+  configure: (config: ServiceWorkerConfig): void => {
+    try {
+      // 清理旧的处理器
+      if (globalState.activeHandler && typeof globalState.activeHandler.clearCache === 'function') {
+        globalState.activeHandler.clearCache();
+      }
+
+      // 创建新的处理器
+      const newHandler = createFetchHandler(config);
+
+      // 更新状态
+      globalState.config = config;
+      globalState.activeHandler = newHandler;
+      globalState.mode = 'active';
+      globalState.initialized = true;
+      globalState.errorCount = 0;
+      globalState.lastError = undefined;
+
+      if (config.debug) {
+        console.log('prefetch-worker: global handler configured', config);
+      }
+    } catch (error) {
+      // 配置失败，切换到错误模式
+      globalState.mode = 'error';
+      globalState.errorCount++;
+      globalState.lastError = error instanceof Error ? error : new Error(String(error));
+
+      if (config.debug) {
+        console.error('prefetch-worker: configuration failed', error);
+      }
+
+      throw error;
+    }
+  },
+  isInitialized: (): boolean => {
+    return globalState.initialized;
+  },
+  clearCache: (): void => {
+    if (globalState.activeHandler && typeof globalState.activeHandler.clearCache === 'function') {
+      globalState.activeHandler.clearCache();
+    }
+  },
+  getCacheStats: (): { size: number; entries: number } => {
+    if (globalState.activeHandler && typeof globalState.activeHandler.getCacheStats === 'function') {
+      return globalState.activeHandler.getCacheStats();
+    }
+    return { size: 0, entries: 0 };
+  }
+});
+
+/**
+ * 创建全局 fetch 处理器
+ * 在 Service Worker 启动时调用，立即注册但根据状态决定行为
+ */
+export function createGlobalFetchHandler(): GlobalFetchHandler {
+  return globalFetchHandler as GlobalFetchHandler;
 }

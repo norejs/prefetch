@@ -8,7 +8,7 @@
 - 📦 **智能缓存**: 支持预请求和普通请求的统一缓存机制
 - ⚡ **性能优化**: Promise 级别的请求复用
 - 🎛️ **灵活配置**: 支持消息初始化和默认配置
-- 🔧 **动态劫持**: fetch 事件监听器在脚本初始化时注册，通过函数变量实现动态处理
+- 🔧 **全局劫持**: 全局 fetch 处理器在 SW 启动时同步注册，支持动态配置和状态切换
 - 🐛 **调试友好**: 详细的日志输出
 - 📦 **多格式支持**: ESM、UMD、IIFE 三种构建格式
 - 🔥 **热重载**: 开发模式下支持热重载
@@ -61,14 +61,55 @@ await setup({
 });
 ```
 
-### 2. 直接使用 Service Worker
+### 2. 全局处理器（推荐）
+
+全局处理器解决了 Service Worker 中 fetch 监听器必须同步注册的限制，支持动态配置和状态切换。
+
+#### 方式1：智能初始化
+```javascript
+// sw.js
+import { initializePrefetchWorker } from '@norejs/prefetch-worker';
+
+// 无配置：等待主进程发送配置消息
+const cleanup = initializePrefetchWorker();
+
+// 或者有配置：立即初始化
+const cleanup = initializePrefetchWorker({
+  apiMatcher: '/api/*',
+  defaultExpireTime: 5000,
+  debug: true
+});
+```
+
+#### 方式2：手动管理（高级用法）
+```javascript
+// sw.js
+import { createGlobalFetchHandler } from '@norejs/prefetch-worker';
+
+// 注意：通常不需要手动创建，main() 函数会自动注册
+// 但如果需要完全手动控制：
+const globalHandler = createGlobalFetchHandler();
+self.addEventListener('fetch', globalHandler);
+
+// 稍后配置激活（active 模式）
+globalHandler.configure({
+  apiMatcher: /\/api\/.*/,
+  defaultExpireTime: 10000
+});
+
+// 检查状态和统计
+console.log('Initialized:', globalHandler.isInitialized());
+console.log('Cache stats:', globalHandler.getCacheStats());
+```
+
+### 3. 传统方式（兼容性）
 
 #### ESM 格式
 ```javascript
 // sw.js (ES Module)
-import { setupWorker } from '@norejs/prefetch-worker/esm';
+import { createFetchHandler } from '@norejs/prefetch-worker';
 
-const handler = setupWorker({
+const handler = createFetchHandler({
   apiMatcher: /\/api\/.*/,
   defaultExpireTime: 30000,
   debug: true
@@ -82,13 +123,34 @@ self.addEventListener('fetch', handler);
 // sw.js (传统方式)
 importScripts('/prefetch-worker.umd.js');
 
-const handler = PrefetchWorker.setup({
+const handler = PrefetchWorker.createFetchHandler({
   apiMatcher: '/api/*',
   defaultExpireTime: 30000,
   debug: true
 });
 
 self.addEventListener('fetch', handler);
+```
+
+## 🔄 全局处理器状态
+
+全局处理器支持三种运行模式：
+
+| 模式 | 说明 | 行为 |
+|------|------|------|
+| `pass-through` | 透传模式（初始状态） | 直接放行所有请求，不进行任何处理 |
+| `active` | 激活模式 | 根据配置进行缓存和请求处理 |
+| `error` | 错误模式 | 发生错误时自动切换，记录错误并放行请求 |
+
+```javascript
+// 检查处理器状态
+const globalHandler = createGlobalFetchHandler();
+
+console.log('是否已初始化:', globalHandler.isInitialized());
+console.log('缓存统计:', globalHandler.getCacheStats());
+
+// 清理缓存
+globalHandler.clearCache();
 ```
 
 ## ⚙️ 配置选项

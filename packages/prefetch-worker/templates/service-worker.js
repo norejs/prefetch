@@ -52,7 +52,7 @@ async function initialize() {
       debug: DEBUG_MODE
     });
 
-    // 初始化预取功能（等待主进程配置）
+    // 初始化预取功能（全局处理器会自动注册）
     const cleanupPrefetch = initializePrefetchWorker();
 
     if (DEBUG_MODE) {
