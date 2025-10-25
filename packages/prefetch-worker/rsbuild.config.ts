@@ -7,11 +7,11 @@ export default {
           'service-worker': './src/index.ts',
         };
       }
-      if (target === 'node') {
-        return {
-          index: './src/index.server.ts',
-        };
-      }
+
+      return {
+        index: './src/index.server.ts',
+      };
+
     },
   },
   dev: {
