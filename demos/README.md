@@ -4,8 +4,10 @@
 
 ## 📁 项目列表
 
-### 1. [importscripts-basic](./importscripts-basic/) - ImportScripts 基础演示
+### 1. [@norejs/demo-importscripts-basic](./importscripts-basic/) - ImportScripts 基础演示
+- **NPM Package**: `@norejs/demo-importscripts-basic`
 - **端口**: 8080
+- **启动**: `npm install && npm run dev`
 - **功能**: 演示传统的`importScripts`用法
 - **CDN 引入**: `http://localhost:18003/service-worker.js`
 - **特性**:
@@ -15,9 +17,12 @@
   - ✅ 全局作用域共享
   - ✅ 传统Service Worker架构
   - ✅ CDN 方式引入 prefetch-worker
+  - ✅ 独立 NPM 包，使用 serve 启动
 
-### 2. [sw-esm-test](./sw-esm-test/) - ES Modules 测试
+### 2. [@norejs/demo-sw-esm-test](./sw-esm-test/) - ES Modules 测试
+- **NPM Package**: `@norejs/demo-sw-esm-test`
 - **端口**: 8081
+- **启动**: `npm install && npm run dev`
 - **功能**: 测试Service Worker中的ES Modules支持
 - **CDN 引入**: `http://localhost:18003/service-worker.esm.js`
 - **特性**:
@@ -28,6 +33,7 @@
   - ✅ 类和异步/等待模式
   - ✅ 浏览器兼容性检测
   - ✅ CDN 方式引入 prefetch-worker
+  - ✅ 独立 NPM 包，使用 serve 启动
 
 ## 🚀 快速开始
 
@@ -43,28 +49,28 @@ npm run dev
 # 开发服务器将在 http://localhost:18003 提供文件
 ```
 
-### 方式一：分别启动
+### 方式一：分别启动 (推荐)
 ```bash
 # 启动 ImportScripts 演示
 cd demos/importscripts-basic
-node server.js
+npm install && npm run dev
 # 访问: http://localhost:8080
 
 # 启动 ESM 测试
-cd demos/sw-esm-test  
-node server.js
+cd demos/sw-esm-test
+npm install && npm run dev
 # 访问: http://localhost:8081
 ```
 
-### 方式二：使用启动脚本
+### 方式二：快速启动
 ```bash
 # ImportScripts 演示
 cd demos/importscripts-basic
-./start.sh
+npm start
 
 # ESM 测试
 cd demos/sw-esm-test
-node server.js
+npm start
 ```
 
 ## 📊 功能对比

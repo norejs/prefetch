@@ -87,28 +87,22 @@ npm run dev:server
 
 ## 🚀 使用方法
 
-### 1. 启动服务器
+### 1. 安装和启动
 
 ```bash
+# 进入项目目录
 cd demos/sw-esm-test
-node server.js
-```
 
-或者使用其他方式：
-```bash
-# Python
-python3 -m http.server 8081
+# 安装依赖
+npm install
 
-# PHP
-php -S localhost:8081
-
-# npx
-npx serve . -p 8081
+# 启动开发服务器 (端口 8081)
+npm run dev
 ```
 
 ### 2. 访问测试页面
 
-打开浏览器访问: `http://localhost:8081`
+开发服务器启动后，打开浏览器访问: `http://localhost:8081`
 
 ### 3. 测试步骤
 

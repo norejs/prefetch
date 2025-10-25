@@ -76,8 +76,21 @@ class CDNIntegrationTester {
     console.log('2️⃣ 测试 importscripts-basic 演示...');
     
     try {
-      // 检查 service-worker.js 文件中的 CDN 引用
       const fs = require('fs');
+      
+      // 检查 package.json 文件
+      const packagePath = path.join(__dirname, 'importscripts-basic', 'package.json');
+      if (fs.existsSync(packagePath)) {
+        const packageContent = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+        if (packageContent.name === '@norejs/demo-importscripts-basic') {
+          console.log('   ✅ package.json 配置正确');
+        }
+        if (packageContent.scripts && packageContent.scripts.dev) {
+          console.log('   ✅ npm dev 脚本配置正确');
+        }
+      }
+      
+      // 检查 service-worker.js 文件中的 CDN 引用
       const swPath = path.join(__dirname, 'importscripts-basic', 'service-worker.js');
       const swContent = fs.readFileSync(swPath, 'utf8');
       
@@ -86,6 +99,14 @@ class CDNIntegrationTester {
         this.testResults.importScriptsDemo = true;
       } else {
         console.log('   ❌ service-worker.js 未包含 CDN 引用');
+      }
+      
+      // 检查旧的 server.js 文件是否已删除
+      const oldServerPath = path.join(__dirname, 'importscripts-basic', 'server.js');
+      if (!fs.existsSync(oldServerPath)) {
+        console.log('   ✅ 旧的 server.js 文件已删除');
+      } else {
+        console.log('   ⚠️  旧的 server.js 文件仍存在');
       }
       
       // 检查本地 prefetch-worker.js 文件是否已删除
@@ -107,8 +128,21 @@ class CDNIntegrationTester {
     console.log('3️⃣ 测试 sw-esm-test 演示...');
     
     try {
-      // 检查 sw-module.js 文件中的 CDN 引用
       const fs = require('fs');
+      
+      // 检查 package.json 文件
+      const packagePath = path.join(__dirname, 'sw-esm-test', 'package.json');
+      if (fs.existsSync(packagePath)) {
+        const packageContent = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+        if (packageContent.name === '@norejs/demo-sw-esm-test') {
+          console.log('   ✅ package.json 配置正确');
+        }
+        if (packageContent.scripts && packageContent.scripts.dev) {
+          console.log('   ✅ npm dev 脚本配置正确');
+        }
+      }
+      
+      // 检查 sw-module.js 文件中的 CDN 引用
       const swPath = path.join(__dirname, 'sw-esm-test', 'sw-module.js');
       const swContent = fs.readFileSync(swPath, 'utf8');
       
@@ -117,6 +151,14 @@ class CDNIntegrationTester {
         this.testResults.esmDemo = true;
       } else {
         console.log('   ❌ sw-module.js 未包含 CDN 引用');
+      }
+      
+      // 检查旧的 server.js 文件是否已删除
+      const oldServerPath = path.join(__dirname, 'sw-esm-test', 'server.js');
+      if (!fs.existsSync(oldServerPath)) {
+        console.log('   ✅ 旧的 server.js 文件已删除');
+      } else {
+        console.log('   ⚠️  旧的 server.js 文件仍存在');
       }
       
       // 检查本地 prefetch-worker.js 文件是否已删除
@@ -157,7 +199,9 @@ class CDNIntegrationTester {
       console.log('🎉 所有测试通过！CDN 集成配置正确。');
       console.log('\n📝 下一步:');
       console.log('1. 启动 prefetch-worker 开发服务器: cd packages/prefetch-worker && npm run dev');
-      console.log('2. 启动演示项目: cd demos/importscripts-basic && node server.js');
+      console.log('2. 启动演示项目:');
+      console.log('   - ImportScripts: cd demos/importscripts-basic && npm install && npm run dev');
+      console.log('   - ESM Test: cd demos/sw-esm-test && npm install && npm run dev');
       console.log('3. 在浏览器中测试功能');
     } else {
       console.log('⚠️  部分测试失败，请检查配置。');
