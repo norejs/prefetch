@@ -12,7 +12,7 @@ export default function Products() {
     fetch('http://localhost:18001/api/products')
       .then(response => response.json())
       .then(data => {
-        setProducts(data);
+        setProducts(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch(err => {
@@ -37,13 +37,17 @@ export default function Products() {
       <main className="content">
         <h2>Products</h2>
         <div className="products-grid">
-          {products.map(product => (
-            <div key={product.id} className="product-card">
-              <h3>{product.name}</h3>
-              <p>{product.description}</p>
-              <p className="price">${product.price}</p>
-            </div>
-          ))}
+          {products && products.length > 0 ? (
+            products.map(product => (
+              <div key={product.id} className="product-card">
+                <h3>{product.name}</h3>
+                <p>{product.description}</p>
+                <p className="price">${product.price}</p>
+              </div>
+            ))
+          ) : (
+            <p>No products available.</p>
+          )}
         </div>
       </main>
     </div>

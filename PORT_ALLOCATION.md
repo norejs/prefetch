@@ -11,7 +11,14 @@
 
 ### Demo 项目 (18010-18019)
 - **18010** - nextjs-no-sw (`test-system/demos/nextjs-no-sw`)
-- **18011-18019** - 预留给未来的 demo 项目
+- **18011** - vue3-vite-no-sw template (`test-system/templates/vue3-vite-no-sw`)
+- **18012** - react-vite-no-sw template (`test-system/templates/react-vite-no-sw`)
+- **18013** - nextjs-with-sw template (`test-system/templates/nextjs-with-sw`)
+- **18014** - react-cra-no-sw template (`test-system/templates/react-cra-no-sw`)
+- **18015** - react-cra-with-sw template (`test-system/templates/react-cra-with-sw`)
+- **18016** - react-cra-with-prefetch template (`test-system/templates/react-cra-with-prefetch`)
+- **18017** - react-cra-with-workbox template (`test-system/templates/react-cra-with-workbox`)
+- **18018-18019** - 预留给未来的 demo 项目
 
 ### 测试应用 (18020-18029)
 - **18021** - vue3-vite-no-sw test app (`test-apps/vue3-vite-no-sw`)

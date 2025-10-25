@@ -6,6 +6,7 @@
     "dev": "next dev -p 8010",
     "build": "next build",
     "start": "next start",
+    "prefetch":"prefetch",
     "lint": "next lint"
   },
   "dependencies": {
