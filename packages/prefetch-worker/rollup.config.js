@@ -131,27 +131,5 @@ export default defineConfig([
     }
   },
 
-  // Node.js 服务器构建
-  {
-    input: 'src/dev-server.ts',
-    output: {
-      file: 'dist/dev-server.js',
-      format: 'es',
-      sourcemap: isDev
-    },
-    plugins: [
-      resolve({
-        preferBuiltins: true
-      }),
-      commonjs(),
-      typescript({
-        tsconfig: './tsconfig.json'
-      })
-    ],
-    external: ['express', 'chokidar', 'ws', 'path', 'fs', 'http'],
-    watch: {
-      include: 'src/**',
-      exclude: 'node_modules/**'
-    }
-  }
+
 ]);
