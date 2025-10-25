@@ -2,14 +2,29 @@
 
 这个demo专门测试Service Worker中ES Modules (ESM) 的支持情况和使用方法。
 
+## 📦 NPM Package
+
+这是一个独立的 npm package，可以通过以下方式安装和运行：
+
+```bash
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+
+# 或者
+npm start
+```
+
 ## 📁 文件结构
 
 ```
 demos/sw-esm-test/
+├── package.json            # NPM 包配置
 ├── index.html              # 主测试页面
 ├── sw-classic.js           # 传统Service Worker (importScripts)
 ├── sw-module.js            # ES Module Service Worker
-├── server.js               # 开发服务器
 ├── README.md               # 说明文档
 └── modules/                # 模块目录
     ├── utils-classic.js    # 传统模式工具函数
@@ -19,6 +34,30 @@ demos/sw-esm-test/
     ├── api-handler-esm.js        # ES Module API处理器
     └── dynamic-feature.js        # 动态导入功能演示
 ```
+
+## 🌐 CDN 引入方式
+
+本演示项目使用开发环境的 CDN 方式引入 prefetch-worker：
+
+```javascript
+// 在 sw-module.js 中
+import * as prefetch from "http://localhost:18003/service-worker.esm.js"
+```
+
+### 启动开发服务器
+
+在使用本演示之前，需要先启动 prefetch-worker 的开发服务器：
+
+```bash
+# 在项目根目录
+cd packages/prefetch-worker
+npm run dev
+
+# 或者直接启动开发服务器
+npm run dev:server
+```
+
+开发服务器将在 `http://localhost:18003` 提供 prefetch-worker 的 ESM 版本文件。
 
 ## 🎯 测试目标
 

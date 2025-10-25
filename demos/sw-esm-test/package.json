@@ -1,0 +1,38 @@
+{
+  "name": "@norejs/demo-sw-esm-test",
+  "version": "1.0.0",
+  "description": "Service Worker ES Modules test demo with prefetch-worker CDN integration",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "dev": "serve . -p 8081 --cors",
+    "start": "npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "service-worker",
+    "es-modules",
+    "esm",
+    "prefetch-worker",
+    "demo",
+    "cdn",
+    "dynamic-import"
+  ],
+  "author": "NoReJS Team",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/norejs/prefetch.git",
+    "directory": "demos/sw-esm-test"
+  },
+  "bugs": {
+    "url": "https://github.com/norejs/prefetch/issues"
+  },
+  "homepage": "https://github.com/norejs/prefetch/tree/main/demos/sw-esm-test#readme"
+}

@@ -7,16 +7,19 @@
 ### 1. [importscripts-basic](./importscripts-basic/) - ImportScripts 基础演示
 - **端口**: 8080
 - **功能**: 演示传统的`importScripts`用法
+- **CDN 引入**: `http://localhost:18003/service-worker.js`
 - **特性**:
   - ✅ 基础的`importScripts`导入
   - ✅ 错误处理和降级方案
   - ✅ 同步脚本加载
   - ✅ 全局作用域共享
   - ✅ 传统Service Worker架构
+  - ✅ CDN 方式引入 prefetch-worker
 
 ### 2. [sw-esm-test](./sw-esm-test/) - ES Modules 测试
 - **端口**: 8081
 - **功能**: 测试Service Worker中的ES Modules支持
+- **CDN 引入**: `http://localhost:18003/service-worker.esm.js`
 - **特性**:
   - ✅ ES Module `import`/`export`语法
   - ✅ 动态导入 (`import()`)
@@ -24,8 +27,21 @@
   - ✅ 现代JavaScript语法支持
   - ✅ 类和异步/等待模式
   - ✅ 浏览器兼容性检测
+  - ✅ CDN 方式引入 prefetch-worker
 
 ## 🚀 快速开始
+
+### 前置条件：启动 prefetch-worker 开发服务器
+
+两个演示项目都使用 CDN 方式引入 prefetch-worker，需要先启动开发服务器：
+
+```bash
+# 在项目根目录
+cd packages/prefetch-worker
+npm run dev
+
+# 开发服务器将在 http://localhost:18003 提供文件
+```
 
 ### 方式一：分别启动
 ```bash

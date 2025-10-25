@@ -5,7 +5,8 @@ console.log('Module SW: 开始加载ES Module Service Worker');
 import { moduleUtils } from './modules/utils-esm.js';
 import { CacheManager } from './modules/cache-manager-esm.js';
 import { ApiHandler } from './modules/api-handler-esm.js';
-import * as prefetch from "./modules/prefetch-worker.js"
+// 使用开发环境 CDN 引入 prefetch-worker
+import * as prefetch from "http://localhost:18003/service-worker.esm.js"
 console.log('prefetch',prefetch)
 console.log('Module SW: ✅ ES Module 导入成功');
 

@@ -2,16 +2,60 @@
 
 这个demo演示了Service Worker中`importScripts`的基本用法和常见问题。
 
+## 📦 NPM Package
+
+这是一个独立的 npm package，可以通过以下方式安装和运行：
+
+```bash
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+
+# 或者
+npm start
+```
+
 ## 文件结构
 
 ```
 demos/importscripts-basic/
+├── package.json        # NPM 包配置
 ├── index.html          # 主页面
 ├── service-worker.js   # Service Worker主文件
 ├── utils.js           # 工具函数库
 ├── cache-helper.js    # 缓存辅助函数
 └── README.md          # 说明文档
 ```
+
+## CDN 引入方式
+
+本演示项目使用开发环境的 CDN 方式引入 prefetch-worker：
+
+```javascript
+// 在 service-worker.js 中
+const SCRIPTS_TO_IMPORT = [
+    './utils.js',
+    './cache-helper.js',
+    'http://localhost:18003/service-worker.js'  // 开发环境 CDN
+];
+```
+
+### 启动开发服务器
+
+在使用本演示之前，需要先启动 prefetch-worker 的开发服务器：
+
+```bash
+# 在项目根目录
+cd packages/prefetch-worker
+npm run dev
+
+# 或者直接启动开发服务器
+npm run dev:server
+```
+
+开发服务器将在 `http://localhost:18003` 提供 prefetch-worker 文件。
 
 ## 功能特性
 
@@ -31,23 +75,21 @@ demos/importscripts-basic/
 
 ## 使用方法
 
-### 1. 启动本地服务器
-由于Service Worker需要HTTPS或localhost环境，你需要启动一个本地服务器：
+### 1. 安装和启动
 
 ```bash
-# 使用Python (推荐)
+# 进入项目目录
 cd demos/importscripts-basic
-python3 -m http.server 8080
 
-# 或使用Node.js
-npx serve . -p 8080
+# 安装依赖
+npm install
 
-# 或使用PHP
-php -S localhost:8080
+# 启动开发服务器 (端口 8080)
+npm run dev
 ```
 
 ### 2. 访问页面
-打开浏览器访问: `http://localhost:8080`
+开发服务器启动后，打开浏览器访问: `http://localhost:8080`
 
 ### 3. 测试步骤
 1. 点击"注册 Service Worker"按钮
