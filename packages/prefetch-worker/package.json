@@ -28,7 +28,7 @@
     "build:prod": "cross-env NODE_ENV=production rollup -c",
     "build:watch": "rollup -c --watch",
     "dev": "npm run build:dev && npm run dev:server",
-    "dev:server": "serve dist --listen 18005 --cors --single",
+    "dev:server": "serve dist --listen 18003 --cors --single",
     "clean": "rimraf dist",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.js",
