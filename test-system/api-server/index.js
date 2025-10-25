@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const config = require('../test-config');
-const sharedConfig = require('../../packages/shared-config');
 const createLoggerMiddleware = require('./middleware/logger');
 const { ConfigurableDelayMiddleware } = require('./middleware/delay');
 
@@ -102,8 +101,8 @@ class APIServer {
       throw new Error('Server is already running');
     }
 
-    // 使用共享配置分配端口
-    const serverPort = port || await sharedConfig.allocatePort('api-server', this.port);
+    // 直接使用指定端口
+    const serverPort = port || this.port;
     this.port = serverPort;
 
     return new Promise((resolve, reject) => {
@@ -111,19 +110,12 @@ class APIServer {
         if (err) {
           reject(err);
         } else {
-          // 更新服务状态为运行中
-          sharedConfig.setServiceStatus('api-server', 'running', {
-            pid: process.pid,
-            actualPort: serverPort
-          });
-          
           console.log(`API Server running at http://${this.host}:${serverPort}`);
           resolve();
         }
       });
 
       this.server.on('error', (err) => {
-        sharedConfig.setServiceStatus('api-server', 'error', { error: err.message });
         if (err.code === 'EADDRINUSE') {
           reject(new Error(`Port ${serverPort} is already in use`));
         } else {
