@@ -5,7 +5,7 @@ module.exports = {
     port: 18001,
     host: 'localhost',
     // 模拟网络延迟（毫秒）
-    responseDelay: 0
+    responseDelay: 3000  // 3秒延迟，便于测试 prefetch 缓存效果
   },
 
   // 浏览器测试配置

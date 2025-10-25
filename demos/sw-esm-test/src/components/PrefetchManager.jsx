@@ -12,16 +12,32 @@ function PrefetchManager({ onLog, swRegistration }) {
   const checkTestApiServerStatus = async () => {
     try {
       onLog('🔍 检查 test-api-server 状态...', 'info')
+      const startTime = performance.now()
+      
       const response = await fetch('http://localhost:18001/api/health', {
         method: 'GET',
         mode: 'cors'
       })
+      
+      const endTime = performance.now()
+      const responseTime = endTime - startTime
 
       if (response.ok) {
         const data = await response.json()
         setTestApiServerStatus('running')
         onLog('✅ test-api-server 正在运行', 'success')
         onLog(`📊 服务器运行时间: ${data.uptime?.toFixed(2)}s`, 'info')
+        onLog(`⏱️ 响应时间: ${responseTime.toFixed(2)}ms`, 'info')
+        
+        // 检查是否有延迟配置
+        if (responseTime > 2500) {
+          onLog('🐌 检测到服务器延迟配置 (>2.5s)，适合测试 prefetch 缓存效果', 'success')
+        } else if (responseTime > 1000) {
+          onLog('⏳ 检测到中等延迟配置 (>1s)', 'info')
+        } else {
+          onLog('⚡ 服务器响应较快 (<1s)', 'info')
+        }
+        
         return true
       } else {
         setTestApiServerStatus('stopped')
@@ -288,6 +304,7 @@ function PrefetchManager({ onLog, swRegistration }) {
 
       // 2. 第一轮：直接请求测试
       onLog('📝 步骤 2/4: 第一轮直接请求测试', 'info')
+      const directTestStartTime = performance.now()
       const directResults = []
 
       for (const testCase of apiTestCases) {
@@ -333,6 +350,10 @@ function PrefetchManager({ onLog, swRegistration }) {
           await new Promise(resolve => setTimeout(resolve, 100))
         }
       }
+      
+      const directTestEndTime = performance.now()
+      const totalDirectTime = directTestEndTime - directTestStartTime
+      onLog(`📊 直接请求总耗时: ${totalDirectTime.toFixed(2)}ms`, 'info')
 
       // 3. 预请求阶段
       onLog('📝 步骤 3/4: 预请求所有端点 (20秒有效期)', 'info')
@@ -364,6 +385,7 @@ function PrefetchManager({ onLog, swRegistration }) {
 
       // 4. 第二轮：缓存请求测试
       onLog('📝 步骤 4/4: 第二轮缓存请求测试', 'info')
+      const cachedTestStartTime = performance.now()
       const cachedResults = []
 
       for (const testCase of apiTestCases) {
@@ -409,6 +431,10 @@ function PrefetchManager({ onLog, swRegistration }) {
           await new Promise(resolve => setTimeout(resolve, 100))
         }
       }
+      
+      const cachedTestEndTime = performance.now()
+      const totalCachedTime = cachedTestEndTime - cachedTestStartTime
+      onLog(`📊 缓存请求总耗时: ${totalCachedTime.toFixed(2)}ms`, 'info')
 
       // 计算统计结果
       const successfulDirect = directResults.filter(r => r.success)
@@ -423,11 +449,24 @@ function PrefetchManager({ onLog, swRegistration }) {
         : 0
 
       const improvement = avgDirectTime > 0 ? ((avgDirectTime - avgCachedTime) / avgDirectTime * 100) : 0
+      
+      // 计算总时间对比
+      const totalTimeWithoutPrefetch = totalDirectTime
+      const totalTimeWithPrefetch = totalPrefetchTime + totalCachedTime
+      const totalTimeSaved = totalTimeWithoutPrefetch - totalCachedTime
+      const totalTimeImprovement = totalTimeWithoutPrefetch > 0 ? 
+        ((totalTimeWithoutPrefetch - totalTimeWithPrefetch) / totalTimeWithoutPrefetch * 100) : 0
 
       const results = {
         directResults,
         cachedResults,
         totalPrefetchTime,
+        totalDirectTime,
+        totalCachedTime,
+        totalTimeWithoutPrefetch,
+        totalTimeWithPrefetch,
+        totalTimeSaved,
+        totalTimeImprovement,
         avgDirectTime,
         avgCachedTime,
         improvement,
@@ -439,7 +478,13 @@ function PrefetchManager({ onLog, swRegistration }) {
       onLog('🎉 性能测试完成！', 'success')
       onLog(`📊 直接请求平均耗时: ${avgDirectTime.toFixed(2)}ms`, 'info')
       onLog(`📊 缓存请求平均耗时: ${avgCachedTime.toFixed(2)}ms`, 'info')
-      onLog(`📊 性能提升: ${improvement.toFixed(1)}%`, 'success')
+      onLog(`📊 单次请求性能提升: ${improvement.toFixed(1)}%`, 'success')
+      onLog('', 'info')
+      onLog('🕒 总时间对比分析:', 'info')
+      onLog(`📊 无预请求总时间: ${totalTimeWithoutPrefetch.toFixed(2)}ms`, 'info')
+      onLog(`📊 有预请求总时间: ${totalTimeWithPrefetch.toFixed(2)}ms (预请求 ${totalPrefetchTime.toFixed(2)}ms + 缓存请求 ${totalCachedTime.toFixed(2)}ms)`, 'info')
+      onLog(`📊 总时间节省: ${totalTimeSaved.toFixed(2)}ms`, totalTimeSaved > 0 ? 'success' : 'warning')
+      onLog(`📊 总体性能提升: ${totalTimeImprovement.toFixed(1)}%`, totalTimeImprovement > 0 ? 'success' : 'warning')
 
     } catch (error) {
       onLog(`❌ 性能测试失败: ${error.message}`, 'error')
@@ -635,8 +680,35 @@ function PrefetchManager({ onLog, swRegistration }) {
                 <span className="stat-value">{benchmarkResults.avgCachedTime.toFixed(2)}ms</span>
               </div>
               <div className="stat-item highlight">
-                <span className="stat-label">性能提升:</span>
+                <span className="stat-label">单次请求提升:</span>
                 <span className="stat-value">{benchmarkResults.improvement.toFixed(1)}%</span>
+              </div>
+            </div>
+            
+            <div className="total-time-comparison">
+              <h5>🕒 总时间对比</h5>
+              <div className="time-comparison-stats">
+                <div className="time-stat-item without-prefetch">
+                  <span className="time-label">无预请求方案:</span>
+                  <span className="time-value">{benchmarkResults.totalTimeWithoutPrefetch.toFixed(2)}ms</span>
+                  <div className="time-breakdown">直接请求所有端点</div>
+                </div>
+                <div className="time-stat-item with-prefetch">
+                  <span className="time-label">有预请求方案:</span>
+                  <span className="time-value">{benchmarkResults.totalTimeWithPrefetch.toFixed(2)}ms</span>
+                  <div className="time-breakdown">
+                    预请求 {benchmarkResults.totalPrefetchTime.toFixed(2)}ms + 缓存请求 {benchmarkResults.totalCachedTime.toFixed(2)}ms
+                  </div>
+                </div>
+                <div className="time-stat-item total-improvement">
+                  <span className="time-label">总体效果:</span>
+                  <span className="time-value">
+                    {benchmarkResults.totalTimeSaved > 0 ? '节省' : '增加'} {Math.abs(benchmarkResults.totalTimeSaved).toFixed(2)}ms
+                  </span>
+                  <div className="time-breakdown">
+                    总体性能 {benchmarkResults.totalTimeImprovement > 0 ? '提升' : '下降'} {Math.abs(benchmarkResults.totalTimeImprovement).toFixed(1)}%
+                  </div>
+                </div>
               </div>
             </div>
 
