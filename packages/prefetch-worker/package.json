@@ -1,55 +1,100 @@
 {
   "name": "@norejs/prefetch-worker",
-  "version": "1.0.1",
-  "description": "Service Worker based API prefetching and caching solution",
-  "main": "dist/worker/service-worker.js",
-  "module": "dist/esm/index.js",
+  "version": "1.0.0",
+  "description": "Service worker implementation for background prefetching with ESM and UMD support",
+  "type": "module",
+  "main": "dist/service-worker.js",
+  "module": "dist/service-worker.esm.js",
   "types": "dist/types/index.d.ts",
-  "bin": {
-    "prefetch-worker": "bin/install.js"
+  "exports": {
+    ".": {
+      "import": "./dist/service-worker.esm.js",
+      "require": "./dist/prefetch-worker.umd.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./umd": "./dist/prefetch-worker.umd.js",
+    "./esm": "./dist/service-worker.esm.js",
+    "./iife": "./dist/service-worker.js"
   },
   "files": [
     "dist",
-    "bin"
+    "src",
+    "README.md",
+    "CHANGELOG.md"
   ],
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/worker/service-worker.js"
-    },
-    "./service-worker": "./dist/worker/service-worker.js"
-  },
   "scripts": {
-    "dev": "rsbuild dev",
-    "start": "node dist/server/index.js",
-    "build": "rsbuild build",
-    "test": "",
-    "prepublishOnly": "npm run build",
-    "publish": "npm publish"
+    "build": "npm run clean && rollup -c",
+    "build:dev": "cross-env NODE_ENV=development rollup -c",
+    "build:prod": "cross-env NODE_ENV=production rollup -c",
+    "build:watch": "rollup -c --watch",
+    "dev": "npm run build:dev && node dist/dev-server.js",
+    "dev:watch": "concurrently \"npm run build:watch\" \"npm run dev:server\"",
+    "dev:server": "node dist/dev-server.js",
+    "clean": "rimraf dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.js",
+    "lint:fix": "eslint src --ext .ts,.js --fix",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "prepublishOnly": "npm run build:prod"
   },
   "keywords": [
     "service-worker",
     "prefetch",
     "cache",
-    "api",
-    "performance",
-    "pwa"
+    "pwa",
+    "esm",
+    "umd",
+    "background",
+    "performance"
   ],
-  "author": "",
+  "author": "NoReJS Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/prefetch.git",
+    "url": "https://github.com/norejs/prefetch.git",
     "directory": "packages/prefetch-worker"
   },
+  "bugs": {
+    "url": "https://github.com/norejs/prefetch/issues"
+  },
+  "homepage": "https://github.com/norejs/prefetch#readme",
   "devDependencies": {
-    "@rsbuild/core": "^0.6.1",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.5",
     "@types/crypto-js": "^4.2.2",
-    "@types/express": "^4.17.21"
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.5",
+    "@types/ws": "^8.5.10",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "chokidar": "^3.5.3",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.56.0",
+    "express": "^4.18.2",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.9.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0",
+    "ws": "^8.16.0"
   },
   "dependencies": {
-    "crypto-js": "^4.2.0",
-    "express": "^4.21.2"
-  }
+    "crypto-js": "^4.2.0"
+  },
+  "peerDependencies": {
+    "@norejs/prefetch": "*"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "browserslist": [
+    "Chrome >= 91",
+    "Firefox >= 89",
+    "Safari >= 15",
+    "Edge >= 91"
+  ]
 }

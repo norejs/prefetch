@@ -1,8 +1,8 @@
-# Prefetch Worker
+# @norejs/prefetch-worker
 
-一个支持消息初始化的 Service Worker，用于实现智能的 API 请求缓存和预请求功能。
+一个现代化的 Service Worker 库，支持智能的 API 请求缓存和预请求功能。使用 Rollup 构建，支持 ESM、UMD 和 IIFE 多种格式。
 
-## 特性
+## ✨ 特性
 
 - 🔄 **请求去重**: 自动合并相同的并发请求
 - 📦 **智能缓存**: 支持预请求和普通请求的统一缓存机制
@@ -10,78 +10,205 @@
 - 🎛️ **灵活配置**: 支持消息初始化和默认配置
 - 🔧 **动态劫持**: fetch 事件监听器在脚本初始化时注册，通过函数变量实现动态处理
 - 🐛 **调试友好**: 详细的日志输出
+- 📦 **多格式支持**: ESM、UMD、IIFE 三种构建格式
+- 🔥 **热重载**: 开发模式下支持热重载
+- 🛠️ **TypeScript**: 完整的 TypeScript 支持
 
-## 安装
+## 📦 安装
 
 ```bash
 npm install @norejs/prefetch-worker
 ```
 
-## 复制 Service Worker 文件
+## 🏗️ 构建格式
 
-```bash
-# 复制到 public 目录
-prefetch-worker install --dir public
-
-# 或者复制到自定义目录
-prefetch-worker install --dir assets
+### ESM (推荐用于现代浏览器)
+```javascript
+// 支持 ES Module 的现代浏览器
+navigator.serviceWorker.register('/service-worker.esm.js', { 
+  type: 'module' 
+});
 ```
 
-## 使用方法
+### UMD (用于 importScripts)
+```javascript
+// 在 Service Worker 中使用 importScripts
+importScripts('/prefetch-worker.umd.js');
+const handler = PrefetchWorker.setup(config);
+```
+
+### IIFE (独立文件)
+```javascript
+// 直接注册独立的 Service Worker 文件
+navigator.serviceWorker.register('/service-worker.js');
+```
+
+## 🚀 使用方法
 
 ### 1. 基本用法（使用 @norejs/prefetch）
 
 ```javascript
-import { setup } from '@norejs/prefetch'
+import { setup } from '@norejs/prefetch';
 
 // 初始化 Service Worker
 await setup({
-  serviceWorkerUrl: '/service-worker.js',
+  serviceWorkerUrl: '/service-worker.esm.js',
   scope: '/',
-  apiMatcher: '\/api\/*',           // API 匹配规则，默认 '/api'
-  defaultExpireTime: 30000,     // 默认过期时间 30 秒
-  maxCacheSize: 100,            // 最大缓存数量
-  debug: true                   // 开启调试模式
-})
+  apiMatcher: '/api/*',
+  defaultExpireTime: 30000,
+  maxCacheSize: 100,
+  debug: true
+});
 ```
 
-### 2. 手动初始化（发送消息）
+### 2. 直接使用 Service Worker
 
+#### ESM 格式
 ```javascript
-// 注册 Service Worker
-const registration = await navigator.serviceWorker.register('/service-worker.js')
+// sw.js (ES Module)
+import { setupWorker } from '@norejs/prefetch-worker/esm';
 
-// 等待激活
-await new Promise((resolve) => {
-  if (navigator.serviceWorker.controller) {
-    resolve()
-  } else {
-    navigator.serviceWorker.addEventListener('controllerchange', resolve)
-  }
-})
+const handler = setupWorker({
+  apiMatcher: /\/api\/.*/,
+  defaultExpireTime: 30000,
+  debug: true
+});
 
-// 发送初始化消息
-navigator.serviceWorker.controller.postMessage({
-  type: 'PREFETCH_INIT',
-  config: {
-    apiMatcher: '/api/v1',        // 自定义 API 匹配规则
-    defaultExpireTime: 60000,     // 60 秒过期时间
-    maxCacheSize: 200,            // 最大缓存 200 个请求
-    debug: false                  // 关闭调试模式
-  }
-})
+self.addEventListener('fetch', handler);
 ```
 
-### 3. 配置参数
+#### UMD 格式
+```javascript
+// sw.js (传统方式)
+importScripts('/prefetch-worker.umd.js');
+
+const handler = PrefetchWorker.setup({
+  apiMatcher: '/api/*',
+  defaultExpireTime: 30000,
+  debug: true
+});
+
+self.addEventListener('fetch', handler);
+```
+
+## ⚙️ 配置选项
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `apiMatcher` | `string \| RegExp` | `'/api'` | API 请求匹配规则 |
-| `defaultExpireTime` | `number` | `0` | 默认缓存过期时间（毫秒） |
+| `apiMatcher` | `string \| RegExp` | `'/api/*'` | API 匹配规则 |
+| `requestToKey` | `function` | 内置函数 | 请求转换为缓存键的函数 |
+| `defaultExpireTime` | `number` | `0` | 默认过期时间（毫秒），0 表示不缓存 |
 | `maxCacheSize` | `number` | `100` | 最大缓存数量 |
 | `debug` | `boolean` | `false` | 是否开启调试模式 |
+| `allowCrossOrigin` | `boolean` | `false` | 是否允许跨域请求 |
+| `autoSkipWaiting` | `boolean` | `true` | 是否自动跳过等待 |
 
-## HTTP 方法支持
+## 🔧 开发
+
+### 构建命令
+
+```bash
+# 开发构建
+npm run build:dev
+
+# 生产构建
+npm run build:prod
+
+# 监听模式构建
+npm run build:watch
+
+# 清理构建文件
+npm run clean
+```
+
+### 开发服务器
+
+```bash
+# 启动开发服务器
+npm run dev
+
+# 启动开发服务器 + 监听构建
+npm run dev:watch
+
+# 仅启动服务器（需要先构建）
+npm run dev:server
+```
+
+开发服务器特性：
+- 🌐 **端口**: 18003
+- 🔥 **热重载**: 文件变化自动重新构建
+- 📡 **WebSocket**: 实时通知客户端更新
+- 🔍 **健康检查**: `/health` 端点
+- 📋 **文件列表**: `/files` 端点
+- 🔨 **手动构建**: `POST /build` 端点
+
+### 热重载客户端
+
+在开发模式下，可以在主页面中包含热重载客户端：
+
+```html
+<!-- 仅在开发模式下包含 -->
+<script src="/hot-reload-client.js"></script>
+```
+
+或者手动使用：
+
+```javascript
+import { ServiceWorkerHotReload } from '@norejs/prefetch-worker/hot-reload';
+
+const hotReload = new ServiceWorkerHotReload({
+  serverUrl: 'ws://localhost:18003',
+  debug: true
+});
+
+hotReload.connect();
+```
+
+## 🧪 测试
+
+```bash
+# 运行测试
+npm test
+
+# 运行测试并生成覆盖率报告
+npm run test:coverage
+
+# 类型检查
+npm run type-check
+
+# 代码检查
+npm run lint
+
+# 自动修复代码风格
+npm run lint:fix
+```
+
+## 📁 项目结构
+
+```
+packages/prefetch-worker/
+├── src/
+│   ├── index.ts              # 主入口文件
+│   ├── setup.ts              # 设置函数
+│   ├── dev-server.ts         # 开发服务器
+│   ├── hot-reload-client.ts  # 热重载客户端
+│   ├── types.ts              # 类型定义
+│   └── utils/
+│       ├── logger.ts         # 日志工具
+│       └── requestToKey.ts   # 请求键生成
+├── dist/
+│   ├── service-worker.esm.js # ESM 格式
+│   ├── prefetch-worker.umd.js# UMD 格式
+│   ├── service-worker.js     # IIFE 格式
+│   ├── dev-server.js         # 开发服务器
+│   └── types/                # TypeScript 声明文件
+├── rollup.config.js          # Rollup 配置
+├── tsconfig.json             # TypeScript 配置
+├── .eslintrc.js              # ESLint 配置
+└── package.json              # 包配置
+```
+
+## 🔄 HTTP 方法支持
 
 ### 支持缓存的方法 ✅
 - **GET**: 查询操作，适合缓存
@@ -91,7 +218,7 @@ navigator.serviceWorker.controller.postMessage({
 ### 不支持缓存的方法 ❌
 - **DELETE**: 删除操作，每次都真实执行
 
-## 请求复用机制
+## 🔀 请求复用机制
 
 Service Worker 会自动处理并发的相同请求：
 
@@ -101,82 +228,38 @@ Promise.all([
   fetch('/api/users'),    // 发起真实请求
   fetch('/api/users'),    // 复用第一个请求的 Promise
   fetch('/api/users')     // 复用第一个请求的 Promise
-])
+]);
 ```
 
-## 预请求功能
+## 🎯 预请求功能
 
 配合 `@norejs/prefetch` 使用预请求功能：
 
 ```javascript
-import { preFetch } from '@norejs/prefetch'
+import { preFetch } from '@norejs/prefetch';
 
 // 直接预请求数据
 await preFetch('/api/products', {
   expireTime: 30000  // 30 秒过期时间
-})
+});
 
 // 实际请求时会从缓存返回
-const response = await fetch('/api/products')
+const response = await fetch('/api/products');
 ```
 
-## 调试
+## 🐛 调试
 
 开启调试模式后，可以在浏览器控制台看到详细的日志：
 
 ```
-prefetch-worker: received message {type: "PREFETCH_INIT", config: {...}}
-prefetch-worker: initializing with config {apiMatcher: "/api", ...}
-prefetch-worker: initialization completed
-prefetch: cache hit (response) /api/products
-prefetch: cache hit (promise) /api/users
+[2024-01-01T12:00:00.000Z] [prefetch-worker] received message {type: "PREFETCH_INIT", config: {...}}
+[2024-01-01T12:00:00.001Z] [prefetch-worker] initializing with config {apiMatcher: "/api", ...}
+[2024-01-01T12:00:00.002Z] [prefetch-worker] initialization completed
+[2024-01-01T12:00:01.000Z] [prefetch-worker] cache hit (response) /api/products
+[2024-01-01T12:00:01.001Z] [prefetch-worker] cache hit (promise) /api/users
 ```
 
-## 自动初始化
-
-如果没有收到初始化消息，Service Worker 会在 install 事件后 1 秒自动使用默认配置初始化：
-
-```javascript
-// 默认配置
-{
-  apiMatcher: '\/api\/*'
-}
-```
-
-## 消息类型
-
-### 发送给 Service Worker
-
-```javascript
-// 初始化消息
-{
-  type: 'PREFETCH_INIT',
-  config: {
-    apiMatcher: '\/api\/*',
-    defaultExpireTime: 30000,
-    maxCacheSize: 100,
-    debug: true
-  }
-}
-```
-
-### 从 Service Worker 接收
-
-```javascript
-// 初始化成功
-{
-  type: 'PREFETCH_INIT_SUCCESS',
-  config: { /* 实际使用的配置 */ }
-}
-
-// 初始化失败
-{
-  type: 'PREFETCH_INIT_ERROR',
-  error: 'Error message'
-}
-```
-
-## 技术实现
+## 🔧 技术实现
 
 ### 动态劫持机制
 
@@ -198,19 +281,17 @@ self.addEventListener('fetch', function (event) {
 handleFetchEventImpl = setupWorker(config);
 ```
 
-### 处理流程
+### 构建系统
 
-1. **脚本加载**: 注册 `fetch` 事件监听器，但不执行任何处理逻辑
-2. **收到初始化消息**: 调用 `setupWorker` 获取处理函数
-3. **设置处理函数**: 将返回的函数赋值给 `handleFetchEventImpl`
-4. **开始拦截**: 后续请求通过动态函数进行处理
+使用 Rollup 构建系统，相比 Rsbuild 的优势：
 
-这种设计确保了：
-- 符合 Service Worker 规范要求
-- 支持动态配置和初始化
-- 避免了"Event handler must be added on initial evaluation"错误
+- ✅ **专为库设计**: 更适合构建 Service Worker
+- ✅ **多格式支持**: 原生支持 ESM、UMD、IIFE
+- ✅ **更小体积**: 生成的代码更紧凑
+- ✅ **更好的 Tree Shaking**: 更精确的依赖分析
+- ✅ **Service Worker 优化**: 专门的 Service Worker 构建优化
 
-## 注意事项
+## ⚠️ 注意事项
 
 1. **首次加载**: Service Worker 首次安装时可能需要刷新页面才能拦截请求
 2. **HTTPS**: Service Worker 只能在 HTTPS 或 localhost 下运行
@@ -218,9 +299,25 @@ handleFetchEventImpl = setupWorker(config);
 4. **缓存策略**: DELETE 请求永远不会被缓存，确保数据一致性
 5. **动态劫持**: fetch 监听器在脚本评估时注册，但处理逻辑通过函数变量动态设置
 
-## 兼容性
+## 🌐 兼容性
 
-- Chrome 40+
-- Firefox 44+
-- Safari 11.1+
-- Edge 17+
+- Chrome 91+ (ESM 支持)
+- Firefox 89+ (ESM 支持)
+- Safari 15+ (ESM 支持)
+- Edge 91+ (ESM 支持)
+- 所有支持 Service Worker 的浏览器 (UMD/IIFE 格式)
+
+## 📄 许可证
+
+MIT License - 详见 [LICENSE](LICENSE) 文件。
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 📚 相关链接
+
+- [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
+- [ES Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+- [Rollup](https://rollupjs.org/)
+- [@norejs/prefetch](../prefetch/README.md)
