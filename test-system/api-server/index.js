@@ -26,7 +26,8 @@ class APIServer {
     this.app.use(cors({
       origin: '*',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization']
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Test-Source', 'X-Prefetch-Request-Type', 'X-Prefetch-Expire-Time'],
+      credentials: false
     }));
 
     // Body parser 中间件

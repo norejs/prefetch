@@ -16,7 +16,7 @@ function PrefetchManager({ onLog, swRegistration }) {
         method: 'GET',
         mode: 'cors'
       })
-      
+
       if (response.ok) {
         const data = await response.json()
         setTestApiServerStatus('running')
@@ -39,10 +39,10 @@ function PrefetchManager({ onLog, swRegistration }) {
   const handleInitialize = async () => {
     try {
       onLog('🚀 使用 @norejs/prefetch 初始化...', 'info')
-      
+
       // 先检查 test-api-server 状态
       await checkTestApiServerStatus()
-      
+
       const config = {
         serviceWorkerUrl: '/sw-module.js',
         scope: '/',
@@ -59,7 +59,7 @@ function PrefetchManager({ onLog, swRegistration }) {
       } else {
         onLog('⚠️ Prefetch 初始化返回 null', 'warning')
       }
-      
+
     } catch (error) {
       onLog(`❌ Prefetch 初始化失败: ${error.message}`, 'error')
     }
@@ -69,7 +69,7 @@ function PrefetchManager({ onLog, swRegistration }) {
   const testApiCall = async (endpoint, method = 'GET', data = null, usePreFetch = false) => {
     try {
       onLog(`🌐 测试 API 调用: ${method} ${endpoint} ${usePreFetch ? '(使用 preFetch)' : '(使用 fetch)'}`, 'info')
-      
+
       const options = {
         method: method,
         headers: {
@@ -77,7 +77,7 @@ function PrefetchManager({ onLog, swRegistration }) {
           'X-Test-Source': 'prefetch-manager'
         }
       }
-      
+
       if (data && method !== 'GET') {
         options.body = JSON.stringify(data)
       }
@@ -85,17 +85,27 @@ function PrefetchManager({ onLog, swRegistration }) {
       let response
       if (usePreFetch && method === 'GET') {
         // 使用 preFetch 方法（仅支持 GET 请求）
-        await preFetch(endpoint, {
-          expireTime: 30000 // 30秒过期时间
-        })
-        // preFetch 不返回响应，需要再次 fetch 获取数据
-        response = await fetch(endpoint, options)
-        onLog('📦 使用 preFetch 预取后再 fetch 获取数据', 'info')
+        if (!prefetchInitialized) {
+          onLog('⚠️ 未初始化状态下调用 preFetch，可能无法正常工作', 'warning')
+        }
+
+        try {
+          await preFetch(endpoint, {
+            expireTime: 30000 // 30秒过期时间
+          })
+          // preFetch 不返回响应，需要再次 fetch 获取数据
+          response = await fetch(endpoint, options)
+          onLog('📦 使用 preFetch 预取后再 fetch 获取数据', 'info')
+        } catch (preFetchError) {
+          onLog(`⚠️ preFetch 调用失败: ${preFetchError.message}，改用普通 fetch`, 'warning')
+          // 如果 preFetch 失败，降级为普通 fetch
+          response = await fetch(endpoint, options)
+        }
       } else {
         // 使用普通 fetch
         response = await fetch(endpoint, options)
       }
-      
+
       if (response.ok) {
         const responseData = await response.json()
         const result = {
@@ -106,14 +116,14 @@ function PrefetchManager({ onLog, swRegistration }) {
           timestamp: Date.now(),
           usedPreFetch: usePreFetch && method === 'GET'
         }
-        
+
         setApiTestResults(prev => [result, ...prev.slice(0, 4)]) // 保留最近5条记录
         onLog(`✅ API 调用成功: ${response.status}`, 'success')
         onLog(`📋 响应数据: ${JSON.stringify(responseData, null, 2)}`, 'info')
       } else {
         onLog(`⚠️ API 调用返回: ${response.status} ${response.statusText}`, 'warning')
       }
-      
+
     } catch (error) {
       onLog(`❌ API 调用失败: ${error.message}`, 'error')
     }
@@ -142,7 +152,7 @@ function PrefetchManager({ onLog, swRegistration }) {
   ]
 
   // 根据服务器状态选择测试用例
-  const apiTestCases = testApiServerStatus === 'running' 
+  const apiTestCases = testApiServerStatus === 'running'
     ? [...staticApiTestCases, ...testApiServerCases]
     : staticApiTestCases
 
@@ -153,7 +163,7 @@ function PrefetchManager({ onLog, swRegistration }) {
     }
 
     onLog('🧪 方法1：直接在消息处理器中添加 fetch 监听器...', 'info')
-    
+
     swRegistration.active.postMessage({
       type: 'ADD_DYNAMIC_FETCH_HANDLER'
     })
@@ -166,7 +176,7 @@ function PrefetchManager({ onLog, swRegistration }) {
     }
 
     onLog('🧪 方法2：通过 ESM 动态导入模块添加 fetch 监听器...', 'info')
-    
+
     swRegistration.active.postMessage({
       type: 'ADD_DYNAMIC_FETCH_VIA_ESM'
     })
@@ -179,7 +189,7 @@ function PrefetchManager({ onLog, swRegistration }) {
     }
 
     onLog('🧪 测试 fetch 处理器状态...', 'info')
-    
+
     swRegistration.active.postMessage({
       type: 'TEST_FETCH_HANDLERS'
     })
@@ -192,7 +202,7 @@ function PrefetchManager({ onLog, swRegistration }) {
     }
 
     onLog('🎯 测试模块拦截器功能...', 'info')
-    
+
     swRegistration.active.postMessage({
       type: 'TEST_INTERCEPTOR'
     })
@@ -205,7 +215,7 @@ function PrefetchManager({ onLog, swRegistration }) {
     }
 
     onLog('🔄 测试异步初始化状态...', 'info')
-    
+
     swRegistration.active.postMessage({
       type: 'TEST_ASYNC_INIT'
     })
@@ -215,13 +225,17 @@ function PrefetchManager({ onLog, swRegistration }) {
   const clearCache = async () => {
     try {
       onLog('🧹 清理 prefetch 缓存...', 'info')
-      
+
+      if (!prefetchInitialized) {
+        onLog('⚠️ Prefetch 未初始化，缓存清理可能无效果', 'warning')
+      }
+
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         // 发送清理缓存消息到 Service Worker
         navigator.serviceWorker.controller.postMessage({
           type: 'PREFETCH_CLEAR_CACHE'
         })
-        
+
         // 等待清理完成的响应
         await new Promise((resolve) => {
           const handleMessage = (event) => {
@@ -231,16 +245,18 @@ function PrefetchManager({ onLog, swRegistration }) {
             }
           }
           navigator.serviceWorker.addEventListener('message', handleMessage)
-          
+
           // 设置超时
           setTimeout(() => {
             navigator.serviceWorker.removeEventListener('message', handleMessage)
             resolve()
           }, 2000)
         })
+      } else {
+        onLog('⚠️ Service Worker 未就绪，无法清理缓存', 'warning')
       }
-      
-      onLog('✅ 缓存清理完成', 'success')
+
+      onLog('✅ 缓存清理操作完成', 'success')
     } catch (error) {
       onLog(`❌ 缓存清理失败: ${error.message}`, 'error')
     }
@@ -249,35 +265,41 @@ function PrefetchManager({ onLog, swRegistration }) {
   // 一键性能测试
   const runBenchmarkTest = async () => {
     if (!prefetchInitialized) {
-      onLog('⚠️ 请先初始化 Prefetch', 'warning')
-      return
+      onLog('⚠️ 未初始化 Prefetch，性能测试可能无法正常工作', 'warning')
+      onLog('💡 建议先点击"初始化 Prefetch"按钮', 'info')
+
+      // 询问用户是否继续
+      const shouldContinue = confirm('Prefetch 未初始化，性能测试可能无法正常工作。是否继续？')
+      if (!shouldContinue) {
+        return
+      }
     }
 
     setIsRunningBenchmark(true)
     setBenchmarkResults(null)
-    
+
     try {
       onLog('🚀 开始一键性能测试...', 'info')
-      
+
       // 1. 清理缓存
       onLog('📝 步骤 1/4: 清理缓存', 'info')
       await clearCache()
       await new Promise(resolve => setTimeout(resolve, 500)) // 等待缓存清理完成
-      
+
       // 2. 第一轮：直接请求测试
       onLog('📝 步骤 2/4: 第一轮直接请求测试', 'info')
       const directResults = []
-      
+
       for (const testCase of apiTestCases) {
         if (testCase.method === 'GET') {
           onLog(`🌐 直接请求: ${testCase.name}`, 'info')
           const startTime = performance.now()
-          
+
           try {
             const response = await fetch(testCase.endpoint)
             const endTime = performance.now()
             const responseTime = endTime - startTime
-            
+
             if (response.ok) {
               await response.json() // 消费响应体
               directResults.push({
@@ -306,16 +328,16 @@ function PrefetchManager({ onLog, swRegistration }) {
               error: error.message
             })
           }
-          
+
           // 请求间隔
           await new Promise(resolve => setTimeout(resolve, 100))
         }
       }
-      
+
       // 3. 预请求阶段
       onLog('📝 步骤 3/4: 预请求所有端点 (20秒有效期)', 'info')
       const prefetchStartTime = performance.now()
-      
+
       for (const testCase of apiTestCases) {
         if (testCase.method === 'GET') {
           onLog(`📦 预请求: ${testCase.name}`, 'info')
@@ -327,33 +349,33 @@ function PrefetchManager({ onLog, swRegistration }) {
           } catch (error) {
             onLog(`❌ 预请求失败: ${testCase.name} - ${error.message}`, 'error')
           }
-          
+
           // 预请求间隔
           await new Promise(resolve => setTimeout(resolve, 50))
         }
       }
-      
+
       const prefetchEndTime = performance.now()
       const totalPrefetchTime = prefetchEndTime - prefetchStartTime
       onLog(`✅ 所有预请求完成，耗时: ${totalPrefetchTime.toFixed(2)}ms`, 'success')
-      
+
       // 等待一小段时间确保预请求完全处理
       await new Promise(resolve => setTimeout(resolve, 500))
-      
+
       // 4. 第二轮：缓存请求测试
       onLog('📝 步骤 4/4: 第二轮缓存请求测试', 'info')
       const cachedResults = []
-      
+
       for (const testCase of apiTestCases) {
         if (testCase.method === 'GET') {
           onLog(`🌐 缓存请求: ${testCase.name}`, 'info')
           const startTime = performance.now()
-          
+
           try {
             const response = await fetch(testCase.endpoint)
             const endTime = performance.now()
             const responseTime = endTime - startTime
-            
+
             if (response.ok) {
               await response.json() // 消费响应体
               cachedResults.push({
@@ -382,26 +404,26 @@ function PrefetchManager({ onLog, swRegistration }) {
               error: error.message
             })
           }
-          
+
           // 请求间隔
           await new Promise(resolve => setTimeout(resolve, 100))
         }
       }
-      
+
       // 计算统计结果
       const successfulDirect = directResults.filter(r => r.success)
       const successfulCached = cachedResults.filter(r => r.success)
-      
-      const avgDirectTime = successfulDirect.length > 0 
-        ? successfulDirect.reduce((sum, r) => sum + r.responseTime, 0) / successfulDirect.length 
+
+      const avgDirectTime = successfulDirect.length > 0
+        ? successfulDirect.reduce((sum, r) => sum + r.responseTime, 0) / successfulDirect.length
         : 0
-      
-      const avgCachedTime = successfulCached.length > 0 
-        ? successfulCached.reduce((sum, r) => sum + r.responseTime, 0) / successfulCached.length 
+
+      const avgCachedTime = successfulCached.length > 0
+        ? successfulCached.reduce((sum, r) => sum + r.responseTime, 0) / successfulCached.length
         : 0
-      
+
       const improvement = avgDirectTime > 0 ? ((avgDirectTime - avgCachedTime) / avgDirectTime * 100) : 0
-      
+
       const results = {
         directResults,
         cachedResults,
@@ -411,14 +433,14 @@ function PrefetchManager({ onLog, swRegistration }) {
         improvement,
         timestamp: Date.now()
       }
-      
+
       setBenchmarkResults(results)
-      
+
       onLog('🎉 性能测试完成！', 'success')
       onLog(`📊 直接请求平均耗时: ${avgDirectTime.toFixed(2)}ms`, 'info')
       onLog(`📊 缓存请求平均耗时: ${avgCachedTime.toFixed(2)}ms`, 'info')
       onLog(`📊 性能提升: ${improvement.toFixed(1)}%`, 'success')
-      
+
     } catch (error) {
       onLog(`❌ 性能测试失败: ${error.message}`, 'error')
     } finally {
@@ -429,33 +451,35 @@ function PrefetchManager({ onLog, swRegistration }) {
   return (
     <div className="demo-section">
       <h3>🚀 @norejs/prefetch 测试</h3>
-      
+
       <div className="button-group">
-        <button 
+        <button
           onClick={handleInitialize}
           disabled={prefetchInitialized}
         >
           {prefetchInitialized ? '✅ 已初始化' : '初始化 Prefetch'}
         </button>
-        
-        <button 
+
+        <button
           onClick={checkTestApiServerStatus}
           disabled={isRunningBenchmark}
         >
           🔍 检查 API 服务器
         </button>
-        
-        <button 
+
+        <button
           onClick={clearCache}
-          disabled={!prefetchInitialized || isRunningBenchmark}
+          disabled={isRunningBenchmark}
+          title={!prefetchInitialized ? '未初始化状态下的缓存清理（可能无效果）' : '清理 prefetch 缓存'}
         >
           🧹 清理缓存
         </button>
-        
-        <button 
+
+        <button
           onClick={runBenchmarkTest}
-          disabled={!prefetchInitialized || isRunningBenchmark}
+          disabled={isRunningBenchmark}
           className="benchmark-button"
+          title={!prefetchInitialized ? '未初始化状态下的性能测试（建议先初始化）' : '已初始化状态下的性能测试'}
         >
           {isRunningBenchmark ? '⏳ 测试中...' : '🚀 一键性能测试'}
         </button>
@@ -487,7 +511,7 @@ function PrefetchManager({ onLog, swRegistration }) {
       {/* API 测试区域 */}
       <div className="test-section">
         <h4>🌐 API 调用测试</h4>
-        
+
         {/* 静态 JSON 文件测试 */}
         <div className="api-category">
           <h5>📁 静态 JSON 文件 ({staticApiTestCases.length} 个端点)</h5>
@@ -497,7 +521,6 @@ function PrefetchManager({ onLog, swRegistration }) {
                 <div className="api-test-buttons">
                   <button
                     onClick={() => testApiCall(testCase.endpoint, testCase.method, testCase.data, false)}
-                    disabled={!prefetchInitialized}
                     className={`api-test-button ${testCase.method.toLowerCase()}`}
                   >
                     <span className="method-badge">{testCase.method}</span>
@@ -506,8 +529,8 @@ function PrefetchManager({ onLog, swRegistration }) {
                   {testCase.method === 'GET' && (
                     <button
                       onClick={() => testApiCall(testCase.endpoint, testCase.method, testCase.data, true)}
-                      disabled={!prefetchInitialized}
                       className={`api-test-button prefetch ${testCase.method.toLowerCase()}`}
+                      title={!prefetchInitialized ? '未初始化状态下的 preFetch 测试' : '已初始化状态下的 preFetch 测试'}
                     >
                       <span className="method-badge">PRE</span>
                       {testCase.name} (preFetch)
@@ -520,7 +543,7 @@ function PrefetchManager({ onLog, swRegistration }) {
         </div>
 
         {/* test-api-server 测试 */}
-        {testApiServerStatus === 'running' && (
+        {  (
           <div className="api-category">
             <h5>🖥️ test-api-server ({testApiServerCases.length} 个端点)</h5>
             <div className="api-test-grid">
@@ -529,7 +552,6 @@ function PrefetchManager({ onLog, swRegistration }) {
                   <div className="api-test-buttons">
                     <button
                       onClick={() => testApiCall(testCase.endpoint, testCase.method, testCase.data, false)}
-                      disabled={!prefetchInitialized}
                       className={`api-test-button ${testCase.method.toLowerCase()}`}
                     >
                       <span className="method-badge">{testCase.method}</span>
@@ -538,8 +560,8 @@ function PrefetchManager({ onLog, swRegistration }) {
                     {testCase.method === 'GET' && (
                       <button
                         onClick={() => testApiCall(testCase.endpoint, testCase.method, testCase.data, true)}
-                        disabled={!prefetchInitialized}
                         className={`api-test-button prefetch ${testCase.method.toLowerCase()}`}
+                        title={!prefetchInitialized ? '未初始化状态下的 preFetch 测试' : '已初始化状态下的 preFetch 测试'}
                       >
                         <span className="method-badge">PRE</span>
                         {testCase.name} (preFetch)
@@ -551,7 +573,7 @@ function PrefetchManager({ onLog, swRegistration }) {
             </div>
           </div>
         )}
-        
+
         <div className="custom-api-test">
           <h5>自定义 API 测试</h5>
           <div className="input-group">
@@ -573,7 +595,6 @@ function PrefetchManager({ onLog, swRegistration }) {
                 const method = document.getElementById('custom-method').value
                 testApiCall(endpoint, method, null, false)
               }}
-              disabled={!prefetchInitialized}
             >
               发送 fetch
             </button>
@@ -587,7 +608,7 @@ function PrefetchManager({ onLog, swRegistration }) {
                   onLog('⚠️ preFetch 仅支持 GET 请求', 'warning')
                 }
               }}
-              disabled={!prefetchInitialized}
+              title={!prefetchInitialized ? '未初始化状态下的 preFetch 测试' : '已初始化状态下的 preFetch 测试'}
             >
               发送 preFetch
             </button>
@@ -618,7 +639,7 @@ function PrefetchManager({ onLog, swRegistration }) {
                 <span className="stat-value">{benchmarkResults.improvement.toFixed(1)}%</span>
               </div>
             </div>
-            
+
             <div className="benchmark-details">
               <h5>详细对比</h5>
               <div className="comparison-table">
@@ -630,10 +651,10 @@ function PrefetchManager({ onLog, swRegistration }) {
                 </div>
                 {benchmarkResults.directResults.map((direct, index) => {
                   const cached = benchmarkResults.cachedResults[index]
-                  const improvement = direct.success && cached.success 
+                  const improvement = direct.success && cached.success
                     ? ((direct.responseTime - cached.responseTime) / direct.responseTime * 100)
                     : 0
-                  
+
                   return (
                     <div key={index} className="table-row">
                       <span className="endpoint-name">{direct.name}</span>
@@ -682,60 +703,81 @@ function PrefetchManager({ onLog, swRegistration }) {
           </div>
         </div>
       )}
-      
+
       <div className="test-section">
         <h4>🧪 Fetch 监听器警告测试</h4>
         <div className="button-group">
-          <button 
+          <button
             onClick={testDynamicFetchHandler}
             disabled={!swRegistration}
           >
             ⚠️ 方法1：直接添加
           </button>
-          
-          <button 
+
+          <button
             onClick={testESMDynamicFetch}
             disabled={!swRegistration}
           >
             📦 方法2：ESM 动态导入
           </button>
-          
-          <button 
+
+          <button
             onClick={testFetchHandlers}
             disabled={!swRegistration}
           >
             📊 检查状态
           </button>
         </div>
-        
+
         <div className="button-group">
-          <button 
+          <button
             onClick={testInterceptor}
             disabled={!swRegistration}
           >
             🎯 测试模块拦截器
           </button>
-          
-          <button 
+
+          <button
             onClick={testAsyncInit}
             disabled={!swRegistration}
           >
             🔄 测试异步初始化
           </button>
         </div>
-        
+
         <p className="test-description">
-          <strong>🚀 一键性能测试</strong>：自动执行完整的性能对比测试流程<br/>
-          <strong>🧹 清理缓存</strong>：清理 prefetch 缓存，确保测试准确性<br/>
-          <strong>📦 预请求</strong>：20秒有效期，批量预取所有 API 端点<br/>
-          <strong>📊 性能对比</strong>：直接请求 vs 缓存请求的响应时间对比
+          <strong>🚀 一键性能测试</strong>：自动执行完整的性能对比测试流程（建议先初始化）<br />
+          <strong>🧹 清理缓存</strong>：清理 prefetch 缓存，确保测试准确性<br />
+          <strong>📦 预请求</strong>：20秒有效期，批量预取所有 API 端点<br />
+          <strong>📊 性能对比</strong>：直接请求 vs 缓存请求的响应时间对比<br />
+          <strong>💡 提示</strong>：所有按钮都可以直接使用，无需等待初始化完成
         </p>
       </div>
-      
-      <p className="status-text">
-        状态: <strong>{prefetchInitialized ? '✅ 已初始化' : '⏳ 未初始化'}</strong>
-      </p>
-      
+
+      <div className="status-summary">
+        <p className="status-text">
+          Prefetch 状态: <strong>{prefetchInitialized ? '✅ 已初始化' : '⏳ 未初始化'}</strong>
+        </p>
+
+        <p className="status-text">
+          test-api-server: <strong>
+            {testApiServerStatus === 'running' && '🟢 运行中'}
+            {testApiServerStatus === 'stopped' && '🔴 已停止'}
+            {testApiServerStatus === 'unknown' && '⚪ 未检测'}
+          </strong>
+        </p>
+
+        <div className="usage-tips">
+          <h5>💡 使用提示</h5>
+          <ul>
+            <li><strong>fetch 按钮</strong>：随时可用，发送普通 HTTP 请求</li>
+            <li><strong>preFetch 按钮</strong>：随时可用，未初始化时可能降级为普通请求</li>
+            <li><strong>一键性能测试</strong>：随时可用，建议先初始化以获得最佳效果</li>
+            <li><strong>清理缓存</strong>：随时可用，未初始化时可能无实际效果</li>
+          </ul>
+        </div>
+      </div>
+
       {!swRegistration && (
         <p className="status-text warning">
           请先注册 Service Worker
