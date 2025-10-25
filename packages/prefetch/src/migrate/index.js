@@ -1,12 +1,12 @@
 /**
- * Prefetch Migration Tool - Main Entry
+ * Prefetch Service Worker Setup Tool - Main Entry
  * 
- * Orchestrates the migration process:
+ * Orchestrates the Service Worker setup process:
  * 1. Detect framework and compatibility
  * 2. Install dependencies
  * 3. Create/modify Service Worker
- * 4. Generate and inject registration code
- * 5. Validate and test
+ * 4. Generate registration instructions (manual integration)
+ * 5. Validate setup
  */
 
 const path = require('path');
@@ -17,7 +17,6 @@ const FrameworkDetector = require('./modules/framework-detector');
 const PackageInstaller = require('./modules/package-installer');
 const SWManager = require('./modules/sw-manager');
 const CodeGenerator = require('./modules/code-generator');
-const FileInjector = require('./modules/file-injector');
 // const BackupManager = require('./modules/backup-manager');
 // const Validator = require('./modules/validator');
 const Logger = require('./utils/logger');
@@ -217,42 +216,42 @@ async function runMigration(options = {}) {
     
     console.log();
 
-    // Step 4: Generate and inject registration code
-    console.log('Step 4/5: Generating registration code...');
+    // Step 4: Generate registration instructions (no automatic injection)
+    console.log('Step 4/5: Generating registration instructions...');
     
-    const injector = new FileInjector(rootDir, frameworkInfo);
     const generator = new CodeGenerator(frameworkInfo, options.config);
+    const registrationCode = generator.generateRegistrationCode();
     
-    // Locate entry file
-    const entryFile = await injector.locateEntryFile();
+    // Always show manual instructions instead of auto-injection
+    console.log(`  ℹ️  Service Worker registration code (add to your app entry point):`);
+    console.log('');
+    console.log('  ' + registrationCode.split('\n').join('\n  '));
+    console.log('');
+    console.log(`  💡 Add this code to your main application file:`);
     
-    if (entryFile) {
-      console.log(`  ✓ Entry file: ${path.relative(rootDir, entryFile)}`);
-      
-      // Check if already has registration code
-      const hasRegistration = await injector.hasRegistrationCode(entryFile);
-      
-      if (hasRegistration) {
-        console.log(`  ℹ️  Entry file already has Service Worker registration`);
-      } else {
-        // Generate registration code
-        const registrationCode = generator.generateRegistrationCode();
-        
-        // Inject code
-        await injector.inject(entryFile, registrationCode, { dryRun: options.dryRun });
-        
-        if (!options.dryRun) {
-          console.log(`  ✓ Registration code injected`);
-        }
-      }
-    } else {
-      console.log(`  ⚠️  Could not locate entry file automatically`);
-      
-      // Generate registration code for manual addition
-      const registrationCode = generator.generateRegistrationCode();
-      const instructions = injector.generateManualInstructions(registrationCode);
-      
-      console.log(instructions);
+    // Show framework-specific suggestions
+    switch (frameworkInfo.name) {
+      case 'nextjs':
+        console.log(`     - pages/_app.js or pages/_app.tsx`);
+        console.log(`     - app/layout.js or app/layout.tsx (App Router)`);
+        break;
+      case 'cra':
+      case 'react-vite':
+      case 'react':
+        console.log(`     - src/index.js or src/index.tsx`);
+        console.log(`     - src/App.js or src/App.tsx`);
+        break;
+      case 'vue-cli':
+      case 'vue-vite':
+      case 'vue':
+        console.log(`     - src/main.js or src/main.ts`);
+        break;
+      case 'nuxt':
+        console.log(`     - plugins/service-worker.client.js`);
+        console.log(`     - app.vue or layouts/default.vue`);
+        break;
+      default:
+        console.log(`     - Your main application entry file`);
     }
     
     console.log();
@@ -262,25 +261,24 @@ async function runMigration(options = {}) {
     console.log('  ✓ Framework detected and compatible');
     console.log('  ✓ Dependencies installed');
     console.log('  ✓ Service Worker configured');
-    console.log('  ✓ Registration code added');
+    console.log('  ✓ Registration instructions provided');
     console.log();
     
     // Show completion message
-    console.log('✅ Migration completed successfully!\n');
+    console.log('✅ Service Worker setup completed!\n');
     console.log('📝 What was done:');
     console.log(`  ✓ Detected framework: ${frameworkInfo.description}`);
     console.log(`  ✓ Installed @norejs/prefetch package`);
     console.log(`  ✓ Created/updated Service Worker: ${path.relative(rootDir, swFilePath)}`);
-    if (entryFile) {
-      console.log(`  ✓ Added registration code to: ${path.relative(rootDir, entryFile)}`);
-    }
+    console.log(`  ✓ Generated registration code for manual integration`);
     console.log();
     console.log('🚀 Next steps:');
-    console.log('  1. Start your development server');
-    console.log('  2. Open browser DevTools (F12)');
-    console.log('  3. Go to Application > Service Workers');
-    console.log('  4. Verify the Service Worker is registered');
-    console.log('  5. Test API requests to see caching in action');
+    console.log('  1. Add the registration code to your application entry point (see above)');
+    console.log('  2. Start your development server');
+    console.log('  3. Open browser DevTools (F12)');
+    console.log('  4. Go to Application > Service Workers');
+    console.log('  5. Verify the Service Worker is registered');
+    console.log('  6. Use @norejs/prefetch in your app to configure API caching');
     console.log();
     console.log('📚 Documentation: https://github.com/norejs/prefetch');
     console.log();

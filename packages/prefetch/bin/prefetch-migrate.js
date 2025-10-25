@@ -1,29 +1,31 @@
 #!/usr/bin/env node
 
 /**
- * Prefetch Migration Tool
- * 
- * A project migration tool that helps existing frontend projects
- * quickly support Prefetch API caching and prefetching functionality.
- * 
+ * Prefetch Service Worker Setup Tool
+ *
+ * A setup tool that helps existing frontend projects quickly add
+ * Prefetch Service Worker for API caching and prefetching functionality.
+ *
+ * This tool only handles Service Worker setup - manual registration required.
+ *
  * @version 1.0.0
  */
 
-const path = require('path');
-const { runMigration } = require('../src/migrate');
+const path = require("path");
+const { runMigration } = require("../src/migrate");
 
 // Parse command line arguments
 const args = process.argv.slice(2);
 
 // Show help
-if (args.includes('--help') || args.includes('-h')) {
+if (args.includes("--help") || args.includes("-h")) {
   showHelp();
   process.exit(0);
 }
 
 // Show version
-if (args.includes('--version') || args.includes('-v')) {
-  const packageJson = require('../package.json');
+if (args.includes("--version") || args.includes("-v")) {
+  const packageJson = require("../package.json");
   console.log(`prefetch-migrate v${packageJson.version}`);
   process.exit(0);
 }
@@ -33,7 +35,7 @@ const options = parseOptions(args);
 
 // If no arguments provided, run default migration
 if (args.length === 0) {
-  console.log('🚀 Running default migration...\n');
+  console.log("🚀 Running default migration...\n");
   options.yes = true; // Auto-confirm for default migration
 }
 
@@ -43,7 +45,7 @@ runMigration(options)
     process.exit(0);
   })
   .catch((error) => {
-    console.error('\n❌ Migration failed:', error.message);
+    console.error("\n❌ Migration failed:", error.message);
     if (options.verbose) {
       console.error(error.stack);
     }
@@ -80,58 +82,58 @@ function parseOptions(args) {
     const arg = args[i];
 
     switch (arg) {
-      case '--rollback':
+      case "--rollback":
         options.rollback = true;
         break;
 
-      case '--dry-run':
+      case "--dry-run":
         options.dryRun = true;
         break;
 
-      case '--dev':
+      case "--dev":
         options.dev = true;
         break;
 
-      case '--cdn-prefix':
+      case "--cdn-prefix":
         options.cdnPrefix = args[++i];
         break;
 
-      case '--cdn-url':
+      case "--cdn-url":
         options.cdnUrl = args[++i];
         break;
 
-      case '--debug-port':
+      case "--debug-port":
         options.debugPort = parseInt(args[++i], 10);
         break;
 
-      case '--config':
+      case "--config":
         try {
           options.config = JSON.parse(args[++i]);
         } catch (error) {
-          console.error('Error: Invalid JSON in --config');
+          console.error("Error: Invalid JSON in --config");
           process.exit(1);
         }
         break;
 
-      case '--verbose':
-      case '-v':
+      case "--verbose":
+      case "-v":
         options.verbose = true;
         break;
 
-      case '--force':
-      case '-f':
+      case "--force":
+      case "-f":
         options.force = true;
         break;
 
-      case '--yes':
-      case '-y':
+      case "--yes":
+      case "-y":
         options.yes = true;
         break;
 
       default:
-        if (arg.startsWith('-')) {
+        if (arg.startsWith("-")) {
           console.error(`Unknown option: ${arg}`);
-          console.error('Run with --help for usage information');
+          console.error("Run with --help for usage information");
           process.exit(1);
         }
     }
@@ -145,18 +147,19 @@ function parseOptions(args) {
  */
 function showHelp() {
   console.log(`
-🚀 Prefetch Migration Tool
+🚀 Prefetch Service Worker Setup Tool
 
-Automatically migrate your frontend project to support Prefetch API caching.
+Automatically setup Service Worker for Prefetch API caching in your project.
+This tool only handles Service Worker files - you need to manually register the SW in your app.
 
 Usage:
   prefetch-migrate [options]
 
-  Run without options to start default migration with auto-confirmation.
+  Run without options to start default setup with auto-confirmation.
 
 Options:
   --rollback              Rollback to previous state
-  --dry-run               Simulate migration without making changes
+  --dry-run               Simulate setup without making changes
   
   --dev                   Enable development mode (use local dev server)
   --cdn-prefix <url>      Custom CDN URL prefix
@@ -172,10 +175,10 @@ Options:
   --version, -v           Show version
 
 Examples:
-  # Default migration (auto-confirm all prompts)
+  # Default setup (auto-confirm all prompts)
   prefetch-migrate
   
-  # Interactive migration (with prompts)
+  # Interactive setup (with prompts)
   prefetch-migrate --verbose
   
   # Development mode
@@ -187,8 +190,18 @@ Examples:
   # Dry run (simulate without changes)
   prefetch-migrate --dry-run
   
-  # Rollback previous migration
+  # Rollback previous setup
   prefetch-migrate --rollback
+
+What this tool does:
+  ✓ Detects your project framework
+  ✓ Installs @norejs/prefetch package
+  ✓ Creates/updates Service Worker with Prefetch integration
+  ✓ Provides registration code for manual integration
+
+What you need to do:
+  ✓ Add the provided registration code to your app entry point
+  ✓ Use @norejs/prefetch API in your app to configure caching
 
 Documentation: https://github.com/norejs/prefetch
 `);

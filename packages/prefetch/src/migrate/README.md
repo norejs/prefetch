@@ -1,6 +1,99 @@
-# Prefetch Migration Tool
+# Prefetch Service Worker Setup Tool
 
-This directory contains the implementation of the `prefetch-migrate` CLI tool - a project migration tool that helps existing frontend projects quickly support Prefetch API caching and prefetching functionality.
+This directory contains the setup tool for adding Prefetch Service Worker functionality to existing frontend projects.
+
+## Overview
+
+The setup tool automates the process of:
+1. Detecting the project framework
+2. Installing required dependencies  
+3. Creating/updating Service Worker files
+4. Providing registration instructions (manual integration required)
+5. Validating the setup
+
+**Important**: This tool only handles Service Worker setup. You need to manually register the Service Worker in your application.
+
+## Usage
+
+```bash
+# Run setup
+npx prefetch-migrate
+
+# Development mode (uses local dev server)
+npx prefetch-migrate --dev
+
+# Dry run (no changes)
+npx prefetch-migrate --dry-run
+
+# Custom configuration
+npx prefetch-migrate --config '{"apiMatcher":"/api/*","debug":true}'
+```
+
+## What the tool does
+
+✅ **Automated**:
+- Detects your project framework
+- Installs `@norejs/prefetch` package
+- Creates/updates Service Worker with Prefetch integration
+- Provides registration code template
+
+❌ **Manual (you need to do)**:
+- Add the registration code to your app entry point
+- Configure Prefetch rules using `@norejs/prefetch` API
+- Test and customize the setup
+
+## Architecture
+
+The tool is modular and consists of:
+
+- `index.js` - Main orchestrator
+- `modules/` - Core functionality modules
+- `utils/` - Utility functions
+
+## Key Modules
+
+### Framework Detector
+Detects the frontend framework and checks compatibility.
+
+### Package Installer  
+Handles dependency installation.
+
+### Service Worker Manager
+Creates and updates Service Worker files with Prefetch integration.
+
+### Code Generator
+Generates Service Worker code and registration templates.
+
+## Example Registration
+
+After running the tool, you'll get registration code like this:
+
+```javascript
+// Register Prefetch Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(registration => {
+      console.log('Prefetch Service Worker registered:', registration);
+      
+      // Send initialization message to Service Worker
+      if (registration.active) {
+        registration.active.postMessage({
+          type: 'PREFETCH_INIT',
+          config: {
+            // Add your Prefetch configuration here
+            // apiMatcher: '/api/*',
+            // defaultExpireTime: 30000,
+            // maxCacheSize: 100,
+            // debug: false
+          }
+        });
+      }
+    })
+    .catch(error => console.error('Prefetch Service Worker registration failed:', error));
+}
+```
+
+Add this code to your application entry point (e.g., `src/index.js`, `pages/_app.js`, etc.).
 
 ## Directory Structure
 
@@ -12,119 +105,37 @@ src/migrate/
 │   ├── package-installer.js    # Dependency installation
 │   ├── sw-manager.js           # Service Worker file management
 │   ├── code-generator.js       # Code generation (SW and registration)
-│   ├── file-injector.js        # Code injection using AST
 │   ├── backup-manager.js       # Backup and rollback functionality
 │   └── validator.js            # Migration validation
-├── templates/                  # Code templates
-│   ├── service-worker/         # SW templates (to be added)
-│   └── registration/           # Registration code templates (to be added)
 └── utils/                      # Utility functions
     ├── file-utils.js           # File operations
     └── logger.js               # Logging utility
 ```
 
-## Migration Flow
+## Setup Flow
 
-The migration process follows these steps:
+The setup process follows these steps:
 
-1. **Framework Detection** (`framework-detector.js`)
-   - Detect the frontend framework (Next.js, CRA, Vue, etc.)
-   - Check Node.js and framework version compatibility
-   - Determine project structure (publicDir, buildDir, entry files)
-
-2. **Dependency Installation** (`package-installer.js`)
-   - Detect package manager (npm, yarn, pnpm)
-   - Check if `@norejs/prefetch` is already installed
-   - Install the package if needed
-
-3. **Service Worker Setup** (`sw-manager.js`)
-   - Scan for existing Service Worker files
-   - Check if Prefetch is already integrated
-   - Create new SW or update existing one
-   - Backup files before modification
-
-4. **Registration Code Generation** (`code-generator.js` + `file-injector.js`)
-   - Generate framework-specific registration code
-   - Locate application entry file
-   - Inject registration code using AST manipulation
-   - Preserve code style and formatting
-
-5. **Validation** (`validator.js`)
-   - Validate all file modifications
-   - Verify dependency installation
-   - Check registration code correctness
-   - Generate validation report
-
-## Module Status
-
-| Module | Status | Task |
-|--------|--------|------|
-| Framework Detector | 🔨 Skeleton | Task 2 |
-| Package Installer | 🔨 Skeleton | Task 3 |
-| SW Manager | 🔨 Skeleton | Task 4 |
-| Code Generator | 🔨 Skeleton | Task 5 |
-| File Injector | 🔨 Skeleton | Task 6 |
-| Backup Manager | 🔨 Skeleton | Task 7 |
-| Validator | 🔨 Skeleton | Task 8 |
-
-## Usage
-
-```bash
-# Basic migration
-prefetch-migrate
-
-# Development mode (use local dev server)
-prefetch-migrate --dev
-
-# Custom CDN
-prefetch-migrate --cdn-prefix http://localhost:3100
-
-# Dry run (simulate without changes)
-prefetch-migrate --dry-run
-
-# Rollback to previous state
-prefetch-migrate --rollback
-
-# Verbose output
-prefetch-migrate --verbose
-```
+1. **Framework Detection** - Detect the frontend framework and check compatibility
+2. **Dependency Installation** - Install `@norejs/prefetch` package if needed
+3. **Service Worker Setup** - Create/update Service Worker with Prefetch integration
+4. **Registration Instructions** - Provide registration code template (no auto-injection)
+5. **Validation** - Validate the setup
 
 ## Development
 
-### Adding a New Module
+The tool is designed to be:
+- Framework-agnostic
+- Non-invasive (no automatic code injection)
+- Rollback-capable
+- Testable
 
-1. Create the module file in `modules/`
-2. Export a class with clear methods
-3. Add JSDoc comments
-4. Import and use in `index.js`
+### Philosophy
 
-### Adding Templates
+This tool follows a "Service Worker only" approach:
+- ✅ Handles Service Worker creation/updates automatically
+- ✅ Provides clear registration instructions
+- ❌ Does NOT modify your application code automatically
+- ❌ Does NOT inject code into your entry files
 
-1. Create template files in `templates/`
-2. Use placeholders for dynamic content
-3. Document template variables
-
-### Testing
-
-Test templates will be created in Phase 2 (Task 11-12).
-
-## Implementation Progress
-
-- [x] Task 1.1: Project structure created
-- [x] Task 1.2: Module skeleton files created
-- [ ] Task 2: Framework Detector (Next)
-- [ ] Task 3: Package Installer
-- [ ] Task 4: SW Manager
-- [ ] Task 5: Code Generator
-- [ ] Task 6: File Injector
-- [ ] Task 7: Backup Manager
-- [ ] Task 8: Validator
-- [ ] Task 9: Interactive Flow
-- [ ] Task 10: Main Orchestration
-
-## Notes
-
-- All modules use async/await for consistency
-- Error handling will be added during implementation
-- Backup is created before any file modification
-- Auto-rollback on error (unless in dry-run mode)
+This approach gives developers full control over how and where they integrate the Service Worker registration in their applications.

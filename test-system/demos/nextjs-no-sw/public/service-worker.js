@@ -20,7 +20,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch 事件处理（将被 Prefetch 集成代码增强）
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', () => {
   // 默认行为：直接透传请求
   // Prefetch 集成代码会拦截并处理匹配的请求
 });
@@ -203,8 +203,6 @@ console.log('Service Worker: Base setup complete');
   /**
    * Fetch 事件处理
    */
-  const originalFetchHandler = self.onfetch;
-  
   self.addEventListener('fetch', (event) => {
     // 优先使用 Prefetch 处理
     if (prefetchHandler) {
@@ -218,10 +216,7 @@ console.log('Service Worker: Base setup complete');
       }
     }
     
-    // 调用原有的 fetch 处理逻辑（如果存在）
-    if (originalFetchHandler) {
-      return originalFetchHandler.call(self, event);
-    }
+    // 默认行为：直接透传请求
   });
   
   console.log('[Prefetch] Integration loaded, waiting for INIT message');

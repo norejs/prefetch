@@ -53,7 +53,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch 事件处理（将被 Prefetch 集成代码增强）
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', () => {
   // 默认行为：直接透传请求
   // Prefetch 集成代码会拦截并处理匹配的请求
 });
@@ -263,8 +263,6 @@ console.log('Service Worker: Base setup complete');
   /**
    * Fetch 事件处理
    */
-  const originalFetchHandler = self.onfetch;
-  
   self.addEventListener('fetch', (event) => {
     // 优先使用 Prefetch 处理
     if (prefetchHandler) {
@@ -278,10 +276,7 @@ console.log('Service Worker: Base setup complete');
       }
     }
     
-    // 调用原有的 fetch 处理逻辑（如果存在）
-    if (originalFetchHandler) {
-      return originalFetchHandler.call(self, event);
-    }
+    // 默认行为：直接透传请求
   });
   
   console.log('[Prefetch] Integration loaded, waiting for INIT message');
@@ -327,24 +322,8 @@ console.log('Service Worker: Base setup complete');
    * @returns {string}
    */
   generateRegistrationCode() {
-    const framework = this.frameworkInfo.name;
-    
-    switch (framework) {
-      case 'nextjs':
-        return this._generateNextJSRegistration();
-      case 'cra':
-      case 'react-vite':
-      case 'react':
-        return this._generateReactRegistration();
-      case 'vue-cli':
-      case 'vue-vite':
-      case 'vue':
-        return this._generateVueRegistration();
-      case 'nuxt':
-        return this._generateNuxtRegistration();
-      default:
-        return this._generateGenericRegistration();
-    }
+    // 简化的通用注册代码，让用户自行集成到合适的位置
+    return this._generateGenericRegistration();
   }
   
   /**
@@ -412,13 +391,27 @@ if (process.client && 'serviceWorker' in navigator) {
    * @private
    */
   _generateGenericRegistration() {
-    return `// Register Service Worker
+    return `// Register Prefetch Service Worker
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(registration => console.log('SW registered:', registration))
-      .catch(error => console.log('SW registration failed:', error));
-  });
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(registration => {
+      console.log('Prefetch Service Worker registered:', registration);
+      
+      // Send initialization message to Service Worker
+      if (registration.active) {
+        registration.active.postMessage({
+          type: 'PREFETCH_INIT',
+          config: {
+            // Add your Prefetch configuration here
+            // apiMatcher: '/api/*',
+            // defaultExpireTime: 30000,
+            // maxCacheSize: 100,
+            // debug: false
+          }
+        });
+      }
+    })
+    .catch(error => console.error('Prefetch Service Worker registration failed:', error));
 }`;
   }
 }
