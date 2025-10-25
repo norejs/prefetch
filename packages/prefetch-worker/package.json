@@ -19,6 +19,8 @@
   "files": [
     "dist",
     "src",
+    "templates",
+    "docs",
     "README.md",
     "CHANGELOG.md"
   ],
@@ -35,7 +37,9 @@
     "lint:fix": "eslint src --ext .ts,.js --fix",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "prepublishOnly": "npm run build:prod"
+    "prepublishOnly": "npm run build:prod",
+    "copy-template": "cp templates/service-worker.js ../../service-worker.js && echo 'ESM template copied to project root'",
+    "copy-template:here": "cp templates/service-worker.js ./service-worker.js && echo 'ESM template copied to current directory'"
   },
   "keywords": [
     "service-worker",

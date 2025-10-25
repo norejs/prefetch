@@ -1,6 +1,87 @@
 # Prefetch Worker 使用示例
 
-## 🎯 智能初始化 `initializePrefetchWorker`
+## 🚀 ESM 模板（推荐，无需构建）
+
+### 使用 ESM 模板
+
+使用 `service-worker.js` 模板，纯 ESM 导入，适用于现代浏览器：
+
+```javascript
+// 1. 复制 templates/service-worker.js 到你的项目根目录
+
+// 2. 注册 Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(registration => {
+      console.log('Service Worker registered:', registration);
+      
+      // 发送配置消息
+      if (registration.active) {
+        registration.active.postMessage({
+          type: 'PREFETCH_CONFIG',
+          config: {
+            enablePrefetch: true,
+            cacheStrategy: 'cache-first',
+            prefetchRules: [
+              { pattern: /\/api\/.*\.json$/, priority: 'high' },
+              { pattern: /\.(js|css)$/, priority: 'medium' }
+            ]
+          }
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Service Worker registration failed:', error);
+    });
+}
+```
+
+**ESM 模板特性：**
+- 🚀 **纯 ESM 导入**，性能最佳
+- 🌐 **调试模式控制**：DEBUG_MODE 决定使用本地还是 CDN
+- 🛠️ **动态配置**：支持主进程实时配置
+- 🔧 **可替换标识**：方便自定义配置
+- 🎯 **简单易用**：复制即用，无需构建
+
+### 零配置使用
+
+```javascript
+// 最简单的使用方式 - 复制文件即可
+// service-worker.js 会自动：
+// 1. 使用 ESM 导入 prefetch-worker
+// 2. 选择合适的资源路径（本地/CDN）
+// 3. 等待主进程配置
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js');
+}
+```
+
+### 自定义配置
+
+```javascript
+// 注册后发送配置
+navigator.serviceWorker.register('/service-worker.js')
+  .then(registration => {
+    // 等待 Service Worker 激活
+    navigator.serviceWorker.ready.then(() => {
+      registration.active.postMessage({
+        type: 'PREFETCH_CONFIG',
+        config: {
+          enablePrefetch: true,
+          cacheStrategy: 'network-first',
+          prefetchRules: [
+            { pattern: /\/api\/users\/.*/, priority: 'high' },
+            { pattern: /\/api\/posts\/.*/, priority: 'medium' },
+            { pattern: /\.(jpg|png|webp)$/, priority: 'low' }
+          ]
+        }
+      });
+    });
+  });
+```
+
+## 🎯 智能初始化 `initializePrefetchWorker`（需要构建）
 
 `initializePrefetchWorker` 方法会根据是否传入配置来智能决定初始化方式：
 
