@@ -287,7 +287,7 @@ npm run demo:start:all
 **Note**: The demo projects use the new unified `prefetch` CLI command, demonstrating the simplified installation process.
 
 Visit:
-- **API Server**: http://localhost:3001
+- **API Server**: http://localhost:18001
 - **Next.js Demo**: http://localhost:3000  
 - **Vite Demo**: http://localhost:5173
 

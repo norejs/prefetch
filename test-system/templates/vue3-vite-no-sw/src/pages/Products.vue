@@ -24,7 +24,7 @@ export default {
     }
   },
   mounted() {
-    fetch('http://localhost:3001/api/products')
+    fetch('http://localhost:18001/api/products')
       .then(response => response.json())
       .then(data => {
         this.products = data;

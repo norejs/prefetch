@@ -6,7 +6,7 @@ function Products() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/products')
+    fetch('http://localhost:18001/api/products')
       .then(response => response.json())
       .then(data => {
         setProducts(data);

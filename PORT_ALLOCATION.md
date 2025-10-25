@@ -31,6 +31,29 @@
 - **Next.js Demo**: http://localhost:18010
 - **Vue3 Test App**: http://localhost:18021
 
+## 开发环境 SW 文件配置
+
+在开发环境中，Service Worker 文件可以配置为使用本地开发服务器：
+
+```javascript
+// 开发环境配置示例
+const PREFETCH_CONFIG = {
+  // 开发环境使用本地服务器（当前可用文件）
+  cdnUrl: 'http://localhost:18003/service-worker.js',
+  
+  // 生产环境使用 CDN
+  // cdnUrl: 'https://esm.sh/@norejs/prefetch-worker@latest/dist/service-worker.js',
+  
+  fallbackUrl: '/service-worker.js',
+  timeout: 5000,
+};
+```
+
+**注意**: 
+- 当前开发服务器提供的是 `service-worker.js` 文件
+- 如果需要 UMD 格式的 `prefetch-worker.umd.js` 用于 `importScripts()`，需要后续修复构建配置
+- 使用 `prefetch-integrate` 工具的 `--debug` 模式会自动配置为使用 `http://localhost:18030` 调试服务器
+
 ## Templates 目录说明
 
 `test-system/templates/` 目录下的项目是模板文件，不会被 turbo 运行。它们通过 `pnpm-workspace.yaml` 中的 `!test-system/templates/**` 规则被排除。

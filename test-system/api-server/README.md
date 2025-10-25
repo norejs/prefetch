@@ -29,7 +29,7 @@ pnpm start
 pnpm dev
 ```
 
-服务器将在 http://localhost:3001 运行
+服务器将在 http://localhost:18001 运行
 
 ## 📡 API 端点
 
@@ -60,7 +60,7 @@ pnpm dev
 
 ```javascript
 apiServer: {
-  port: 3001,
+  port: 18001,
   host: 'localhost',
   responseDelay: 0  // 模拟网络延迟（毫秒）
 }
@@ -125,7 +125,7 @@ apiServer: {
 
 ```javascript
 // test-runner/index.js
-await apiServer.start(3001);
+await apiServer.start(18001);
 // 运行测试...
 await apiServer.stop();
 ```
@@ -167,7 +167,7 @@ reporting: {
 ### 2. API 端点
 
 ```bash
-curl http://localhost:3001/api/logs
+curl http://localhost:18001/api/logs
 ```
 
 ### 3. 程序访问
@@ -185,7 +185,7 @@ console.log(logs);
 const APIServer = require('./api-server');
 
 // 启动服务器
-await APIServer.start(3001);
+await APIServer.start(18001);
 
 // 运行测试...
 
@@ -255,7 +255,7 @@ app.use(authMiddleware);
    - 需要单独安装依赖
 
 2. **端口占用**
-   - 默认使用端口 3001
+   - 默认使用端口 18001
    - 如果端口被占用，修改 `test-config.js`
 
 3. **CORS 配置**

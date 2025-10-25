@@ -111,7 +111,7 @@ pnpm install  # API 服务器有自己的依赖
 pnpm start
 ```
 
-API 服务器将在 http://localhost:3001 运行
+API 服务器将在 http://localhost:18001 运行
 
 **注意：** API 服务器是一个独立的 npm package (`@norejs/test-api-server`)，有自己的 `package.json` 和依赖。
 
@@ -227,7 +227,7 @@ git clean -fdx demos/
    - 所有项目共享依赖，节省空间
 
 5. **端口配置**
-   - API 服务器默认端口：3001
+   - API 服务器默认端口：18001
    - 模板项目默认端口：3000
    - 如果端口被占用，需要修改配置
 

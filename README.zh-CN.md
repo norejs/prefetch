@@ -287,7 +287,7 @@ npm run demo:start:all
 **注意**: 演示项目使用新的统一 `prefetch` CLI 命令，展示了简化的安装流程。
 
 访问地址：
-- **API 服务器**: http://localhost:3001
+- **API 服务器**: http://localhost:18001
 - **Next.js 演示**: http://localhost:3000
 - **Vite 演示**: http://localhost:5173
 

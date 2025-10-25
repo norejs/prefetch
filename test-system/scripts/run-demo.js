@@ -28,7 +28,7 @@ const apiServerDir = path.join(rootDir, 'api-server');
  */
 async function isAPIServerRunning() {
   return new Promise((resolve) => {
-    const req = http.get('http://localhost:3001/api/health', (res) => {
+    const req = http.get('http://localhost:18001/api/health', (res) => {
       resolve(res.statusCode === 200);
     });
     
@@ -92,7 +92,7 @@ async function startAPIServer() {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     if (await isAPIServerRunning()) {
-      console.log(chalk.green('   ✓ API server started at http://localhost:3001\n'));
+      console.log(chalk.green('   ✓ API server started at http://localhost:18001\n'));
       return serverProcess;
     }
     
@@ -281,7 +281,7 @@ async function main() {
       console.log(chalk.yellow('⚠️  API server is not running'));
       await startAPIServer();
     } else {
-      console.log(chalk.green('✓ API server is already running at http://localhost:3001\n'));
+      console.log(chalk.green('✓ API server is already running at http://localhost:18001\n'));
     }
     
     // 4. 运行 demo

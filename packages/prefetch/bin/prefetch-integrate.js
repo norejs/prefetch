@@ -155,10 +155,10 @@ class PrefetchIntegrator {
 
     // 根据 debug 模式选择 CDN URL
     const cdnUrl = debug
-      ? `http://localhost:${debugPort}/prefetch-worker.umd.js`
+      ? `http://localhost:${debugPort}/service-worker.js`
       : useLatest 
-        ? `${ESM_SH_BASE}/${PACKAGE_NAME}@latest/dist/prefetch-worker.umd.js`
-        : `${ESM_SH_BASE}/${PACKAGE_NAME}@${version}/dist/prefetch-worker.umd.js`;
+        ? `${ESM_SH_BASE}/${PACKAGE_NAME}@latest/dist/service-worker.js`
+        : `${ESM_SH_BASE}/${PACKAGE_NAME}@${version}/dist/service-worker.js`;
 
     const configJson = JSON.stringify(config, null, 2).split('\n').map((line, i) => 
       i === 0 ? line : '      ' + line
@@ -180,7 +180,7 @@ class PrefetchIntegrator {
     cdnUrl: '${cdnUrl}',
     
     // 本地降级文件（可选）
-    fallbackUrl: '/prefetch-worker.umd.js',
+    fallbackUrl: '/service-worker.js',
     
     // 加载超时时间（毫秒）
     timeout: 5000,
@@ -439,9 +439,9 @@ console.log('Service Worker: Base setup complete');
     
     if (debug) {
       console.log(`🔧 Mode: DEBUG`);
-      console.log(`🌐 Local Dev Server: http://localhost:${debugPort}/prefetch-worker.umd.js`);
+      console.log(`🌐 Local Dev Server: http://localhost:${debugPort}/service-worker.js`);
       console.log(`\n⚠️  Make sure to start the dev server:`);
-      console.log(`   cd packages/prefetch-worker && npm run dev:server`);
+      console.log(`   cd packages/prefetch-worker && npm run dev`);
     } else {
       console.log(`🌐 CDN: esm.sh/${PACKAGE_NAME}@${VERSION}`);
     }
@@ -513,7 +513,7 @@ console.log('Service Worker: Base setup complete');
     
     if (debug) {
       console.log(`🔧 Mode: DEBUG`);
-      console.log(`🌐 Local Dev Server: http://localhost:${debugPort}/prefetch-worker.umd.js`);
+      console.log(`🌐 Local Dev Server: http://localhost:${debugPort}/service-worker.js`);
     } else {
       console.log(`🌐 CDN: esm.sh/${PACKAGE_NAME}@${VERSION}`);
     }

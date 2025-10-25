@@ -128,7 +128,7 @@ function showAPIServerInfo() {
   console.log(chalk.gray(`   1. cd test-system/api-server`));
   console.log(chalk.gray(`   2. npm install`));
   console.log(chalk.gray(`   3. npm start`));
-  console.log(chalk.gray(`   4. API will be available at http://localhost:3001\n`));
+  console.log(chalk.gray(`   4. API will be available at http://localhost:18001\n`));
 }
 
 /**
