@@ -48,7 +48,7 @@ if (!isDev) {
 export default defineConfig([
   // ESM 格式 - 用于现代浏览器的 Service Worker
   {
-    input: 'src/index.ts',
+    input: 'src/worker.ts',
     output: {
       file: 'dist/service-worker.esm.js',
       format: 'es',
@@ -76,7 +76,7 @@ export default defineConfig([
 
   // UMD 格式 - 用于 importScripts
   {
-    input: 'src/setup.ts',
+    input: 'src/index.ts',
     output: {
       file: 'dist/prefetch-worker.umd.js',
       format: 'umd',
@@ -105,7 +105,7 @@ export default defineConfig([
 
   // IIFE 格式 - 独立的 Service Worker 文件
   {
-    input: 'src/index.ts',
+    input: 'src/worker.ts',
     output: {
       file: 'dist/service-worker.js',
       format: 'iife',
