@@ -1,0 +1,46 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "张三",
+      "email": "zhangsan@example.com",
+      "role": "admin",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=zhangsan",
+      "createdAt": "2024-01-15T08:30:00Z",
+      "lastLogin": "2024-10-25T10:15:30Z"
+    },
+    {
+      "id": 2,
+      "name": "李四",
+      "email": "lisi@example.com",
+      "role": "user",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=lisi",
+      "createdAt": "2024-02-20T14:22:15Z",
+      "lastLogin": "2024-10-24T16:45:22Z"
+    },
+    {
+      "id": 3,
+      "name": "王五",
+      "email": "wangwu@example.com",
+      "role": "user",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=wangwu",
+      "createdAt": "2024-03-10T09:18:45Z",
+      "lastLogin": "2024-10-23T11:30:18Z"
+    },
+    {
+      "id": 4,
+      "name": "赵六",
+      "email": "zhaoliu@example.com",
+      "role": "moderator",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=zhaoliu",
+      "createdAt": "2024-04-05T13:45:30Z",
+      "lastLogin": "2024-10-25T09:22:45Z"
+    }
+  ],
+  "total": 4,
+  "page": 1,
+  "pageSize": 10,
+  "timestamp": 1729872000000,
+  "message": "用户列表获取成功"
+}

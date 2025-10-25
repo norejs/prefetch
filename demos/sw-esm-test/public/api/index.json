@@ -1,0 +1,65 @@
+{
+  "success": true,
+  "data": {
+    "title": "API 端点列表",
+    "description": "sw-esm-test 项目中可用的模拟 API 端点",
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/api/users",
+        "method": "GET",
+        "description": "获取用户列表",
+        "file": "users.json",
+        "cacheable": true
+      },
+      {
+        "path": "/api/users/1",
+        "method": "GET", 
+        "description": "获取用户详情",
+        "file": "users/1.json",
+        "cacheable": true
+      },
+      {
+        "path": "/api/products",
+        "method": "GET",
+        "description": "获取产品列表",
+        "file": "products.json",
+        "cacheable": true
+      },
+      {
+        "path": "/api/orders/123",
+        "method": "GET",
+        "description": "获取订单详情",
+        "file": "orders/123.json",
+        "cacheable": true
+      },
+      {
+        "path": "/api/system/status",
+        "method": "GET",
+        "description": "获取系统状态",
+        "file": "system/status.json",
+        "cacheable": false
+      },
+      {
+        "path": "/api/custom/test",
+        "method": "GET",
+        "description": "自定义测试端点",
+        "file": "custom/test.json",
+        "cacheable": true
+      }
+    ],
+    "features": [
+      "所有端点都返回 JSON 格式数据",
+      "支持 preFetch 预取缓存",
+      "包含丰富的模拟数据",
+      "支持 CORS 跨域请求"
+    ],
+    "usage": {
+      "fetch": "使用标准 fetch() 方法请求",
+      "preFetch": "使用 @norejs/prefetch 的 preFetch() 方法预取",
+      "cache": "GET 请求会被 Service Worker 缓存"
+    }
+  },
+  "timestamp": 1729872000000,
+  "message": "API 端点列表获取成功"
+}

@@ -1,0 +1,33 @@
+{
+  "success": true,
+  "data": {
+    "endpoint": "/api/custom/test",
+    "method": "GET",
+    "message": "自定义 API 端点响应",
+    "randomData": "abc123xyz",
+    "features": [
+      "支持自定义端点",
+      "JSON 文件模拟",
+      "实时数据返回",
+      "缓存测试友好"
+    ],
+    "testData": {
+      "string": "Hello World",
+      "number": 42,
+      "boolean": true,
+      "array": [1, 2, 3, 4, 5],
+      "object": {
+        "nested": "value",
+        "count": 100
+      }
+    },
+    "metadata": {
+      "version": "1.0.0",
+      "author": "API Test System",
+      "generated": true,
+      "cacheable": true
+    }
+  },
+  "timestamp": 1729872000000,
+  "message": "自定义端点响应成功"
+}

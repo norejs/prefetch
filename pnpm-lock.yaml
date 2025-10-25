@@ -32,9 +32,6 @@ importers:
       '@norejs/prefetch':
         specifier: workspace:*
         version: link:../../packages/prefetch
-      '@norejs/prefetch-worker':
-        specifier: workspace:*
-        version: link:../../packages/prefetch-worker
       react:
         specifier: ^18.2.0
         version: 18.3.1

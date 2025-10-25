@@ -1,0 +1,96 @@
+{
+  "success": true,
+  "data": {
+    "id": 123,
+    "orderNumber": "ORD-2024-10-25-001",
+    "userId": 1,
+    "userName": "张三",
+    "userEmail": "zhangsan@example.com",
+    "status": "completed",
+    "statusText": "已完成",
+    "paymentStatus": "paid",
+    "paymentMethod": "支付宝",
+    "shippingStatus": "delivered",
+    "items": [
+      {
+        "id": 1,
+        "productId": 1,
+        "productName": "iPhone 15 Pro",
+        "productImage": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=200",
+        "price": 7999,
+        "quantity": 1,
+        "subtotal": 7999,
+        "specifications": {
+          "color": "自然钛金属",
+          "storage": "256GB"
+        }
+      }
+    ],
+    "pricing": {
+      "subtotal": 7999,
+      "shipping": 0,
+      "tax": 0,
+      "discount": 800,
+      "total": 7199
+    },
+    "shipping": {
+      "method": "顺丰快递",
+      "trackingNumber": "SF1234567890",
+      "address": {
+        "recipient": "张三",
+        "phone": "+86 138-0013-8000",
+        "province": "广东省",
+        "city": "深圳市",
+        "district": "南山区",
+        "street": "科技园南区",
+        "detail": "腾讯大厦 A 座 20 楼",
+        "zipCode": "518000"
+      },
+      "estimatedDelivery": "2024-10-26T18:00:00Z",
+      "actualDelivery": "2024-10-25T16:30:00Z"
+    },
+    "timeline": [
+      {
+        "status": "created",
+        "statusText": "订单创建",
+        "timestamp": "2024-10-23T10:30:00Z",
+        "description": "订单已创建，等待付款"
+      },
+      {
+        "status": "paid",
+        "statusText": "支付完成",
+        "timestamp": "2024-10-23T10:35:00Z",
+        "description": "支付宝支付成功，订单进入处理状态"
+      },
+      {
+        "status": "processing",
+        "statusText": "处理中",
+        "timestamp": "2024-10-23T14:20:00Z",
+        "description": "商品正在准备发货"
+      },
+      {
+        "status": "shipped",
+        "statusText": "已发货",
+        "timestamp": "2024-10-24T09:15:00Z",
+        "description": "商品已发货，快递单号：SF1234567890"
+      },
+      {
+        "status": "delivered",
+        "statusText": "已送达",
+        "timestamp": "2024-10-25T16:30:00Z",
+        "description": "商品已成功送达"
+      },
+      {
+        "status": "completed",
+        "statusText": "已完成",
+        "timestamp": "2024-10-25T18:00:00Z",
+        "description": "订单已完成，感谢您的购买"
+      }
+    ],
+    "createdAt": "2024-10-23T10:30:00Z",
+    "updatedAt": "2024-10-25T18:00:00Z",
+    "completedAt": "2024-10-25T18:00:00Z"
+  },
+  "timestamp": 1729872000000,
+  "message": "订单信息获取成功"
+}

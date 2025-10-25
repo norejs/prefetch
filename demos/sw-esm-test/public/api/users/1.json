@@ -1,0 +1,44 @@
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "张三",
+    "email": "zhangsan@example.com",
+    "role": "admin",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=zhangsan",
+    "phone": "+86 138-0013-8000",
+    "department": "技术部",
+    "position": "高级工程师",
+    "bio": "全栈开发工程师，专注于前端技术和用户体验设计",
+    "skills": ["JavaScript", "React", "Node.js", "Python", "Docker"],
+    "projects": [
+      {
+        "id": 101,
+        "name": "用户管理系统",
+        "status": "active",
+        "progress": 85
+      },
+      {
+        "id": 102,
+        "name": "API 网关",
+        "status": "completed",
+        "progress": 100
+      }
+    ],
+    "createdAt": "2024-01-15T08:30:00Z",
+    "updatedAt": "2024-10-20T14:22:30Z",
+    "lastLogin": "2024-10-25T10:15:30Z",
+    "loginCount": 342,
+    "preferences": {
+      "theme": "dark",
+      "language": "zh-CN",
+      "notifications": {
+        "email": true,
+        "push": false,
+        "sms": true
+      }
+    }
+  },
+  "timestamp": 1729872000000,
+  "message": "用户信息获取成功"
+}

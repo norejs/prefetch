@@ -1,0 +1,101 @@
+{
+  "success": true,
+  "data": {
+    "status": "healthy",
+    "version": "1.2.3",
+    "environment": "production",
+    "uptime": 86400,
+    "uptimeText": "1 天",
+    "startTime": "2024-10-24T10:00:00Z",
+    "currentTime": "2024-10-25T10:00:00Z",
+    "server": {
+      "hostname": "api-server-01",
+      "region": "cn-south-1",
+      "zone": "cn-south-1a",
+      "instanceId": "i-1234567890abcdef0"
+    },
+    "resources": {
+      "cpu": {
+        "usage": 23.5,
+        "cores": 8,
+        "model": "Intel Xeon E5-2686 v4"
+      },
+      "memory": {
+        "used": 1024,
+        "total": 4096,
+        "usage": 25.0,
+        "unit": "MB"
+      },
+      "disk": {
+        "used": 45.2,
+        "total": 100.0,
+        "usage": 45.2,
+        "unit": "GB"
+      },
+      "network": {
+        "inbound": 125.6,
+        "outbound": 89.3,
+        "unit": "Mbps"
+      }
+    },
+    "services": {
+      "database": {
+        "status": "healthy",
+        "responseTime": 12,
+        "connections": 45,
+        "maxConnections": 100
+      },
+      "redis": {
+        "status": "healthy",
+        "responseTime": 2,
+        "memory": 256,
+        "maxMemory": 512
+      },
+      "elasticsearch": {
+        "status": "healthy",
+        "responseTime": 8,
+        "indices": 15,
+        "documents": 1250000
+      },
+      "messageQueue": {
+        "status": "healthy",
+        "responseTime": 5,
+        "queueSize": 23,
+        "processedToday": 15420
+      }
+    },
+    "metrics": {
+      "requestsPerSecond": 156.7,
+      "averageResponseTime": 45,
+      "errorRate": 0.02,
+      "successRate": 99.98
+    },
+    "health": {
+      "overall": "healthy",
+      "checks": [
+        {
+          "name": "database_connection",
+          "status": "pass",
+          "responseTime": 12
+        },
+        {
+          "name": "redis_connection",
+          "status": "pass",
+          "responseTime": 2
+        },
+        {
+          "name": "external_api",
+          "status": "pass",
+          "responseTime": 156
+        },
+        {
+          "name": "disk_space",
+          "status": "pass",
+          "value": 45.2
+        }
+      ]
+    }
+  },
+  "timestamp": 1729872000000,
+  "message": "系统状态获取成功"
+}
