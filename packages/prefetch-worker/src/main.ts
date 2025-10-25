@@ -1,4 +1,4 @@
-import type { 
+import type {
   ServiceWorkerConfig,
   InitSuccessMessage,
   InitErrorMessage,
@@ -20,11 +20,12 @@ const defaultConfig: ServiceWorkerConfig = {
 };
 
 /**
- * 初始化 Prefetch Worker（支持消息通讯）
- * @param config 配置选项
+ * 设置消息监听器，等待主进程发送配置消息
+ * 专注于监听主进程消息并动态配置 fetch 处理器
+ * @param config 初始配置选项
  * @returns 清理函数
  */
-export function initializePrefetchWorker(config: Partial<ServiceWorkerConfig> = {}): () => void {
+export function setupMessageListener(config: Partial<ServiceWorkerConfig> = {}): () => void {
   if (!isServiceWorkerContext) {
     throw new Error('initializePrefetchWorker can only be called in Service Worker context');
   }
@@ -57,17 +58,17 @@ export function initializePrefetchWorker(config: Partial<ServiceWorkerConfig> = 
   // 消息处理器
   const messageHandler = (event: ExtendableMessageEvent) => {
     console.log('prefetch-worker: received message', event.data);
-    
+
     if (event.data?.type === 'PREFETCH_INIT') {
       try {
         const newConfig: ServiceWorkerConfig = {
           ...currentConfig,
           ...event.data.config
         };
-        
+
         console.log('prefetch-worker: initializing with message config', newConfig);
         setupFetchHandler(newConfig);
-        
+
         // 发送成功响应
         const source = event.source || event.ports?.[0];
         if (source) {
@@ -77,10 +78,10 @@ export function initializePrefetchWorker(config: Partial<ServiceWorkerConfig> = 
           };
           source.postMessage(response);
         }
-        
+
       } catch (error) {
         console.error('prefetch-worker: initialization failed', error);
-        
+
         // 发送错误响应
         const source = event.source || event.ports?.[0];
         if (source) {
@@ -92,7 +93,7 @@ export function initializePrefetchWorker(config: Partial<ServiceWorkerConfig> = 
         }
       }
     }
-    
+
     // 健康检查
     if (event.data?.type === 'PREFETCH_HEALTH_CHECK') {
       const source = event.source || event.ports?.[0];
@@ -136,96 +137,64 @@ export function initializePrefetchWorker(config: Partial<ServiceWorkerConfig> = 
   // 注册消息监听器
   self.addEventListener('message', messageHandler);
 
-  // 注册基本的生命周期事件
-  const installHandler = () => {
-    console.log('prefetch-worker: install event');
-    
-    // 延迟自动初始化，给主进程发送配置的机会
-    setTimeout(() => {
-      if (!isInitialized) {
-        console.log('prefetch-worker: auto-initializing with default config');
-        setupFetchHandler(currentConfig);
-      }
-    }, 1000);
-  };
-  
-  const activateHandler = (event: ExtendableEvent) => {
-    console.log('prefetch-worker: activate event');
-    event.waitUntil(
-      self.clients.claim().then(() => {
-        console.log('prefetch-worker: activated and controlling clients');
-      })
-    );
-  };
-
-  self.addEventListener('install', installHandler);
-  self.addEventListener('activate', activateHandler);
-
-  console.log('prefetch-worker: initialized, waiting for configuration');
+  console.log('prefetch-worker: message listener initialized, waiting for configuration from main thread');
 
   // 返回清理函数
   return () => {
-    console.log('prefetch-worker: cleaning up');
+    console.log('prefetch-worker: cleaning up message listener');
+
     if (fetchHandler) {
       self.removeEventListener('fetch', fetchHandler);
       (fetchHandler as any).clearCache?.();
     }
+
     self.removeEventListener('message', messageHandler);
-    self.removeEventListener('install', installHandler);
-    self.removeEventListener('activate', activateHandler);
     isInitialized = false;
     fetchHandler = null;
   };
 }
 
 /**
- * 创建简单的 Service Worker（立即初始化，不等待消息）
- * @param config 配置选项
+ * 智能初始化 Prefetch Worker
+ * - 如果传入了配置：立即初始化，不等待主进程消息
+ * - 如果没有传配置：等待主进程发送配置消息
+ * @param config 配置选项（可选）
  * @returns 清理函数
  */
-export function createSimpleWorker(config: Partial<ServiceWorkerConfig> = {}): () => void {
+export function initializePrefetchWorker(config?: Partial<ServiceWorkerConfig>): () => void {
   if (!isServiceWorkerContext) {
-    throw new Error('createSimpleWorker can only be called in Service Worker context');
+    throw new Error('initializePrefetchWorker can only be called in Service Worker context');
   }
 
-  const finalConfig: ServiceWorkerConfig = {
-    ...defaultConfig,
-    ...config
-  };
+  // 检查是否传入了有效配置
+  const hasConfig = config !== undefined && Object.keys(config).length > 0;
 
-  console.log('prefetch-worker: creating simple worker with config', finalConfig);
+  if (hasConfig) {
+    // 有配置：立即初始化
+    const finalConfig: ServiceWorkerConfig = {
+      ...defaultConfig,
+      ...config
+    };
 
-  // 创建 fetch 处理器
-  const fetchHandler = createFetchHandler(finalConfig);
-  
-  // 直接注册 fetch 事件监听器
-  self.addEventListener('fetch', fetchHandler);
+    console.log('prefetch-worker: initializing immediately with provided config', finalConfig);
 
-  // 注册基本的生命周期事件
-  const installHandler = () => {
-    console.log('prefetch-worker: install event');
-  };
-  
-  const activateHandler = (event: ExtendableEvent) => {
-    console.log('prefetch-worker: activate event');
-    event.waitUntil(
-      self.clients.claim().then(() => {
-        console.log('prefetch-worker: activated and controlling clients');
-      })
-    );
-  };
+    // 创建 fetch 处理器
+    const fetchHandler = createFetchHandler(finalConfig);
 
-  self.addEventListener('install', installHandler);
-  self.addEventListener('activate', activateHandler);
+    // 直接注册 fetch 事件监听器
+    self.addEventListener('fetch', fetchHandler);
 
-  console.log('prefetch-worker: simple worker initialized');
+    console.log('prefetch-worker: initialized and ready');
 
-  // 返回清理函数
-  return () => {
-    console.log('prefetch-worker: cleaning up simple worker');
-    self.removeEventListener('fetch', fetchHandler);
-    self.removeEventListener('install', installHandler);
-    self.removeEventListener('activate', activateHandler);
-    (fetchHandler as any).clearCache?.();
-  };
+    // 返回清理函数
+    return () => {
+      console.log('prefetch-worker: cleaning up immediate initialization');
+      self.removeEventListener('fetch', fetchHandler);
+      (fetchHandler as any).clearCache?.();
+    };
+  } else {
+    // 无配置：等待主进程消息
+    console.log('prefetch-worker: no config provided, waiting for main thread initialization');
+    return setupMessageListener(defaultConfig);
+  }
 }
