@@ -1,49 +1,50 @@
 {
-    "name": "root",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "packageManager": "pnpm@7.33.7",
-    "npmRegistry": "https://registry.npmjs.org",
-    "scripts": {
-        "test": "pnpm --filter @norejs/test-system test",
-        "test:quick": "pnpm --filter @norejs/test-system test:quick",
-        "test:single": "pnpm --filter @norejs/test-system test:single",
-        "test:demo:copy": "pnpm --filter @norejs/test-system demo:copy",
-        "test:demo:run": "pnpm --filter @norejs/test-system demo:run",
-        "test:demo:list": "pnpm --filter @norejs/test-system demo:list",
-        "dev": "turbo dev",
-        "build": "turbo build",
-        "publish": "turbo publish",
-        "changeset": "changeset",
-        "changeset:version": "changeset version",
-        "changeset:publish": "changeset publish",
-        "changeset:status": "changeset status",
-        "version-packages": "changeset version && pnpm install --lockfile-only",
-        "release": "pnpm build && changeset publish",
-        "demo:api": "cd demos/api-server && npm start",
-        "demo:vite": "cd demos/vite-prefetch-demo && npm run dev",
-        "demo:nextjs": "cd demos/nextjs-prefetch-demo && npm run dev",
-        "demo:start:vite": "concurrently \"npm run demo:api\" \"npm run demo:vite\"",
-        "demo:start:nextjs": "concurrently \"npm run demo:api\" \"npm run demo:nextjs\"",
-        "demo:start:all": "concurrently \"npm run demo:api\" \"npm run demo:vite\" \"npm run demo:nextjs\"",
-        "demo:install": "cd demos/api-server && npm install && cd ../vite-prefetch-demo && pnpm install && cd ../nextjs-prefetch-demo && pnpm install",
-        "demo:copy-sw": "cd demos/nextjs-prefetch-demo && npm run copy-sw",
-        "demo:build": "cd demos/vite-prefetch-demo && npm run build && cd ../nextjs-prefetch-demo && npm run build"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "devDependencies": {
-        "@changesets/changelog-github": "^0.5.1",
-        "@changesets/cli": "^2.29.6",
-        "concurrently": "^8.2.2",
-        "turbo": "^1.11.1"
-    },
-    "nx": {
-        "targets": {}
-    },
-    "volta": {
-        "node": "18.20.8"
-    }
+  "name": "root",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "packageManager": "pnpm@7.33.7",
+  "npmRegistry": "https://registry.npmjs.org",
+  "scripts": {
+    "test": "pnpm --filter @norejs/test-system test",
+    "test:quick": "pnpm --filter @norejs/test-system test:quick",
+    "test:single": "pnpm --filter @norejs/test-system test:single",
+    "test:demo:copy": "pnpm --filter @norejs/test-system demo:copy",
+    "test:demo:run": "pnpm --filter @norejs/test-system demo:run",
+    "test:demo:list": "pnpm --filter @norejs/test-system demo:list",
+    "dev": "turbo dev --filter='!./test-apps/*'",
+    "dev:all": "turbo dev",
+    "build": "turbo build",
+    "publish": "turbo publish",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "changeset:status": "changeset status",
+    "version-packages": "changeset version && pnpm install --lockfile-only",
+    "release": "pnpm build && changeset publish",
+    "demo:api": "cd demos/api-server && npm start",
+    "demo:vite": "cd demos/vite-prefetch-demo && npm run dev",
+    "demo:nextjs": "cd demos/nextjs-prefetch-demo && npm run dev",
+    "demo:start:vite": "concurrently \"npm run demo:api\" \"npm run demo:vite\"",
+    "demo:start:nextjs": "concurrently \"npm run demo:api\" \"npm run demo:nextjs\"",
+    "demo:start:all": "concurrently \"npm run demo:api\" \"npm run demo:vite\" \"npm run demo:nextjs\"",
+    "demo:install": "cd demos/api-server && npm install && cd ../vite-prefetch-demo && pnpm install && cd ../nextjs-prefetch-demo && pnpm install",
+    "demo:copy-sw": "cd demos/nextjs-prefetch-demo && npm run copy-sw",
+    "demo:build": "cd demos/vite-prefetch-demo && npm run build && cd ../nextjs-prefetch-demo && npm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.6",
+    "concurrently": "^8.2.2",
+    "turbo": "^1.11.1"
+  },
+  "nx": {
+    "targets": {}
+  },
+  "volta": {
+    "node": "18.20.8"
+  }
 }

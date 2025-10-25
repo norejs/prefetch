@@ -73,7 +73,6 @@
     // can be run whenever. It also has no filesystem outputs.
     "lint": {},
     "dev": {
-
       "cache": false,
       "persistent": true
     }
