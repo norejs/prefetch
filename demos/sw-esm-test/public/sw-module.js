@@ -16,12 +16,14 @@ interceptorConfigPromise.then(config => {
 });
 
 // 导入 prefetch-worker ES 模块 (CDN方式)
-import { initializePrefetchWorker } from 'http://localhost:18003/prefetch-worker.esm.js';
+import { initializePrefetchWorker, setupLifecycle } from 'http://localhost:18003/prefetch-worker.esm.js';
 
 console.log('Module SW: ✅ prefetch-worker ES Module 导入成功');
 
 // 初始化 prefetch-worker (不传入配置，等待主进程配置)
 initializePrefetchWorker();
+setupLifecycle();
+
 console.log('Module SW: ✅ prefetch-worker 初始化完成，等待主进程配置');
 
 // ===== 测试案例：演示不同方式添加 fetch 监听器 =====
@@ -145,7 +147,7 @@ const messageHandler = async (event) => {
     try {
       // 等待异步初始化完成
       const config = await interceptorConfigPromise;
-      
+
       event.source.postMessage({
         type: 'ASYNC_INIT_TEST_RESULT',
         config: config,
