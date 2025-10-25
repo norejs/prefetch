@@ -35,12 +35,13 @@ function ServiceWorkerManager({ onLog, onRegistration, swRegistration }) {
       onLog(`🔧 功能支持: ${JSON.stringify(data.features, null, 2)}`, 'info')
     } else if (data.type === 'MESSAGE_REPLY') {
       onLog(`💬 SW 回复: ${data.reply}`, 'success')
-      if (data.prefetchWorkerActive !== undefined) {
-        onLog(`🚀 Prefetch Worker 状态: ${data.prefetchWorkerActive ? '活跃' : '未激活'}`, 'info')
+      if (data.dynamicResult) {
+        onLog(`🔄 动态导入结果: ${data.dynamicResult}`, 'info')
       }
-    } else if (data.type === 'PREFETCH_STATUS') {
-      onLog(`🚀 Prefetch Worker 状态: ${data.prefetchWorkerActive ? '✅ 活跃' : '❌ 未激活'}`, 
-            data.prefetchWorkerActive ? 'success' : 'warning')
+    } else if (data.type === 'STATS_REPLY') {
+      onLog(`📊 统计信息: ${JSON.stringify(data.stats, null, 2)}`, 'info')
+    } else if (data.type === 'MESSAGE_ERROR') {
+      onLog(`❌ SW 错误: ${data.error}`, 'error')
     } else {
       onLog(`📨 收到SW消息: ${JSON.stringify(data)}`, 'info')
     }

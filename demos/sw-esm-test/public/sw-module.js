@@ -1,8 +1,7 @@
-// sw-module.js - ES Module Service Worker with Prefetch Worker Integration
+// sw-module.js - 简化的 ES Module Service Worker
 console.log('Module SW: 开始加载ES Module Service Worker');
 
 // 使用ES Module导入本地模块
-import { moduleUtils } from './modules/utils-esm.js';
 import { CacheManager } from './modules/cache-manager-esm.js';
 import { ApiHandler } from './modules/api-handler-esm.js';
 
@@ -11,46 +10,6 @@ console.log('Module SW: ✅ 本地 ES Module 导入成功');
 // 初始化本地模块
 const cacheManager = new CacheManager('esm-sw-cache-v1');
 const apiHandler = new ApiHandler(cacheManager);
-
-// Prefetch Worker 相关变量
-let prefetchWorkerCleanup = null;
-
-// 初始化 Prefetch Worker
-async function initializePrefetchWorker() {
-  try {
-    console.log('Module SW: 开始初始化 Prefetch Worker...');
-    
-    // 使用测试环境 CDN 地址
-    const CDN_BASE = 'http://localhost:18003';
-    const { 
-      setupLifecycle, 
-      initializePrefetchWorker 
-    } = await import(`${CDN_BASE}/service-worker.esm.js`);
-    
-    console.log('Module SW: ✅ Prefetch Worker 模块加载成功');
-    
-    // 设置生命周期管理（不自动管理，因为我们有自己的生命周期）
-    const cleanupLifecycle = setupLifecycle({
-      autoSkipWaiting: false,
-      autoClaimClients: false,
-      debug: true
-    });
-    
-    // 初始化预取功能（等待主进程配置）
-    const cleanupPrefetch = initializePrefetchWorker();
-    
-    // 组合清理函数
-    prefetchWorkerCleanup = () => {
-      cleanupPrefetch();
-      cleanupLifecycle();
-    };
-    
-    console.log('Module SW: ✅ Prefetch Worker 初始化完成，等待主进程配置');
-    
-  } catch (error) {
-    console.error('Module SW: Prefetch Worker 初始化失败:', error);
-  }
-}
 
 // 安装事件
 self.addEventListener('install', (event) => {
@@ -61,9 +20,6 @@ self.addEventListener('install', (event) => {
       // 初始化缓存
       await cacheManager.initialize();
       console.log('Module SW: 缓存管理器初始化完成');
-      
-      // 初始化 Prefetch Worker
-      await initializePrefetchWorker();
       
       // 跳过等待
       self.skipWaiting();
@@ -94,8 +50,7 @@ self.addEventListener('activate', (event) => {
           features: {
             esModules: true,
             dynamicImport: true,
-            topLevelAwait: true,
-            prefetchWorker: !!prefetchWorkerCleanup
+            topLevelAwait: true
           }
         });
       });
@@ -106,6 +61,12 @@ self.addEventListener('activate', (event) => {
 // Fetch事件处理
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+  
+  // 只处理 http/https 协议的请求
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    console.log(`Module SW: 跳过不支持的协议: ${url.protocol} - ${event.request.url}`);
+    return;
+  }
   
   // 拦截API请求
   if (url.pathname.startsWith('/api/')) {
@@ -126,13 +87,6 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', async (event) => {
   console.log('Module SW: 收到消息:', event.data);
   
-  // 处理 Prefetch Worker 配置消息
-  if (event.data && event.data.type === 'PREFETCH_CONFIG') {
-    console.log('Module SW: 收到 Prefetch Worker 配置:', event.data.config);
-    // Prefetch Worker 会自动处理这个消息
-    return;
-  }
-  
   // 处理测试消息
   if (event.data && event.data.type === 'TEST_MESSAGE') {
     // 使用动态导入测试
@@ -147,7 +101,6 @@ self.addEventListener('message', async (event) => {
         originalMessage: event.data,
         reply: 'ES Module Service Worker 收到消息',
         dynamicResult: result,
-        prefetchWorkerActive: !!prefetchWorkerCleanup,
         timestamp: Date.now()
       });
     } catch (error) {
@@ -161,12 +114,17 @@ self.addEventListener('message', async (event) => {
     }
   }
   
-  // 处理 Prefetch Worker 测试消息
-  if (event.data && event.data.type === 'TEST_PREFETCH') {
+  // 处理缓存统计请求
+  if (event.data && event.data.type === 'GET_STATS') {
+    const stats = {
+      cache: await cacheManager.getStats(),
+      api: apiHandler.getStats()
+    };
+    
     event.source.postMessage({
-      type: 'PREFETCH_STATUS',
+      type: 'STATS_REPLY',
       swType: 'module',
-      prefetchWorkerActive: !!prefetchWorkerCleanup,
+      stats: stats,
       timestamp: Date.now()
     });
   }

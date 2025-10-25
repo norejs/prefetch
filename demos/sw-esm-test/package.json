@@ -1,10 +1,10 @@
 {
   "name": "@norejs/demo-sw-esm-test",
   "version": "1.0.0",
-  "description": "Vite + React demo with Service Worker ES Modules and prefetch-worker integration",
+  "description": "Vite + React demo with Service Worker ES Modules testing",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 8081",
+    "dev": "vite --port 8082",
     "build": "vite build",
     "preview": "vite preview",
     "test": "echo 'No tests configured'"
@@ -14,8 +14,9 @@
     "react",
     "service-worker",
     "es-modules",
-    "prefetch-worker",
-    "demo"
+    "esm",
+    "demo",
+    "testing"
   ],
   "author": "NoReJS Team",
   "license": "MIT",
@@ -26,8 +27,6 @@
     "vite": "^5.4.21"
   },
   "dependencies": {
-    "@norejs/prefetch": "workspace:*",
-    "@norejs/prefetch-worker": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

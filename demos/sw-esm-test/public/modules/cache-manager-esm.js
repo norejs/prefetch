@@ -119,6 +119,13 @@ export class CacheManager {
     // 缓存优先策略
     async cacheFirst(request) {
         try {
+            // 检查 URL 协议，只处理 http/https 请求
+            const url = new URL(request.url);
+            if (!['http:', 'https:'].includes(url.protocol)) {
+                logger.log(`跳过缓存不支持的协议: ${url.protocol} - ${request.url}`);
+                return fetch(request);
+            }
+            
             // 先尝试从缓存获取
             const cachedResponse = await this.get(request);
             if (cachedResponse) {

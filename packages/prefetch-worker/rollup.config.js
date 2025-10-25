@@ -48,9 +48,9 @@ if (!isDev) {
 export default defineConfig([
   // ESM 格式 - 用于现代浏览器的 Service Worker
   {
-    input: 'src/worker.ts',
+    input: 'src/index.ts',
     output: {
-      file: 'dist/service-worker.esm.js',
+      file: 'dist/prefetch-worker.esm.js',
       format: 'es',
       sourcemap: isDev,
       banner: `/**
@@ -105,9 +105,9 @@ export default defineConfig([
 
   // IIFE 格式 - 独立的 Service Worker 文件
   {
-    input: 'src/worker.ts',
+    input: 'src/index.ts',
     output: {
-      file: 'dist/service-worker.js',
+      file: 'dist/prefetch-worker.js',
       format: 'iife',
       sourcemap: isDev,
       banner: `/**
@@ -129,7 +129,5 @@ export default defineConfig([
       include: 'src/**',
       exclude: 'node_modules/**'
     }
-  },
-
-
+  }
 ]);

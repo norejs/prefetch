@@ -1,0 +1,13 @@
+{
+  "name": "@norejs/shared-config",
+  "version": "1.0.0",
+  "description": "Shared configuration for NoReJS packages",
+  "main": "index.js",
+  "keywords": [
+    "config",
+    "shared",
+    "norejs"
+  ],
+  "author": "NoReJS Team",
+  "license": "MIT"
+}

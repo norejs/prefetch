@@ -1,16 +1,15 @@
-# Service Worker ESM + Prefetch Worker Demo
+# Service Worker ESM 测试演示
 
-这是一个使用 **Vite + React** 构建的演示项目，展示了如何集成 Service Worker ES Modules 和 `@norejs/prefetch-worker`。
+这是一个使用 **Vite + React** 构建的演示项目，专注于测试 Service Worker ES Modules 功能。
 
 ## 🚀 特性
 
 - ✅ **Vite + React** 现代开发环境
-- ✅ **Service Worker ES Modules** 支持
-- ✅ **@norejs/prefetch** 主进程集成
-- ✅ **@norejs/prefetch-worker** Service Worker 集成
+- ✅ **Service Worker ES Modules** 支持和测试
+- ✅ **动态导入** 功能测试
+- ✅ **缓存策略** 测试
 - ✅ **实时日志查看** 和导出功能
-- ✅ **交互式测试界面** 
-- ✅ **pnpm workspace** 依赖管理
+- ✅ **交互式测试界面**
 
 ## 📦 项目结构
 
@@ -60,14 +59,14 @@ pnpm install
 cd packages/prefetch-worker
 pnpm run dev
 
-# 启动演示项目 (端口 8081)
+# 启动演示项目 (端口 8082)
 cd demos/sw-esm-test  
 pnpm run dev
 ```
 
 ### 3. 访问演示
 
-打开浏览器访问: http://localhost:8081
+打开浏览器访问: http://localhost:8082
 
 ## 🧪 功能测试
 
