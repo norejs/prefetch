@@ -39,11 +39,11 @@ console.log('Service Worker: Base setup complete');
   'use strict';
   
   const PREFETCH_CONFIG = {
-    // CDN URL - esm.sh CDN
-    cdnUrl: 'https://esm.sh/@norejs/prefetch-worker@1.0.0/dist/prefetch-worker.umd.js',
+    // CDN URL - 使用本地文件作为主要源
+    cdnUrl: '/prefetch-worker.js',
     
     // 本地降级文件（可选）
-    fallbackUrl: '/prefetch-worker.umd.js',
+    fallbackUrl: null,
     
     // 加载超时时间（毫秒）
     timeout: 5000,

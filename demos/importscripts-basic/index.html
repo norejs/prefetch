@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImportScripts Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ImportScripts Demo</h1>
+    <p>这个demo演示了Service Worker中importScripts的基本用法</p>
+    
+    <div id="status" class="status info">
+        Service Worker状态: 检查中...
+    </div>
+    
+    <div>
+        <button onclick="registerServiceWorker()">注册 Service Worker</button>
+        <button onclick="unregisterServiceWorker()">注销 Service Worker</button>
+        <button onclick="testFetch()">测试 Fetch</button>
+        <button onclick="clearLog()">清空日志</button>
+    </div>
+    
+    <div id="log"></div>
+
+    <script>
+        const statusEl = document.getElementById('status');
+        const logEl = document.getElementById('log');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logEl.innerHTML += `[${timestamp}] ${message}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateStatus(message, type = 'info') {
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+        
+        // 检查Service Worker支持
+        if ('serviceWorker' in navigator) {
+            log('✓ Service Worker 支持检测通过');
+            checkServiceWorkerStatus();
+        } else {
+            log('✗ 浏览器不支持 Service Worker');
+            updateStatus('浏览器不支持 Service Worker', 'error');
+        }
+        
+        async function checkServiceWorkerStatus() {
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    log('✓ Service Worker 已注册');
+                    updateStatus('Service Worker 已注册并运行', 'success');
+                } else {
+                    log('○ Service Worker 未注册');
+                    updateStatus('Service Worker 未注册', 'info');
+                }
+            } catch (error) {
+                log('✗ 检查 Service Worker 状态失败: ' + error.message);
+                updateStatus('检查状态失败', 'error');
+            }
+        }
+        
+        async function registerServiceWorker() {
+            try {
+                log('开始注册 Service Worker...');
+                const registration = await navigator.serviceWorker.register('./service-worker.js');
+                log('✓ Service Worker 注册成功');
+                updateStatus('Service Worker 注册成功', 'success');
+                
+                // 监听状态变化
+                registration.addEventListener('updatefound', () => {
+                    log('发现 Service Worker 更新');
+                });
+                
+                // 监听消息
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    log('收到 Service Worker 消息: ' + JSON.stringify(event.data));
+                });
+                
+            } catch (error) {
+                log('✗ Service Worker 注册失败: ' + error.message);
+                updateStatus('Service Worker 注册失败', 'error');
+            }
+        }
+        
+        async function unregisterServiceWorker() {
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    await registration.unregister();
+                    log('✓ Service Worker 注销成功');
+                    updateStatus('Service Worker 已注销', 'info');
+                } else {
+                    log('○ 没有找到已注册的 Service Worker');
+                }
+            } catch (error) {
+                log('✗ Service Worker 注销失败: ' + error.message);
+                updateStatus('注销失败', 'error');
+            }
+        }
+        
+        async function testFetch() {
+            try {
+                log('发送测试请求...');
+                const response = await fetch('./test-api?timestamp=' + Date.now());
+                const text = await response.text();
+                log('✓ 请求成功: ' + text);
+            } catch (error) {
+                log('✗ 请求失败: ' + error.message);
+            }
+        }
+        
+        function clearLog() {
+            logEl.innerHTML = '';
+        }
+    </script>
+</body>
+</html>

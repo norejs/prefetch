@@ -1,6 +1,13 @@
+'use client'
 import Link from 'next/link';
-
+import { useEffect } from 'react';
+import { setup } from "@norejs/prefetch"
 export default function Home() {
+  useEffect(() => {
+    setup({
+      
+    });
+  })
   return (
     <div className="container">
       <nav className="nav">

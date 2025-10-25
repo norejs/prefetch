@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Worker ESM Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+        .success { 
+            background-color: #d4edda; 
+            color: #155724; 
+            border-color: #28a745;
+        }
+        .error { 
+            background-color: #f8d7da; 
+            color: #721c24; 
+            border-color: #dc3545;
+        }
+        .info { 
+            background-color: #d1ecf1; 
+            color: #0c5460; 
+            border-color: #17a2b8;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border-color: #ffc107;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 8px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        #log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 15px 0;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+        .test-section {
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .browser-support {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Service Worker ESM 测试</h1>
+    <p>这个demo测试Service Worker中ES Modules的支持情况和使用方法</p>
+    
+    <div class="browser-support">
+        <h4>📋 浏览器支持检测</h4>
+        <div id="browser-support-info">检测中...</div>
+    </div>
+    
+    <div id="status" class="status info">
+        Service Worker状态: 检查中...
+    </div>
+    
+    <div class="test-section">
+        <h3>🔧 Service Worker 控制</h3>
+        <button onclick="registerClassicSW()">注册传统 SW (importScripts)</button>
+        <button onclick="registerModuleSW()">注册模块 SW (ESM)</button>
+        <button onclick="unregisterServiceWorker()">注销 Service Worker</button>
+        <button onclick="checkSWStatus()">检查状态</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>🧪 功能测试</h3>
+        <button onclick="testBasicFetch()">测试基础 Fetch</button>
+        <button onclick="testModuleFetch()">测试模块功能</button>
+        <button onclick="testImportMap()">测试 Import Map</button>
+        <button onclick="sendMessage()">发送消息</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>📊 日志输出</h3>
+        <button onclick="clearLog()">清空日志</button>
+        <button onclick="exportLog()">导出日志</button>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        const statusEl = document.getElementById('status');
+        const logEl = document.getElementById('log');
+        const browserSupportEl = document.getElementById('browser-support-info');
+        
+        let currentRegistration = null;
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            const logMessage = `[${timestamp}] ${prefix} ${message}`;
+            
+            logEl.textContent += logMessage + '\n';
+            logEl.scrollTop = logEl.scrollHeight;
+            
+            console.log(logMessage);
+        }
+        
+        function updateStatus(message, type = 'info') {
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+        
+        // 检测浏览器支持
+        function detectBrowserSupport() {
+            const support = {
+                serviceWorker: 'serviceWorker' in navigator,
+                esModules: 'noModule' in HTMLScriptElement.prototype,
+                dynamicImport: false,
+                importMaps: HTMLScriptElement.supports && HTMLScriptElement.supports('importmap')
+            };
+            
+            // 测试动态导入
+            try {
+                new Function('import("")');
+                support.dynamicImport = true;
+            } catch (e) {
+                support.dynamicImport = false;
+            }
+            
+            let supportHtml = '<ul>';
+            supportHtml += `<li>Service Worker: ${support.serviceWorker ? '✅ 支持' : '❌ 不支持'}</li>`;
+            supportHtml += `<li>ES Modules: ${support.esModules ? '✅ 支持' : '❌ 不支持'}</li>`;
+            supportHtml += `<li>Dynamic Import: ${support.dynamicImport ? '✅ 支持' : '❌ 不支持'}</li>`;
+            supportHtml += `<li>Import Maps: ${support.importMaps ? '✅ 支持' : '❌ 不支持'}</li>`;
+            supportHtml += '</ul>';
+            
+            browserSupportEl.innerHTML = supportHtml;
+            
+            log(`浏览器支持检测完成: SW=${support.serviceWorker}, ESM=${support.esModules}, DynamicImport=${support.dynamicImport}, ImportMaps=${support.importMaps}`);
+            
+            return support;
+        }
+        
+        // 注册传统Service Worker
+        async function registerClassicSW() {
+            try {
+                log('开始注册传统 Service Worker (importScripts)...');
+                currentRegistration = await navigator.serviceWorker.register('./sw-classic.js');
+                log('✅ 传统 Service Worker 注册成功', 'success');
+                updateStatus('传统 Service Worker 已注册', 'success');
+                setupMessageListener();
+            } catch (error) {
+                log(`❌ 传统 Service Worker 注册失败: ${error.message}`, 'error');
+                updateStatus('注册失败', 'error');
+            }
+        }
+        
+        // 注册模块Service Worker
+        async function registerModuleSW() {
+            try {
+                log('开始注册模块 Service Worker (ESM)...');
+                
+                // 检查浏览器是否支持模块类型的Service Worker
+                const options = { type: 'module' };
+                currentRegistration = await navigator.serviceWorker.register('./sw-module.js', options);
+                
+                log('✅ 模块 Service Worker 注册成功', 'success');
+                updateStatus('模块 Service Worker 已注册', 'success');
+                setupMessageListener();
+            } catch (error) {
+                log(`❌ 模块 Service Worker 注册失败: ${error.message}`, 'error');
+                updateStatus('注册失败', 'error');
+                
+                // 如果模块注册失败，提供降级方案
+                log('尝试降级到传统 Service Worker...', 'warning');
+                await registerClassicSW();
+            }
+        }
+        
+        // 注销Service Worker
+        async function unregisterServiceWorker() {
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    await registration.unregister();
+                    currentRegistration = null;
+                    log('✅ Service Worker 注销成功', 'success');
+                    updateStatus('Service Worker 已注销', 'info');
+                } else {
+                    log('⚠️ 没有找到已注册的 Service Worker', 'warning');
+                }
+            } catch (error) {
+                log(`❌ Service Worker 注销失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 检查Service Worker状态
+        async function checkSWStatus() {
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    const sw = registration.active || registration.installing || registration.waiting;
+                    if (sw) {
+                        log(`✅ Service Worker 状态: ${sw.state}`);
+                        log(`📄 脚本URL: ${sw.scriptURL}`);
+                        updateStatus(`Service Worker 运行中 (${sw.state})`, 'success');
+                    }
+                } else {
+                    log('⚠️ 没有找到 Service Worker', 'warning');
+                    updateStatus('Service Worker 未注册', 'info');
+                }
+            } catch (error) {
+                log(`❌ 检查状态失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 设置消息监听
+        function setupMessageListener() {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                log(`📨 收到SW消息: ${JSON.stringify(event.data)}`);
+            });
+        }
+        
+        // 测试基础Fetch
+        async function testBasicFetch() {
+            try {
+                log('🧪 测试基础 Fetch...');
+                const response = await fetch('./api/test?type=basic&timestamp=' + Date.now());
+                const data = await response.text();
+                log(`✅ 基础 Fetch 成功: ${data}`, 'success');
+            } catch (error) {
+                log(`❌ 基础 Fetch 失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 测试模块功能
+        async function testModuleFetch() {
+            try {
+                log('🧪 测试模块功能...');
+                const response = await fetch('./api/module?timestamp=' + Date.now());
+                const data = await response.text();
+                log(`✅ 模块功能测试成功: ${data}`, 'success');
+            } catch (error) {
+                log(`❌ 模块功能测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 测试Import Map
+        async function testImportMap() {
+            try {
+                log('🧪 测试 Import Map...');
+                const response = await fetch('./api/importmap?timestamp=' + Date.now());
+                const data = await response.text();
+                log(`✅ Import Map 测试成功: ${data}`, 'success');
+            } catch (error) {
+                log(`❌ Import Map 测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 发送消息给Service Worker
+        async function sendMessage() {
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration && registration.active) {
+                    registration.active.postMessage({
+                        type: 'TEST_MESSAGE',
+                        timestamp: Date.now(),
+                        data: 'Hello from main thread!'
+                    });
+                    log('📤 消息已发送给 Service Worker');
+                } else {
+                    log('⚠️ 没有活跃的 Service Worker', 'warning');
+                }
+            } catch (error) {
+                log(`❌ 发送消息失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 清空日志
+        function clearLog() {
+            logEl.textContent = '';
+        }
+        
+        // 导出日志
+        function exportLog() {
+            const logContent = logEl.textContent;
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sw-esm-test-log-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            log('📁 日志已导出');
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Service Worker ESM 测试页面加载完成');
+            
+            const support = detectBrowserSupport();
+            
+            if (!support.serviceWorker) {
+                updateStatus('浏览器不支持 Service Worker', 'error');
+                log('❌ 浏览器不支持 Service Worker，无法进行测试', 'error');
+                return;
+            }
+            
+            checkSWStatus();
+        });
+    </script>
+</body>
+</html>
