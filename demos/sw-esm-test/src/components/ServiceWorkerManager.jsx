@@ -34,6 +34,42 @@ function ServiceWorkerManager({ onLog, onRegistration, swRegistration }) {
       onLog(`✅ Prefetch 初始化成功`, 'success')
     } else if (data.type === 'PREFETCH_INIT_ERROR') {
       onLog(`❌ Prefetch 初始化失败: ${data.error}`, 'error')
+    } else if (data.type === 'DYNAMIC_FETCH_HANDLER_ADDED') {
+      onLog(`⚠️ ${data.method === 'esm-import' ? 'ESM 动态导入' : '直接添加'}: ${data.warning}`, 'warning')
+      if (data.moduleTest) {
+        onLog(`📦 模块测试: ${data.moduleTest.message}`, 'info')
+      }
+      if (data.result) {
+        onLog(`📋 结果: ${data.result.warning}`, 'info')
+      }
+      onLog(`💡 请检查浏览器控制台是否有 fetch 事件监听器警告`, 'info')
+    } else if (data.type === 'DYNAMIC_FETCH_ERROR') {
+      onLog(`❌ ${data.method === 'esm-import' ? 'ESM 动态导入' : '直接添加'}失败: ${data.error}`, 'error')
+    } else if (data.type === 'FETCH_HANDLERS_STATUS') {
+      onLog(`📊 Fetch 处理器状态:`, 'info')
+      onLog(`  - 正确的处理器: ${data.correctHandlerActive ? '✅ 活跃' : '❌ 未活跃'}`, 'info')
+      onLog(`  - 动态处理器: ${data.dynamicHandlerActive ? '⚠️ 已添加但可能被忽略' : '❌ 未添加'}`, 'info')
+      onLog(`  - 模块拦截器: ${data.interceptorActive ? '✅ 活跃' : '❌ 未活跃'}`, 'info')
+      if (data.interceptorConfig) {
+        onLog(`  - 拦截器类型: ${data.interceptorConfig.handlerType}`, 'info')
+      }
+      onLog(`  - ${data.message}`, 'info')
+    } else if (data.type === 'INTERCEPTOR_TEST_RESULT') {
+      onLog(`🎯 拦截器测试结果:`, 'success')
+      onLog(`  - 模块加载: ${data.testResult.moduleLoaded ? '✅' : '❌'}`, 'info')
+      onLog(`  - 处理器添加: ${data.testResult.fetchHandlerAdded ? '✅' : '❌'}`, 'info')
+      onLog(`  - 测试URL: ${data.testResult.testUrl}`, 'info')
+      onLog(`  - ${data.message}`, 'info')
+    } else if (data.type === 'INTERCEPTOR_TEST_ERROR') {
+      onLog(`❌ 拦截器测试失败: ${data.error}`, 'error')
+    } else if (data.type === 'ASYNC_INIT_TEST_RESULT') {
+      onLog(`🔄 异步初始化测试结果:`, 'success')
+      onLog(`  - 添加位置: ${data.config.addedAt}`, 'info')
+      onLog(`  - 异步延迟: ${data.config.asyncDelay}ms`, 'info')
+      onLog(`  - 时间戳: ${new Date(data.config.timestamp).toLocaleTimeString()}`, 'info')
+      onLog(`  - ${data.message}`, 'info')
+    } else if (data.type === 'ASYNC_INIT_TEST_ERROR') {
+      onLog(`❌ 异步初始化测试失败: ${data.error}`, 'error')
     } else {
       onLog(`📨 收到SW消息: ${JSON.stringify(data)}`, 'info')
     }
