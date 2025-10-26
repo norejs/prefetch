@@ -2,13 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // 模拟航班搜索数据
 const generateFlights = (from: string, to: string, date: string) => {
-  const airlines = ['中国国航', '东方航空', '南方航空', '海南航空', '厦门航空', '深圳航空']
+  const airlines = [
+    { code: 'CA', name: '中国国航', logo: '🛫' },
+    { code: 'MU', name: '东方航空', logo: '✈️' },
+    { code: 'CZ', name: '南方航空', logo: '🛩️' },
+    { code: 'HU', name: '海南航空', logo: '🛫' },
+    { code: 'MF', name: '厦门航空', logo: '✈️' },
+    { code: 'ZH', name: '深圳航空', logo: '🛩️' }
+  ]
   const aircraftTypes = ['A320', 'A321', 'B737', 'B738', 'A330', 'B777']
   
   const flights = []
-  const basePrice = Math.floor(Math.random() * 800) + 200
+  const basePrice = Math.floor(Math.random() * 600) + 300
   
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 10; i++) {
+    const airline = airlines[i % airlines.length]
     const departureHour = 6 + Math.floor(Math.random() * 16)
     const departureMinute = Math.floor(Math.random() * 60)
     const flightDuration = 120 + Math.floor(Math.random() * 180) // 2-5小时
@@ -17,49 +25,68 @@ const generateFlights = (from: string, to: string, date: string) => {
     arrivalTime.setHours(departureHour, departureMinute)
     arrivalTime.setMinutes(arrivalTime.getMinutes() + flightDuration)
     
-    const priceVariation = (Math.random() - 0.5) * 400
-    const price = Math.max(200, basePrice + priceVariation)
+    const priceVariation = (Math.random() - 0.5) * 300
+    const economyPrice = Math.max(300, basePrice + priceVariation)
+    
+    const punctuality = Math.floor(Math.random() * 30) + 70 // 70-100%
+    const isDirectFlight = Math.random() > 0.3 // 70% 直飞
     
     flights.push({
       id: `FL${1000 + i}`,
-      flightNumber: `${airlines[i % airlines.length].slice(0, 2)}${1000 + Math.floor(Math.random() * 9000)}`,
-      airline: airlines[i % airlines.length],
+      flightNumber: `${airline.code}${1000 + Math.floor(Math.random() * 9000)}`,
+      airline: airline.name,
+      airlineLogo: airline.logo,
       aircraft: aircraftTypes[i % aircraftTypes.length],
       departure: {
-        city: from,
-        airport: `${from}首都国际机场`,
-        terminal: `T${Math.floor(Math.random() * 3) + 1}`,
-        time: `${departureHour.toString().padStart(2, '0')}:${departureMinute.toString().padStart(2, '0')}`
+        time: `${departureHour.toString().padStart(2, '0')}:${departureMinute.toString().padStart(2, '0')}`,
+        airport: from === '上海' ? '浦东T2' : from === '北京' ? '首都T2' : `${from}机场`,
+        terminal: `T${Math.floor(Math.random() * 3) + 1}`
       },
       arrival: {
-        city: to,
-        airport: `${to}机场`,
-        terminal: `T${Math.floor(Math.random() * 3) + 1}`,
-        time: `${arrivalTime.getHours().toString().padStart(2, '0')}:${arrivalTime.getMinutes().toString().padStart(2, '0')}`
+        time: `${arrivalTime.getHours().toString().padStart(2, '0')}:${arrivalTime.getMinutes().toString().padStart(2, '0')}`,
+        airport: to === '北京' ? '首都T2' : to === '上海' ? '浦东T2' : `${to}机场`,
+        terminal: `T${Math.floor(Math.random() * 3) + 1}`
       },
       duration: `${Math.floor(flightDuration / 60)}小时${flightDuration % 60}分钟`,
       price: {
-        economy: Math.floor(price),
-        business: Math.floor(price * 2.5),
-        first: Math.floor(price * 4)
+        economy: Math.floor(economyPrice),
+        business: Math.floor(economyPrice * 2.2),
+        first: Math.floor(economyPrice * 3.8)
       },
-      availability: {
-        economy: Math.floor(Math.random() * 50) + 10,
-        business: Math.floor(Math.random() * 20) + 5,
-        first: Math.floor(Math.random() * 10) + 2
-      },
-      onTime: Math.random() > 0.2, // 80% 准点率
+      punctuality: punctuality,
+      isDirect: isDirectFlight,
       features: [
-        '免费餐食',
-        '娱乐系统',
-        '免费行李',
-        ...(Math.random() > 0.5 ? ['WiFi'] : []),
-        ...(Math.random() > 0.7 ? ['充电插座'] : [])
+        ...(Math.random() > 0.3 ? ['有餐食'] : ['无餐食']),
+        ...(Math.random() > 0.2 ? ['到达准点率 100%'] : []),
+        ...(punctuality > 90 ? ['准点率高'] : []),
+        ...(Math.random() > 0.4 ? ['免费托运20kg'] : []),
+        ...(Math.random() > 0.6 ? ['优惠退票，退改¥147起'] : []),
+        ...(Math.random() > 0.7 ? ['经济舱2.3折'] : []),
+        ...(Math.random() > 0.8 ? ['国航新会员价'] : []),
+        ...(Math.random() > 0.9 ? ['所有舱位机票非常可订'] : [])
+      ],
+      cabinClasses: {
+        economy: {
+          price: Math.floor(economyPrice),
+          available: Math.random() > 0.1,
+          discount: Math.floor(Math.random() * 5 + 2) / 10, // 0.2-0.7折
+          features: ['免费托运20kg', '优惠退票，退改¥147起', `经济舱${Math.floor(Math.random() * 5 + 2)}.${Math.floor(Math.random() * 9)}折`]
+        },
+        business: {
+          price: Math.floor(economyPrice * 2.2),
+          available: Math.random() > 0.3,
+          features: ['免费托运20kg', '优惠退票，退改¥206起', `经济舱${Math.floor(Math.random() * 3 + 4)}.${Math.floor(Math.random() * 9)}折`]
+        }
+      },
+      promotions: [
+        ...(Math.random() > 0.7 ? ['高端超值增值包 +¥40'] : []),
+        ...(Math.random() > 0.8 ? ['延误补偿', '24小时退票立减', '40元*1张接送机券'] : []),
+        ...(Math.random() > 0.6 ? ['立减', '购50元接送机券', '赠国际300里程'] : [])
       ]
     })
   }
   
-  return flights.sort((a, b) => a.price.economy - b.price.economy)
+  return flights.sort((a, b) => a.departure.time.localeCompare(b.departure.time))
 }
 
 export async function GET(request: NextRequest) {

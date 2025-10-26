@@ -1,12 +1,12 @@
 'use client'
 
-import { Ticket, HelpCircle, Seat, Users } from 'lucide-react'
+import { Ticket, HelpCircle, Armchair, Users } from 'lucide-react'
 
 export default function ServiceTabs() {
   const services = [
     { icon: Ticket, label: '机票订单', href: '/orders' },
     { icon: HelpCircle, label: '航班助手', href: '/assistant' },
-    { icon: Seat, label: '在线选座', href: '/seat-selection' },
+    { icon: Armchair, label: '在线选座', href: '/seat-selection' },
     { icon: Users, label: '团体票', href: '/group-booking' }
   ]
 

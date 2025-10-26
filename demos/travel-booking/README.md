@@ -1,36 +1,209 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🤖 Morphix AI Trip - 智能旅行预订平台
 
-## Getting Started
+一个使用 Next.js + TypeScript 构建的 AI 驱动智能旅行预订平台，提供个性化的出行解决方案和智能推荐功能。
 
-First, run the development server:
+## 🎯 项目特色
 
+- **简约设计**：采用简洁的蓝色主题和白色背景，参考现代旅行应用设计
+- **多业务支持**：支持机票和火车票两种出行方式
+- **智能预取**：集成 @norejs/prefetch 提升用户体验
+- **响应式布局**：完美适配移动端和桌面端
+- **端口 18300**：运行在 http://localhost:18300
+
+## ✨ 特性
+
+### 🎨 界面设计
+- **简约风格**：采用简洁的蓝色主题，去除多余的色彩和装饰
+- **清晰布局**：白色背景配合蓝色主色调，信息层次分明
+- **移动优先**：专为移动端设计的交互体验
+- **现代化元素**：圆形头像、渐变背景等现代设计元素
+
+### 🏠 首页功能
+- **渐变背景**：美观的彩色渐变背景，营造旅行氛围
+- **飞机元素**：中央飞机图标，突出航空主题
+- **行程类型**：单程、往返选择
+- **城市选择**：大字体显示出发地和目的地，支持一键互换
+- **日期显示**：清晰的日期显示
+- **舱位选择**：经济舱、公务舱/头等舱选择
+- **搜索按钮**：醒目的橙色搜索按钮
+
+### 🛫 机票列表页
+- **蓝色主题**：简洁的蓝色顶部导航栏
+- **日期选择**：顶部蓝色区域显示多日期和价格
+- **筛选条件**：简洁的筛选按钮和选项
+- **航班列表**：清晰的航班信息展示，包含时间、机场、价格
+- **航空公司标识**：彩色圆形图标区分不同航空公司
+- **价格突出**：蓝色价格显示，清晰易读
+
+### 🚄 火车票列表页  
+- **统一设计**：与机票页面保持一致的蓝色主题
+- **车次显示**：左侧显示车次号和类型（高速、动车等）
+- **时间信息**：清晰的出发和到达时间显示
+- **车站信息**：出发站和到达站名称
+- **行程时间**：中间显示行程耗时
+- **价格显示**：右侧蓝色价格和余票状态
+- **简洁布局**：去除多余装饰，专注核心信息
+
+### 🚀 智能预取功能
+- **@norejs/prefetch 集成**：智能预取热门航班数据
+- **Service Worker**：后台缓存和数据预取
+- **性能优化**：减少用户等待时间
+- **缓存策略**：5分钟 API 缓存，30秒预取缓存
+
+### 📊 航班优惠
+- **三个分类**：国内低价榜、降幅榜、热度榜
+- **实时数据**：模拟真实航班优惠数据
+- **智能预取**：自动预取其他分类数据
+- **价格显示**：起价显示和折扣信息
+
+### 🛠️ 技术栈
+- **Next.js 16**：最新版本的 React 框架
+- **TypeScript**：类型安全的开发体验
+- **Tailwind CSS**：实用优先的 CSS 框架
+- **Lucide React**：现代化图标库
+- **date-fns**：日期处理库
+- **@norejs/prefetch**：智能预取库
+
+## 🚀 快速开始
+
+### 安装依赖
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 在项目根目录使用 pnpm（推荐）
+pnpm install
+
+# 或者在 travel-booking 目录使用 npm
+cd demos/travel-booking
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 启动开发服务器
+```bash
+# 在 travel-booking 目录
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+访问 [http://localhost:18300](http://localhost:18300) 查看应用。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📁 项目结构
 
-## Learn More
+```
+demos/travel-booking/
+├── src/
+│   ├── app/
+│   │   ├── api/                    # API 路由
+│   │   │   ├── flights/            # 航班搜索 API
+│   │   │   ├── trains/             # 火车票搜索 API
+│   │   │   └── flight-deals/       # 航班优惠 API
+│   │   ├── flights/                # 机票列表页
+│   │   ├── trains/                 # 火车票列表页
+│   │   ├── page.tsx                # 首页
+│   │   └── layout.tsx              # 布局组件
+│   └── hooks/
+│       └── usePrefetch.ts          # Prefetch Hook
+├── public/
+│   └── sw.js                       # Service Worker
+├── package.json
+├── tsconfig.json
+├── tailwind.config.js
+└── next.config.ts
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🔧 API 端点
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 航班相关
+- `GET /api/flights/search` - 航班搜索（查询参数）
+- `POST /api/flights/search` - 航班搜索（请求体）
+- `GET /api/flight-deals/domestic` - 国内低价榜
+- `GET /api/flight-deals/international` - 国际航班降幅榜
+- `GET /api/flight-deals/popular` - 热门航班榜
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 火车票相关
+- `GET /api/trains/search` - 火车票搜索（查询参数）
+- `POST /api/trains/search` - 火车票搜索（请求体）
 
-## Deploy on Vercel
+## 🚀 Prefetch 功能
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 自动预取
+应用会自动预取以下数据：
+- **航班优惠**：所有三个分类的优惠数据
+- **热门路线**：北京-上海、北京-广州等热门航线
+- **搜索结果**：基于用户行为预测的搜索结果
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 缓存策略
+- **API 缓存**：5分钟服务端缓存
+- **预取缓存**：30秒客户端缓存
+- **Service Worker**：后台智能缓存管理
+
+### 性能监控
+- **初始化状态**：显示 Prefetch 初始化状态
+- **预取日志**：开发模式下的详细日志
+- **缓存命中**：Service Worker 缓存命中统计
+
+## 🎯 使用场景
+
+### 1. 机票搜索
+1. 选择单程或往返
+2. 输入出发地和目的地
+3. 选择日期和舱位
+4. 点击搜索按钮
+
+### 2. 浏览优惠
+1. 查看"北京出发的低价"部分
+2. 切换不同分类标签
+3. 点击优惠项目查看详情
+
+### 3. 性能体验
+1. 观察页面加载速度
+2. 注意标签切换的响应速度
+3. 查看浏览器开发者工具中的网络请求
+
+## 🔍 开发调试
+
+### Service Worker 调试
+1. 打开浏览器开发者工具
+2. 进入 Application > Service Workers
+3. 查看 Service Worker 状态和日志
+
+### 网络请求监控
+1. 打开 Network 面板
+2. 观察 API 请求和缓存命中
+3. 查看请求头中的缓存标识
+
+### Prefetch 状态
+- 页面底部显示 Prefetch 初始化状态
+- 绿色：已启用智能预取
+- 黄色：初始化中
+- 红色：初始化失败
+
+## 🌟 特色功能
+
+### 智能预取
+- **预测性加载**：根据用户行为预取可能需要的数据
+- **后台处理**：不影响用户界面响应速度
+- **缓存优化**：避免重复请求，提升性能
+
+### 用户体验
+- **即时响应**：标签切换和搜索响应迅速
+- **视觉反馈**：加载状态和成功状态的清晰指示
+- **错误处理**：网络错误时的优雅降级
+
+### 移动端适配
+- **触摸友好**：适合移动设备的交互设计
+- **响应式布局**：在各种屏幕尺寸下都有良好表现
+- **性能优化**：针对移动网络的优化策略
+
+## 📝 开发说明
+
+这个项目展示了如何在现代 React 应用中集成智能预取功能：
+
+1. **Service Worker 集成**：使用 @norejs/prefetch-worker
+2. **React Hook**：封装 prefetch 功能为可复用的 Hook
+3. **API 设计**：RESTful API 设计和缓存策略
+4. **用户体验**：无感知的性能优化
+
+## 🔗 相关链接
+
+- [Next.js 文档](https://nextjs.org/docs)
+- [@norejs/prefetch 文档](../../packages/prefetch/README.md)
+- [Tailwind CSS 文档](https://tailwindcss.com/docs)
+- [Lucide React 图标](https://lucide.dev/)

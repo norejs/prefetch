@@ -122,9 +122,9 @@ const flightDeals = {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { category: string } }
+  { params }: { params: Promise<{ category: string }> }
 ) {
-  const { category } = params
+  const { category } = await params
   
   // 模拟网络延迟
   await new Promise(resolve => setTimeout(resolve, 500))
