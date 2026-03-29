@@ -1,7 +1,12 @@
 {
   "name": "@norejs/prefetch-worker",
-  "version": "1.0.1",
-  "description": "",
+  "version": "1.1.1",
+  "description": "Service Worker for intelligent API request caching and prefetching",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/norejs/prefetch.git",
+    "directory": "packages/prefetch-worker"
+  },
   "main": "index.js",
   "bin": {
     "prefetch-worker": "bin/install.js"
